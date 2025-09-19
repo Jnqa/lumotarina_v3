@@ -1,14 +1,17 @@
 const express = require('express');
-const admin = require('firebase-admin');
 const router = express.Router();
+const {
+  getUserProfile,
+  setUserProfile,
+  updateUserProfile,
+  deleteUserProfile,
+} = require('./firebase');
 
 // Получить профиль пользователя
 router.get('/:id', async (req, res) => {
   const tg_id = req.params.id;
   try {
-    const userRef = admin.database().ref(`users/${tg_id}`);
-    const snapshot = await userRef.once('value');
-    const user = snapshot.val();
+    const user = await getUserProfile(tg_id);
     if (!user) {
       return res.json({
         displayName: 'Новый пользователь',
@@ -24,6 +27,41 @@ router.get('/:id', async (req, res) => {
       });
     }
     res.json(user);
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Создать или полностью заменить профиль пользователя
+router.post('/:id', express.json(), async (req, res) => {
+  const tg_id = req.params.id;
+  const profileData = req.body;
+  try {
+    await setUserProfile(tg_id, profileData);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Частичное обновление профиля пользователя
+router.patch('/:id', express.json(), async (req, res) => {
+  const tg_id = req.params.id;
+  const updateData = req.body;
+  try {
+    await updateUserProfile(tg_id, updateData);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Удалить профиль пользователя
+router.delete('/:id', async (req, res) => {
+  const tg_id = req.params.id;
+  try {
+    await deleteUserProfile(tg_id);
+    res.json({ success: true });
   } catch (e) {
     res.status(500).json({ error: 'Server error' });
   }
