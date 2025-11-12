@@ -1,0 +1,57 @@
+{
+  "id": "paranormal",
+  "name": "Паранормал",
+  "hidden": true,
+  "description": "Стал паранормальным, умеешь использовать Люмион.",
+  "abilities": [
+        {"Strength":0}, 
+        {"Dexterity":10}, 
+        {"Constitution":5},
+        {"Intelligence":10},
+        {"Wisdom":10},
+        {"Charisma":-10},
+        {"Perception":10},
+        {"Willpower":5},
+        {"Engineering":-10},
+        {"Lumion":30},
+        {"Medicine":0},
+        {"Lockpicking":0},
+        {"Stealth":0},
+        {"Nature":0},
+        {"Survival":0},
+        {"Crafting":0}
+    ],
+  "inventory": [["Талисман с Люмионом"], ["Фонарик"] ],
+  "skills": [
+        {
+        "actions": [
+            {
+            "name": "??",
+            "effect": "??",
+            "level": 1
+            }
+        ],
+        "ShortRest": [
+            {
+            "name": "??",
+            "effect": "??",
+            "level": 1    
+            }
+        ],
+        "LongRest": [
+            {
+            "name": "??",
+            "effect": "??",
+            "level": 5
+            }
+        ],
+        "Passive": [
+            {
+            "name": "??",
+            "effect": "??",
+            "level": 1
+            }
+        ]
+    }
+    ]
+}

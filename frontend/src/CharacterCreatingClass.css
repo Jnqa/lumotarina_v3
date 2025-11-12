@@ -1,0 +1,57 @@
+.classes-list{ display:flex; flex-direction:column; gap:12px; margin-top:8px }
+.class-card{ background:#0b0b0b; border:1px solid #222; padding:12px; border-radius:10px; color:#ddd }
+.class-card.has-class{ box-shadow:0 0 0 2px rgba(43,102,255,0.12) }
+.class-card-head{ margin-bottom:8px }
+.class-desc{ color:#bbb; margin-top:6px }
+.has-label{ color:#2b66ff; font-weight:600; margin-left:8px }
+.abilities-grid{ display:flex; flex-wrap:wrap; gap:8px; margin-top:8px }
+.ability-badge{ background:linear-gradient(180deg,#151515,#0f0f0f); padding:6px 8px; border-radius:8px; border:1px solid #222; font-size:13px }
+.ability-empty{ color:#777 }
+.inventory-block{ margin-top:10px }
+.inv-label{ color:#bbb; font-size:13px; margin-bottom:6px }
+.inventory-list{ display:flex; gap:8px; flex-wrap:wrap }
+.inv-btn{ background:transparent; border:1px solid #333; color:#ddd; padding:6px 8px; border-radius:8px; cursor:pointer }
+.inv-btn.selected{ background:#2b66ff; color:#fff; border-color:transparent }
+.skills-block{ margin-top:8px }
+.skill-details summary{ cursor:pointer; padding:6px 0; font-weight:600 }
+.skill-details ul{ margin:6px 0 0 18px; color:#ccc }
+.class-card-footer{ margin-top:10px; display:flex; justify-content:flex-end }
+.choose-btn{ background:linear-gradient(180deg,#6b5cff,#4a38d1); color:#fff; padding:8px 12px; border-radius:8px; border:none }
+
+/* Preview at bottom */
+.char-preview{ background:#070707; border:1px solid #1a1a1a; padding:10px; border-radius:8px; color:#ddd }
+
+@media (max-width:760px){
+  .classes-list{ gap:10px }
+  .ability-badge{ flex:0 0 48%; }
+}
+
+/* New grid + detail panel styles */
+.class-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px }
+.class-tile{ background:linear-gradient(180deg,#0e0e0e,#070707); border:1px solid #222; padding:12px; border-radius:8px; display:flex; align-items:center; justify-content:center; min-height:72px; cursor:pointer }
+.class-tile .tile-title{ color:#ddd; font-weight:700; text-align:center; font-size:14px }
+.class-tile.selected{ box-shadow:0 0 0 3px rgba(43,102,255,0.12); border-color:#2b66ff }
+
+.detail-panel{ margin-top:16px; background:#0b0b0b; border:1px solid #222; padding:14px; border-radius:10px; color:#ddd }
+.detail-header h3{ margin:0 0 8px 0; font-size:18px }
+.detail-desc{ color:#bbb; font-weight:400 }
+
+.detail-inventory{ margin-bottom:10px }
+.detail-inventory .inv-label{ color:#ccc; margin-bottom:6px }
+.detail-inventory .inventory-list{ display:flex; gap:8px; flex-wrap:wrap }
+.detail-inventory .inv-btn{ padding:6px 10px }
+
+.detail-abilities{ margin-top:8px }
+.abilities-grid.grid-4x4{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px }
+.ability-cell{ background:linear-gradient(180deg,#111,#070707); border:1px solid #1a1a1a; border-radius:8px; padding:8px; min-height:56px; display:flex; align-items:center; justify-content:center }
+.ability-inner{ display:flex; flex-direction:column; align-items:center }
+.ability-name{ font-size:12px; color:#cfcfcf }
+.ability-val{ font-size:16px; font-weight:700; color:#fff }
+.ability-empty{ color:#666 }
+
+.detail-skills{ margin-top:12px }
+.detail-skills h4{ margin:0 0 8px 0 }
+.skill-details summary{ cursor:pointer; font-weight:700 }
+.skill-details ul{ margin:6px 0 0 18px; color:#ccc }
+
+.detail-actions{ margin-top:12px; display:flex; justify-content:flex-end }

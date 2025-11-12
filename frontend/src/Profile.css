@@ -1,0 +1,171 @@
+.profile-page {
+  padding: 20px;
+  font-family: Inter, Arial, sans-serif;
+  color: #eee;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+
+.profile-user {
+  position: relative;
+}
+
+.profile-user-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.profile-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #444;
+}
+
+.profile-username {
+  font-weight: 700;
+}
+
+.profile-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 6px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  z-index: 20;
+}
+
+.profile-menu-item {
+  display: block;
+  width: 160px;
+  padding: 8px 10px;
+  background: transparent;
+  color: #fff;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile-main {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+
+.profile-actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.square-btn {
+  aspect-ratio: 1 / 1;
+  background: linear-gradient(180deg,#2b2b2b,#1f1f1f);
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.map-btn {
+  position: relative;
+  overflow: hidden;
+  /* use the public map image served from backend/static */
+  background-image: url('/lore/WorldMap.png');
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+
+.map-btn::before {
+  /* dark overlay so the text remains readable */
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(8,8,12,0.5);
+  pointer-events: none;
+}
+
+.map-btn > * {
+  position: relative; /* ensure text sits above overlay */
+  z-index: 1;
+}
+
+.lore-btn {
+  position: relative;
+  overflow: hidden;
+  background-image: url('/pics/Lore.png');
+  background-size: cover;
+  background-position: center;
+  color: #fff;
+}
+
+.lore-btn::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(8,8,12,0.55);
+  pointer-events: none;
+}
+
+.lore-btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+.profile-character h3 {
+  margin: 0 0 8px 0;
+}
+
+.character-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+}
+
+.character-info {
+  flex: 1;
+}
+
+.no-character {
+  color: #999;
+  font-style: italic;
+}
+
+.primary-btn {
+  background: linear-gradient(180deg,#6b5cff,#4a38d1);
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.profile-empty {
+  padding: 20px;
+}

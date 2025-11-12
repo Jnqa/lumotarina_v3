@@ -1,4 +1,8 @@
 import ClassesEditor from './editor/ClassesEditor';
+import LoreMap from './LoreMap';
+import Lore from './Lore';
+import CharacterCreating from './CharacterCreating';
+import CharacterCreatingClass from './CharacterCreatingClass';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -11,8 +15,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
-  <Route path="/profile" element={<Profile />} />
-  <Route path="/editor/classes" element={<ClassesEditor />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/editor/classes" element={<ClassesEditor />} />
+        <Route path="/lore" element={<Lore />} />
+        <Route path="/lore/map" element={<LoreMap />} />
+        <Route path="/character/create" element={<CharacterCreating />} />
+        <Route path="/character/class" element={<CharacterCreatingClass />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -6,6 +6,7 @@ const {
   updateUserProfile,
   deleteUserProfile,
 } = require('./firebase');
+const admin = require('firebase-admin');
 
 // Получить профиль пользователя
 router.get('/:id', async (req, res) => {
@@ -63,6 +64,20 @@ router.delete('/:id', async (req, res) => {
     await deleteUserProfile(tg_id);
     res.json({ success: true });
   } catch (e) {
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Создать персонажа для пользователя: POST /profile/:id/characters
+router.post('/:id/characters', express.json(), async (req, res) => {
+  const tg_id = req.params.id;
+  const charData = req.body;
+  try {
+    const charsRef = admin.database().ref(`users/${tg_id}/characters`);
+    const newRef = await charsRef.push(charData);
+    res.json({ success: true, id: newRef.key });
+  } catch (e) {
+    console.error('create character error', e);
     res.status(500).json({ error: 'Server error' });
   }
 });

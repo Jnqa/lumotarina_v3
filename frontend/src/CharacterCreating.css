@@ -1,0 +1,43 @@
+.char-root{
+  padding:16px;
+  color:#eee;
+  font-family: Inter, Arial, sans-serif;
+}
+.char-back{ background:transparent; border:1px solid #333; color:#fff; padding:6px 10px; border-radius:6px; cursor:pointer }
+.char-progress{ margin:8px 0 12px 0; color:#bbb }
+.char-stage h3{ margin:6px 0 }
+.char-options{ display:flex; gap:8px; flex-wrap:wrap }
+.char-opt{ background:transparent; border:1px solid #333; color:#ddd; padding:8px 10px; border-radius:8px; cursor:pointer }
+.char-opt.selected{ background:linear-gradient(180deg,#3a2d7a,#2a1f58); color:#fff; border-color:transparent }
+.char-controls{ margin-top:12px; display:flex; gap:8px }
+.char-controls button{ padding:8px 12px; border-radius:8px; cursor:pointer; border: none; background: linear-gradient(180deg,#6b5cff,#4a38d1); color:#fff }
+.char-controls button[disabled]{ opacity:0.4; cursor:not-allowed }
+.char-summary{ margin-top:14px; background:#0f0f0f; padding:10px; border-radius:8px; border:1px solid #222 }
+.char-note{ color:#999 }
+
+/* City panel styles */
+.char-city-panel{ margin-top:12px; background:#0f0f0f; padding:12px; border-radius:8px; border:1px solid #222; color:#ddd }
+.city-header{ display:flex; align-items:center; gap:12px; margin-bottom:8px }
+.level-badge{ padding:4px 8px; border-radius:999px; color:#111; font-weight:700; font-size:13px }
+.city-body{ display:flex; flex-direction:column; gap:8px }
+.city-gallery-and-desc{ display:flex; gap:12px; align-items:flex-start }
+.char-city-gallery{ display:flex; gap:8px; flex-wrap:wrap }
+.char-city-gallery .lore-thumb{ width:96px; height:auto; cursor:pointer; border-radius:6px }
+.city-desc{ flex:1; color:#ddd }
+.city-wealth{ width:100%; margin-bottom:6px }
+.wealth-bar{ height:12px; border-radius:8px; border:1px solid #333; background:linear-gradient(90deg,#111,#0b0b0b); overflow:hidden }
+.wealth-fill{ height:100%; }
+
+/* level button tints */
+.char-opt.level-1{ background: linear-gradient(180deg,#3b3b3b,#2d2d2d); border-color:transparent }
+.char-opt.level-2{ background: linear-gradient(180deg,#2e8b4a,#23673a); border-color:transparent }
+.char-opt.level-3{ background: linear-gradient(180deg,#2b66a6,#174a80); border-color:transparent }
+.char-opt.level-4{ background: linear-gradient(180deg,#6b3b88,#4a1f5f); border-color:transparent }
+.char-opt.level-5{ background: linear-gradient(180deg,#d4a017,#b07f0d); border-color:transparent }
+
+@media (max-width:760px){
+  .char-root{ padding:12px }
+  .char-options{ gap:6px }
+  .char-opt{ padding:10px 12px; font-size:15px }
+}
+/* class-selection styles moved to CharacterCreatingClass.css */

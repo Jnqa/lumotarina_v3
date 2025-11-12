@@ -1,0 +1,442 @@
+{
+  "questions": {
+    "city": {
+      "text": "Из какого ты города?",
+      "type": "choice",
+      "options": [
+        { "text": "Белый Крон", 
+            "next": "childhood_rich",
+            "description": "Островной город в сердце Белокронского залива. Спокойные воды и выверенный порядок отражают его сущность: чистота, величие и дисциплина. Когда-то торговый центр Империи, теперь — оплот науки, дипломатии и искусств. Городом управляет Совет Знаний — союз учёных и чиновников, поддерживающих идеальный порядок и почти полное отсутствие преступности.", 
+            "level": 5,
+            "abilities": [{"Engineering":4}, {"Charisma":2}, {"Intelligence":2}],
+            "enabled": true },
+        { "text": "Кивиград", 
+            "next": "childhood_poor",
+            "description": "Тихий прибрежный городок у реки Кивикоски и Белокронского залива. Скромные низкие дома, неторопливая жизнь и доброжелательные жители создают ощущение уюта. Город не богат, но славится чистым воздухом, зелёными берегами и множеством живописных мест, где природа остаётся главной ценностью.", 
+            "level": 2,
+            "abilities": [{"Intelligence":1}, {"Medicine":5}, {"Wisdom":1}],
+            "enabled": true },
+        { "text": "Кутариновск", 
+            "next": "childhood_poor",
+            "description": "Небольшой промышленный город на берегу Веленора. Заводы и фабрики формируют его облик, а рабочие кварталы отражают суровую реальность жизни. Несмотря на индустриальный характер, город окружён лесами и холмами, предоставляя жителям возможность отдохнуть на природе.", 
+            "level": 1,
+            "abilities": [{"Intelligence":1}, {"Willpower":3}, {"Constitution":5}, {"Crafting":1}],
+            "enabled": true },
+        { "text": "Лаулулахти", 
+            "next": "childhood_poor",
+            "description": "Рыбацкая деревушка среди сосен и скал Белокронского залива. Известна “поющими скалами”, где ветер в шторм звучит как мелодия духов моря. Здесь до сих пор подают копчёного сига в погребке “Хювя пайкка” и стоит старая заброшенная часовня, хранящая тайны прошлого.",
+            "level": 1,
+            "abilities": [{"Perception":2}, {"Dexterity":1}, {"Willpower":1}, {"Wisdom":1}, {"Survival":1}, {"Lumion":1}],
+            "enabled": true },
+        { "text": "Лиймола", 
+            "next": "childhood_poor",
+            "description": "Прибрежная деревушка на берегу Велемора, куда ведёт узкая каменистая дорога. Дома скрыты среди сосен, воздух чист и прохладен, а окрестности полны диких зверей и пения птиц. Жители живут охотой, рыбалкой и ремёслами, сохраняя традиционный образ жизни вдали от цивилизации.",
+            "level":2,
+            "abilities": [{"Perception":1}, {"Crafting":1}, {"Survival":2}, {"Nature":2}, {"Medicine":1}, {"Constitution":1}, {"Stealth":1}],
+            "enabled": true },
+        { "text": "Люборг", 
+            "next": "childhood_rich",
+            "description": "Современный прибрежный городок, сверкающий стеклом и неоном. Здесь находятся штаб-квартиры крупнейших корпораций, среди которых выделяется Luminous — символ технологий и статуса. Улицы ухожены, дороги без пробок, в воздухе — запах кофе и озона. Город живёт в ритме инноваций: парки освещены мягким светом умных фонарей, а фасады зданий переливаются интерактивной рекламой. Люборг дорог, амбициозен и безупречно упорядочен — как сама эпоха, которую он олицетворяет.", 
+            "level":5,
+            "abilities": [{"Intelligence":2}, {"Engineering":1}, {"Charisma":1}, {"Dexterity":1}],
+            "enabled": true },
+        { "text": "Межозёрец", 
+            "next": "childhood_poor",
+            "description": "Оживлённый торговый городок, раскинувшийся между двумя большими озёрами. Здесь сходятся пути купцов и ремесленников со всего региона. На набережных шумят рынки, пахнет свежей рыбой и специями, а лодки с товаром не успевают швартоваться. Жители трудолюбивы и разговорчивы — в Межозёрце всегда можно услышать последние новости и найти всё, что угодно, если знаешь, с кем говорить.",
+            "level": 3,
+            "abilities": [{"Charisma":2}, {"Dexterity":1}, {"Willpower":1}, {"Crafting":2}],
+            "enabled": true },
+        { "text": "Мустальма", 
+            "next": "childhood_base",
+            "description": "Мрачный портовый город на берегу Велемора, наполовину ушедший под воду после древнего катаклизма. В туманах слышны колокола с глубины, а местные шепчут о «людях из тумана» и живом городе, что забирает тех, кто слишком долго глядит на воду.", 
+            "level":3,
+            "abilities": [{"Perception":2}, {"Charisma":2}, {"Willpower":1}, {"Stealth":1}, {"Dexterity":1}],
+            "enabled": true },
+        { "text": "Несауаль", 
+            "next": "childhood_base",
+            "description": "жаркий прибрежный город-гавань, затерянный у далёкого океана. Когда-то торговый центр, теперь — пристанище тех, кто скрывается от прошлого. В скалах слышен шёпот ветра и ночные звуки, а запечатанные двери у берега напоминают, что город хранит больше тайн, чем жителей.",
+            "level":4, 
+            "abilities": [{"Stealth":1}, {"Constitution":2}, {"Willpower":1}, {"Charisma":1}],
+            "enabled": true },
+        { "text": "Отсрова Велемора", 
+            "next": "childhood_unique",
+            "description": "Велемор — тёмное и бурное озеро, укрытое вечными туманами. Красивое, но коварное: местные верят, что оно не прощает неуважения. Говорят, в его глубинах скрыт забытый остров Тарина — легенда, до которой никто не добирался.", 
+            "level":1,
+            "abilities": [{"Perception":3}, {"Nature":3}, {"Willpower":2}, {"Wisdom":2}, {"Lumion":2}, {"Survival":2}, {"Crafting":1}],
+            "enabled": true },
+        { "text": "Остров Тарина", 
+            "next": "childhood_unique",
+            "description": "Загадочный остров посреди озера Велемор, окутанный легендами и туманами. Говорят, что на Тарине обитают духи природы и древние сущности, охраняющие его тайны от посторонних. Никто не знает, что скрывается в его глубинах, ведь те, кто пытался добраться до острова, либо не возвращались, либо возвращались изменёнными навсегда.",
+            "level":5,
+            "abilities": [{"Stealth":5}, {"Lumion":10}, {"Willpower":1}, {"Charisma":1}],
+            "enabled": false },
+        { "text": "Сауркельм", 
+            "next": "childhood_base",
+            "description": "бывшее сердце индустриальной Империи. Когда-то он утопал в дыме, вонял нефтью и жил по законам улиц: мафия, бандиты, контрабанда, кровавые разборки. Власть держали те, кого боялись. Двадцать лет назад всё изменилось. Теперь Сауркельм — мощный экономический центр, город без явных границ между бедными и богатыми. Металл, стекло и паровые шпили напоминают о прошлом, но под блестящей оболочкой всё ещё живут тени старого города.",
+            "level":4, 
+            "abilities": [{"Stealth":3}, {"Dexterity":2}, {"Charisma":2}, {"Intelligence":1}],
+            "enabled": true },
+        { "text": "Сосново", 
+            "next": "childhood_rich",
+            "description": "город дровосеков, утопающий в густых лесах. Главная сила и гордость — лесозаготовки: древесина Сосново ценится повсюду, а жители мастерски управляются с топором и пилой, поддерживая процветание и традиции своего города.",
+            "level":3, 
+            "abilities": [{"Strength":5}, {"Constitution":10}, {"Crafting":2}, {"Survival":2}],
+            "enabled": true },
+        { "text": "Суоград", 
+            "next": "childhood_base", 
+            "description": "Промышленный городок с историей оружейного производства. Сейчас его мощные мастерские и верфи сосредоточены на кораблестроении, а жители сохраняют традиции ремесла и инженерного мастерства, делая город важным центром промышленности и торговли.",
+            "level":3,
+            "abilities": [{"Strength":2}, {"Constitution":3}, {"Crafting":4}, {"Engineering":3}],
+            "enabled": true },
+        { "text": "Тайвель", 
+            "next": "childhood_unique",
+            "description": "Скрытый среди скал город на берегу Велемора. Дорога сюда известна лишь местным, а закрытость поселения делает его окутанным тайной: о жизни внутри знают немногое даже соседние поселения.", 
+            "level":1,
+            "abilities": [{"Lumion":7}, {"Wisdom":3}, {"Dexterity":4}, {"Nature":3}, {"Survival":3}, {"Crafting":3}],
+            "enabled": true },
+        { "text": "Тихоборье", 
+            "next": "relocation_hard",
+            "description": "мрачный город с темными улицами, утонувший в мелкой преступности. Торговцы обходят его стороной, а разрушенные дома и заброшенные площади создают атмосферу упадка и опасности.", 
+            "level":1,
+            "abilities": [{"Stealth":10}, {"Lockpicking":10}, {"Perception":3}, {"Dexterity":4}],
+            "enabled": true }
+
+    ]
+    },
+
+    "childhood_poor": {
+      "text": "Какое у тебя было детство?",
+      "type": "choice",
+      "options": [
+        { "text": "Бедное и трудное", "next": "relocation_hard" },
+        { "text": "Среднее, спокойное", "next": "relocation_normal" }
+      ]
+    },
+
+    "childhood_base": {
+      "text": "Какое у тебя было детство?",
+      "type": "choice",
+      "options": [
+        { "text": "Богатое и беззаботное", "next": "relocation_easy" },
+        { "text": "Бедное и трудное", "next": "relocation_hard" },
+        { "text": "Среднее, спокойное", "next": "relocation_normal" }
+      ]
+    },
+
+    "childhood_rich": {
+      "text": "Какое у тебя было детство?",
+      "type": "choice",
+      "options": [
+        { "text": "Богатое и беззаботное", "next": "relocation_easy" },
+        { "text": "Среднее, спокойное", "next": "relocation_normal" }
+      ]
+    },
+
+    "childhood_unique": {
+      "text": "Какое у тебя было детство?",
+      "type": "choice",
+      "options": [
+        { "text": "Богатое и беззаботное", "next": "relocation_normal_unique" },
+        { "text": "Бедное и трудное", "next": "relocation_hard_unique" },
+        { "text": "Среднее, спокойное", "next": "relocation_normal_unique" }
+      ]
+    },
+
+    "relocation_hard_unique": {
+      "text": "Куда ты переехал, когда стал взрослее?",
+      "type": "choice",
+      "options": [
+        { "text": "Остался в родном городе", "next": "local_lumion_resident" },
+        { "text": "Мустальма", "next": "mustalma"}
+      ]
+    },
+
+    "relocation_normal_unique": {
+      "text": "Куда ты переехал, когда стал взрослее?",
+      "type": "choice",
+      "options": [
+        { "text": "Сауркельм", "next": "street_life" },
+        { "text": "Остался в родном городе", "next": "local_lumion_resident" },
+        { "text": "Мустальма", "next": "mustalma"},
+        { "text": "Сосново", "next": "sosnovo" }
+      ]
+    },
+
+    "relocation_easy": {
+      "text": "Куда ты переехал, когда стал взрослее?",
+      "type": "choice",
+      "options": [
+        { "text": "Белый Крон", "next": "academy" },
+        { "text": "Сауркельм", "next": "street_life" },
+        { "text": "Остался в родном городе", "next": "local_resident" },
+        { "text": "Мустальма", "next": "mustalma" },
+        { "text": "Люборг", "next": "luborg" }
+      ]
+    },
+
+    "relocation_belkron": {
+      "text": "Куда ты переехал, когда стал взрослее?",
+      "type": "choice",
+      "options": [
+        { "text": "Сосново", "next": "sosnovo" },
+        { "text": "Сауркельм", "next": "street_life" },
+        { "text": "Остался в родном городе", "next": "academy" },
+        { "text": "Мустальма", "next": "mustalma" },
+        { "text": "Люборг", "next": "luborg" }
+      ]
+    },
+
+    "relocation_hard": {
+      "text": "Куда ты переехал, когда стал взрослее?",
+      "type": "choice",
+      "options": [
+        { "text": "Остался в родном городе", "next": "local_resident" },
+        { "text": "Мустальма", "next": "mustalma"}
+      ]
+    },
+
+    "relocation_normal": {
+      "text": "Куда ты переехал, когда стал взрослее?",
+      "type": "choice",
+      "options": [
+        { "text": "Сауркельм", "next": "street_life" },
+        { "text": "Остался в родном городе", "next": "local_resident" },
+        { "text": "Мустальма", "next": "mustalma"},
+        { "text": "Сосново", "next": "sosnovo" }
+      ]
+    },
+
+    "academy": {
+      "text": "Ты поступил в Академию Мирайна. Какая у тебя была специализация?",
+      "type": "choice",
+      "options": [
+        { "text": "Инженерия и технологии", "next": "academy_final",
+            "abilities": [{"Engineering":10}, {"Intelligence":10}]  },
+        { "text": "Медицина и биология", "next": "academy_final",
+            "abilities": [{"Medicine":10}, {"Intelligence":10}],
+            "class": "biotech_specialist"}
+      ]
+    },
+
+    "academy_final": {
+      "text": "Доучился ли ты до конца?",
+      "type": "choice",
+      "options": [
+        { "text": "Да", "next": "gender", 
+            "abilities": [{"Engineering":10}],
+            "class": "mirain_graduate"},
+        { "text": "Нет, отчислили за нарушение правил", "next": "gender", 
+            "abilities": [{"Lockpicking":5}, {"Intelligence":5}],
+            "class": "mirain_graduate"}
+      ],
+      "next": "academy_final"
+    },
+
+    "street_life": {
+      "text": "Как ты выживал в Сауркельме?",
+      "type": "choice",
+      "options": [
+        { "text": "Работал на точке продажи", "next": "gender", 
+            "abilities": [{"Charisma":5, "Perception":5}]  },
+        { "text": "Работал в офисе", "next": "gender", 
+            "abilities": [{"Willpower":5, "Intelligence":5}]  },
+        { "text": "Работал в на механическом заводе", "next": "gender", 
+            "abilities": [{"Strength":5, "Engineering":5, "Intelligence":5, "Crafting":5}],
+            "class": "mechanic"},
+        { "text": "Воровал, чтобы жить", "next": "gender", 
+            "abilities": [{"Stealth":5, "Dexterity":5}],
+            "class": "pickpocket"},
+        { "text": "Чинил машины", "next": "gender", 
+            "abilities": [{"Strength":10}],
+            "class": "mechanic"},
+        { "text": "Стал честным репортёром", "next": "gender", 
+            "abilities": [{"Charisma":10}],
+            "class": "truth_journalist"},
+        { "text": "Стал стражем. (Служитель закона)", "next": "gender", 
+            "abilities": [{"Charisma":10}],
+            "class": "guardian"},
+        { "text": "Примкнул к уличной шайке", "next": "gender", 
+            "abilities": [{"Lockpicking":5}, {"Intelligence":5}],
+            "class": "volkov_thug"}
+      ]
+    },
+
+    "local_lumion_resident": {
+      "text": "Чему ты обучался?",
+      "type": "choice",
+      "options": [
+        { "text": "Силе Воли и Восприятие", "next": "gender", 
+            "abilities": [{"Willpower":10, "Perception":10}],
+            "class": "custom"},
+        { "text": "Тренеровал Силу и Телосложение", "next": "gender", 
+            "abilities": [{"Strength":10, "Constitution":10}],
+            "class": "custom"},
+        { "text": "Учился контролировать Люмион", "next": "gender", 
+            "abilities": [{"Lumion":20, "Wisdom":5, "Intelligence":5}],
+            "class": "luminomancer"},
+        { "text": "Был главным болтуном в родном краю", "next": "gender", 
+            "abilities": [{"Charisma":20}],
+            "class": "custom"},
+        { "text": "Создавал полезные предметы", "next": "gender", 
+            "abilities": [{"Crafting":10, "Engineering":5}],
+            "class": "mechanic"},
+        { "text": "Изучал лечебную медицину", "next": "gender", 
+            "abilities": [{"Medicine":10}, {"Willpower":5}],
+            "class": "field_medic"}
+      ]
+    },
+
+    "local_resident": {
+      "text": "Чему ты обучался?",
+      "type": "choice",
+      "options": [
+        { "text": "Силе Воли и Восприятие", "next": "gender", 
+            "abilities": [{"Willpower":10, "Perception":10}],
+            "class": "custom"},
+        { "text": "Тренеровал Силу и Телосложение", "next": "gender", 
+            "abilities": [{"Strength":10, "Constitution":10}],
+            "class": "custom"},
+        { "text": "Учился Выживать", "next": "gender", 
+            "abilities": [{"Lockpicking":10, "Stealth":10, "Survival":10}],
+            "class": "pickpocket"},
+        { "text": "Был главным болтуном в родном краю", "next": "gender", 
+            "abilities": [{"Charisma":20}],
+            "class": "custom"},
+        { "text": "Создавал полезные предметы", "next": "gender", 
+            "abilities": [{"Crafting":10, "Engineering":5}],
+            "class": "mechanic"},
+        { "text": "Изучал лечебную медицину", "next": "gender", 
+            "abilities": [{"Medicine":10}, {"Willpower":5}],
+            "class": "field_medic"}
+      ]
+    },
+
+    "mustalma": {
+      "text": "На чем ты стал зарабатывать в Мустальме?",
+      "type": "choice",
+      "options": [
+        { "text": "Бармен", "next": "gender",
+            "abilities": [{"Charisma":10}, {"Dexterity":10}],
+            "class": "bartender"},
+        { "text": "Работа в порту", "next": "gender",
+            "abilities": [{"Strength":10}, {"Constitution":10}],
+            "class": "custom"}
+      ]
+    },
+
+    "sosnovo": {
+      "text": "Чем ты стал заниматься?",
+      "type": "choice",
+      "options": [
+        { "text": "Рубить лес", "next": "gender",
+            "abilities": [{"Strength":20}, {"Constitution":10}],
+            "class": "custom"},
+        { "text": "Обрабатывать дерево", "next": "gender",
+            "abilities": [{"Strength":10}, {"Constitution":20}],
+            "class": "custom"},
+        { "text": "Углежог", "next": "charcoal",
+            "abilities": [{"Strength":5}, {"Constitution":5}],
+            "class": "custom"}
+
+      ]
+    },
+
+    "charcoal": {
+      "text": "Ты нашёл бревна?",
+      "type": "choice",
+      "options": [
+        { "text": "Да, но не устаивают часы работы", "next": "gender",
+            "abilities": [{"Crafting":5}, {"Survival":3}]  },
+        { "text": "Нет бревен, не могу работать", "next": "gender",
+            "abilities": [{"Charisma":10}, {"Survival":3}] }
+
+      ]
+    },
+
+    "luborg": {
+      "text": "Кем ты стал?",
+      "type": "choice",
+      "options": [
+        { "text": "Корпорат", "next": "gender",
+            "abilities": [{"Intelligence":10}, {"Dexterity":1}],
+            "class": "custom"},
+        { "text": "It Специалист", "next": "gender",
+            "abilities": [{"Intelligence":10}, {"Dexterity":1}],
+            "class": "custom"},
+        { "text": "Ремесленник", "next": "gender",
+            "abilities": [{"Dexterity":10}, {"Crafting":10}],
+            "class": "custom"}
+      ]
+    },
+    
+    "gender": {
+      "text": "Укажи пол персонажа:",
+      "type": "choice",
+      "options": [
+        { "text": "Мужчина", "next": "class",
+            "abilities": [{"Constitution":15}, {"Dexterity":2}, {"Strength":2}]  },
+        { "text": "Женщина", "next": "class",
+            "abilities": [{"Constitution":12}, {"Dexterity":5}] }
+        ]
+    },
+
+    "class": {
+      "text": "Какие навыки ты рвзвиваешь в свободное время?",
+      "type": "choice",
+      "options": [
+        { "text": "Разбираешься в железе. Умеешь чинить и создавать устройства.", 
+            "next": null,
+            "class": "mechanic"},
+        { "text": "Самоучка в IT. Используешь технологии Академии Мирайна", 
+            "next": null,
+            "class": "mirain_graduate"},
+        { "text": "У тебя есть связи в криминальном мире", 
+            "next": "thug"
+            },
+        { "text": "Ты бывший Страж. Защищал порядок и закон в своём городе.",
+            "class": "guardian", 
+            "next": null},
+        { "text": "Ты пробуешь себя в журналистике, расследуешь разные дела и ищешь правду.", 
+            "next": "investigator"
+            },
+        { "text": "Ты увлекаешься взломом замков.", 
+            "next": null,
+            "class": "locksmith"},
+        { "text": "Устраиваешься барменом.", 
+            "next": null,
+            "class": "bartender"},
+        { "text": "Ты изучаешь медицину.", 
+            "next": null,
+            "class": "field_medic"},
+        { "text": "Ты увлекаешься чем-то другим.", 
+            "next": null,
+            "class": "custom"}
+            
+      ]
+    },
+    
+    "thug": {
+      "text": "С какой бандой ты связан?",
+      "type": "choice",
+      "options": [
+        { "text": "Громила Мартони", "next": null,
+            "class": "martoni_thug" },
+        { "text": "Громила Волкова", "next": null,
+            "class": "volkov_thug" }
+        ]
+    },
+
+    "investigator": {
+      "text": "Какой ты журналист?",
+      "type": "choice",
+      "options": [
+        { "text": "Ты за правду. Ищешь реальные факты, не боится лезть в опасные ситуации.", "next": null,
+            "class": "truth_journalist" },
+        { "text": "Ты за деньги. Умеешь врать и манипулировать собеседниками.", "next": null,
+            "class": "liar_journalist" }
+        ]
+    }
+  },
+
+  "start": "city"
+}
