@@ -1,6 +1,7 @@
 {
   "id": "bartender",
   "name": "Бармен",
+  "hp": 10,
   "description": "Тот ещё болтун.",
   "abilities": [
         {"Strength":-20}, 
@@ -20,6 +21,7 @@
         {"Survival":0},
         {"Crafting":0}
     ],
+  "icon": "icons/bartender.png",
   "inventory": [["Бутылка рома"]],
   "skills": [
         {

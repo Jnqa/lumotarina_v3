@@ -1,6 +1,8 @@
 {
   "id": "truth_journalist",
   "name": "Журналист-за-правду",
+  "hp": 8,
+  "icon": "icons/truth_journalist.png",
   "description": "Ищет реальные факты, не боится лезть в опасные ситуации.",
   "abilities": [
         {"Strength":0}, 

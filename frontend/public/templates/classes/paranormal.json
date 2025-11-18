@@ -1,6 +1,7 @@
 {
   "id": "paranormal",
   "name": "Паранормал",
+  "hp": 50,
   "hidden": true,
   "description": "Стал паранормальным, умеешь использовать Люмион.",
   "abilities": [
@@ -21,6 +22,7 @@
         {"Survival":0},
         {"Crafting":0}
     ],
+  "icon": "icons/paranormal.png",
   "inventory": [["Талисман с Люмионом"], ["Фонарик"] ],
   "skills": [
         {

@@ -2,6 +2,7 @@
   "id": "custom_2",
   "name": "Кастомка 2",
   "hidden": true,
+  "hp": 1,
   "description": "Умеешь ??",
   "abilities": [
         {"Strength":0}, 
@@ -21,6 +22,7 @@
         {"Survival":0},
         {"Crafting":0}
     ],
+  "icon": "icons/custom_2.png",
   "inventory": [["??"], ["??"] ],
   "skills": [
         {

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './CharacterCreatingClass.css';
+import { showToast } from './utils/toast';
 
 function mergeAbilitiesObjects(arrOrObj: any): Record<string, number> {
   const out: Record<string, number> = {};
@@ -35,6 +36,7 @@ const ABILITY_LABELS: Record<string, string> = {
 };
 
 export default function CharacterCreatingClass() {
+  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
   const loc = useLocation();
   const nav = useNavigate();
   const state: any = (loc.state as any) || null;
@@ -156,48 +158,7 @@ export default function CharacterCreatingClass() {
     return true;
   }
 
-  async function finalizeWithClass(sub: any) {
-    // build final character and save (same behaviour as before)
-    const mergedAbilities = { ...(preview.abilities || {}) };
-    if (sub && sub.abilities) {
-      const add = mergeAbilitiesObjects(sub.abilities);
-      Object.entries(add).forEach(([k, v]) => {
-        mergedAbilities[k] = (mergedAbilities[k] || 0) + v;
-      });
-    }
-
-    const char: any = {
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-      answers: preview.answers,
-      abilities: mergedAbilities,
-      cityLevel: preview.cityLevel,
-    };
-    if (sub) {
-      char.class = { id: sub.id || sub.class, name: sub.name || sub.text };
-      // attach selected inventory for this subclass if any
-      const inv = selectedInventory[sub.id || sub.class || sub.name] || [];
-      if (inv.length) char.inventory = inv;
-    }
-
-    try {
-      const session = JSON.parse(localStorage.getItem('session') || '{}');
-      if (session && session.tgId) {
-        await fetch(`/profile/${session.tgId}/characters`, {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(char)
-        });
-      } else {
-        const existing = JSON.parse(localStorage.getItem('characters') || '[]');
-        existing.push(char);
-        localStorage.setItem('characters', JSON.stringify(existing));
-      }
-    } catch (e) {
-      const existing = JSON.parse(localStorage.getItem('characters') || '[]');
-      existing.push(char);
-      localStorage.setItem('characters', JSON.stringify(existing));
-    }
-    nav('/profile');
-  }
+  
 
   // cleanup draft after finalize
   function cleanupDraft() {
@@ -207,6 +168,83 @@ export default function CharacterCreatingClass() {
   const subs = allClasses ? flattenSubs(allClasses) : [];
 
   const MAX_INV_DEFAULT = 2;
+
+  // modal state for naming character before creation
+  const [namingModalOpen, setNamingModalOpen] = useState(false);
+  const [pendingClass, setPendingClass] = useState<any | null>(null);
+  const [charName, setCharName] = useState('');
+
+  // helper: combine preview.answers into a History string
+  function buildHistoryFromAnswers(answers: Record<string, any>) {
+    try {
+      return Object.entries(answers).map(([k, v]) => `${k}: ${v}`).join('\n');
+    } catch (e) {
+      return JSON.stringify(answers);
+    }
+  }
+
+  // (removed unused RTDB helper) 
+
+  async function createCharacterFromPending() {
+    if (!pendingClass) return;
+    const idKey = pendingClass.id || pendingClass.class || pendingClass.name || String(Math.random());
+    const inv = selectedInventory[idKey] || [];
+    const mergedAbilities = { ...(preview.abilities || {}) };
+    if (pendingClass && pendingClass.abilities) {
+      const add = mergeAbilitiesObjects(pendingClass.abilities);
+      Object.entries(add).forEach(([k, v]) => { mergedAbilities[k] = (mergedAbilities[k] || 0) + v; });
+    }
+
+    const char: any = {
+      id: Date.now().toString(),
+      name: charName || 'Примероний Фамилионов',
+      history: buildHistoryFromAnswers(preview.answers || {}),
+      class: pendingClass.id || pendingClass.class || pendingClass.name,
+      abilities: mergedAbilities,
+      inventory: inv,
+      level: 1,
+      skillpoints: 0,
+      // compute hpMax and hp from class base hp plus Constitution ability
+      hpMax: ((pendingClass && (pendingClass.hp || pendingClass.baseHp)) || 0) + (mergedAbilities['Constitution'] || 0),
+      hp: ((pendingClass && (pendingClass.hp || pendingClass.baseHp)) || 0) + (mergedAbilities['Constitution'] || 0),
+      armor: 1,
+      skills: {},
+      createdAt: new Date().toISOString(),
+    };
+
+    // require logged-in user and save to backend
+    const session = JSON.parse(localStorage.getItem('session') || '{}');
+    const userId = session?.tgId || session?.uid || session?.userId || null;
+    if (!userId) {
+      showToast('Сохранение персонажа в базу возможно только для авторизованных пользователей. Войдите в систему.', { type: 'error' });
+      return;
+    }
+
+    try {
+      const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(char) });
+      if (resp.ok) {
+        const body = await resp.json();
+        if (body && body.id) char._remoteId = body.id;
+      } else {
+        const text = await resp.text();
+        showToast('Ошибка при сохранении персонажа: ' + (text || resp.status), { type: 'error' });
+        return;
+      }
+    } catch (e) {
+      showToast('Не удалось сохранить персонажа на сервере. Проверьте соединение.', { type: 'error' });
+      return;
+    }
+
+    // once saved remotely, keep a short local pointer for immediate edit
+    try { localStorage.setItem('last_created_character', JSON.stringify(char)); } catch (e) {}
+
+    // cleanup and navigate to edit
+    setNamingModalOpen(false);
+    setPendingClass(null);
+    cleanupDraft();
+    // navigate and pass the character via state
+    nav('/character/edit', { state: { character: char } });
+  }
 
   return (
     <div className="char-root">
@@ -247,7 +285,6 @@ export default function CharacterCreatingClass() {
             </div>
 
             <div className="detail-inventory">
-              <div className="inv-label">Ивентарь (inventory): {JSON.stringify(sub.inventory)}</div>
               <div className="inventory-list">
                 {invList.length === 0 && <div className="no-inv">—</div>}
                 {invList.map((it) => {
@@ -258,7 +295,7 @@ export default function CharacterCreatingClass() {
                         const copy = { ...(prev || {}) };
                         const cur = new Set(copy[idKey] || []);
                         if (cur.has(it)) cur.delete(it); else {
-                          if (cur.size >= invLimit) { alert(`Максимум ${invLimit} предмет(ов) для этого класса`); return copy; }
+                          if (cur.size >= invLimit) { showToast(`Максимум ${invLimit} предмет(ов) для этого класса`, { type: 'error' }); return copy; }
                           cur.add(it);
                         }
                         copy[idKey] = Array.from(cur);
@@ -303,11 +340,25 @@ export default function CharacterCreatingClass() {
             )}
 
             <div className="detail-actions">
-              <button className="choose-btn" onClick={async () => { await finalizeWithClass(sub); cleanupDraft(); }}>Выбрать</button>
+              <button className="choose-btn" onClick={() => { setPendingClass(sub); setCharName(''); setNamingModalOpen(true); }}>Выбрать</button>
             </div>
           </div>
         );
       })()}
+
+      {/* Naming modal */}
+      {namingModalOpen && (
+        <div className="modal-backdrop">
+          <div className="modal">
+            <h3>Назови своего героя:</h3>
+            <input className="modal-input" placeholder="Примероний Фамилионов" value={charName} onChange={(e) => setCharName(e.target.value)} />
+            <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:8}}>
+              <button className="choose-btn" onClick={() => { setNamingModalOpen(false); setPendingClass(null); }}>Отмена</button>
+              <button className="choose-btn" onClick={() => createCharacterFromPending()}>Создать</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* preview moved to the bottom */}
       <div style={{ marginTop: 18 }}>

@@ -25,9 +25,35 @@ async function deleteUserProfile(tg_id) {
   await userRef.remove();
 }
 
+// Characters helpers
+// Create a new character under users/<userId>/characters -> returns the new key
+async function createCharacter(userId, characterData) {
+  const charsRef = admin.database().ref(`users/${userId}/characters`);
+  const newRef = await charsRef.push();
+  await newRef.set(characterData);
+  return newRef.key;
+}
+
+// Update an existing character by id
+async function updateCharacter(userId, charId, updateData) {
+  const charRef = admin.database().ref(`users/${userId}/characters/${charId}`);
+  await charRef.update(updateData);
+  return true;
+}
+
+// Delete an existing character by id
+async function deleteCharacter(userId, charId) {
+  const charRef = admin.database().ref(`users/${userId}/characters/${charId}`);
+  await charRef.remove();
+  return true;
+}
+
 module.exports = {
   getUserProfile,
   setUserProfile,
   updateUserProfile,
   deleteUserProfile,
+  createCharacter,
+  updateCharacter,
+  deleteCharacter,
 };

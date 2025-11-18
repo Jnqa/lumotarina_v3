@@ -1,7 +1,9 @@
 {
   "id": "mirain_graduate",
   "name": "Ученик Академии Мирайна",
+  "hp": 7,
   "description": "Элитный специалист по высоким технологиям и системам ИИ.",
+  "icon": "icons/mirain_graduate.png",
   "inventory": [["Фонарь", "Ящик с инструментами"], ["Паяльник", "Очки"]],
   "abilities": [
         {"Strength":0}, 

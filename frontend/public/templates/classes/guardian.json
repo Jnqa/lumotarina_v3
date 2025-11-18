@@ -1,6 +1,7 @@
 {
   "id": "guardian",
   "name": "Бывший Страж",
+  "hp": 20,
   "description": "Внимательный охранник, умеет стрелять и анализировать ситуацию, почти как детектив.",
   "abilities": [
         {"Strength":5}, 
@@ -20,6 +21,7 @@
         {"Survival":0},
         {"Crafting":0}
     ],
+  "icon": "icons/guardian.png",
   "inventory": [["Бинокль"], ["Дубинка"]],
   "skills": [
         {

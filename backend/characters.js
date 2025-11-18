@@ -4,6 +4,9 @@ const path = require('path');
 const admin = require('firebase-admin');
 const router = express.Router();
 
+// ensure JSON bodies are parsed for these routes
+router.use(express.json());
+
 // Получить список классов из JSON
 router.get('/classes', (req, res) => {
   const filePath = path.join(__dirname, 'characters', 'classes.json');
@@ -25,6 +28,7 @@ router.get('/user/:id', async (req, res) => {
     const snapshot = await charsRef.once('value');
     res.json(snapshot.val() || []);
   } catch (e) {
+    console.error('GET /characters/user/:id error', e);
     res.status(500).json({ error: 'Server error' });
   }
 });
@@ -33,12 +37,154 @@ router.get('/user/:id', async (req, res) => {
 router.post('/user/:id', async (req, res) => {
   const tg_id = req.params.id;
   const character = req.body;
+  console.log('POST /characters/user/:id incoming body:', JSON.stringify(character));
   try {
     const charsRef = admin.database().ref(`characters/${tg_id}`);
-    const newCharRef = charsRef.push();
+    // Use a transaction-safe counter to allocate sequential numeric IDs under `counters/characters/<tg_id>`.
+    const counterRef = admin.database().ref(`counters/characters/${tg_id}`);
+    const counterResult = await counterRef.transaction(current => {
+      return (current === null ? 0 : current + 1);
+    });
+    if (!counterResult.committed) {
+      throw new Error('Failed to allocate numeric id for new character');
+    }
+    const newId = String(counterResult.snapshot.val());
+    const newCharRef = charsRef.child(newId);
     await newCharRef.set(character);
-    res.json({ success: true, id: newCharRef.key });
+    console.log(`Created character for ${tg_id} with id ${newId}`);
+    res.json({ success: true, id: newId });
   } catch (e) {
+    console.error('POST /characters/user/:id error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Обновить существующего персонажа
+router.put('/user/:id/:charId', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  const update = req.body;
+  try {
+    const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
+    await charRef.update(update);
+    res.json({ success: true });
+  } catch (e) {
+    console.error('PUT /characters/user/:id/:charId error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Удалить персонажа
+router.delete('/user/:id/:charId', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  try {
+    const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
+    await charRef.remove();
+    res.json({ success: true });
+  } catch (e) {
+    console.error('DELETE /characters/user/:id/:charId error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Добавить предмет в инвентарь персонажа
+router.post('/user/:id/:charId/inventory', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  const { item } = req.body;
+  if (!item) return res.status(400).json({ error: 'Item is required' });
+  try {
+    const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
+    await charRef.transaction(current => {
+      if (!current) return current;
+      const inv = Array.isArray(current.inventory) ? [...current.inventory] : [];
+      inv.push(item);
+      return { ...current, inventory: inv };
+    });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('POST /characters/user/:id/:charId/inventory error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Alias: POST /items -> same as /inventory (keeps compatibility with frontend calls)
+router.post('/user/:id/:charId/items', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  const { item } = req.body;
+  if (!item) return res.status(400).json({ error: 'Item is required' });
+  try {
+    const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
+    await charRef.transaction(current => {
+      if (!current) return current;
+      const inv = Array.isArray(current.inventory) ? [...current.inventory] : [];
+      inv.push(item);
+      return { ...current, inventory: inv };
+    });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('POST /characters/user/:id/:charId/items error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+// Получить список предметов (inventory) персонажа — для отладки
+router.get('/user/:id/:charId/items', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  try {
+    const invRef = admin.database().ref(`characters/${tg_id}/${charId}/inventory`);
+    const snap = await invRef.once('value');
+    const inv = snap.val();
+    // Возвращаем пустой массив, если инвентарь не задан
+    res.json(Array.isArray(inv) ? inv : []);
+  } catch (e) {
+    console.error('GET /characters/user/:id/:charId/items error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Удалить предмет по индексу из инвентаря персонажа
+router.delete('/user/:id/:charId/inventory/:index', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  const index = parseInt(req.params.index, 10);
+  if (isNaN(index)) return res.status(400).json({ error: 'Invalid index' });
+  try {
+    const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
+    await charRef.transaction(current => {
+      if (!current) return current;
+      const inv = Array.isArray(current.inventory) ? [...current.inventory] : [];
+      if (index < 0 || index >= inv.length) return current;
+      inv.splice(index, 1);
+      return { ...current, inventory: inv };
+    });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('DELETE /characters/user/:id/:charId/inventory/:index error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Alias: DELETE /items/:index -> same as /inventory/:index (compatibility)
+router.delete('/user/:id/:charId/items/:index', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  const index = parseInt(req.params.index, 10);
+  if (isNaN(index)) return res.status(400).json({ error: 'Invalid index' });
+  try {
+    const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
+    await charRef.transaction(current => {
+      if (!current) return current;
+      const inv = Array.isArray(current.inventory) ? [...current.inventory] : [];
+      if (index < 0 || index >= inv.length) return current;
+      inv.splice(index, 1);
+      return { ...current, inventory: inv };
+    });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('DELETE /characters/user/:id/:charId/items/:index error', e);
     res.status(500).json({ error: 'Server error' });
   }
 });

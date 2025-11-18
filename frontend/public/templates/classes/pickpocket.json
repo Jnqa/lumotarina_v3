@@ -1,6 +1,8 @@
 {
   "id": "pickpocket",
   "name": "Карманник",
+  "hp": 10,
+  "icon": "icons/pickpocket.png",
   "description": "Мастер скрытных действий, умеет быстро унести предмет и незаметно уйти.",
   "abilities": [
         {"Strength":0}, 

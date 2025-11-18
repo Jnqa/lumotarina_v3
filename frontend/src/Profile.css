@@ -166,6 +166,15 @@
   font-weight: 700;
 }
 
+/* New styles for character list grid and tiles */
+.character-grid{ display:grid; gap:12px; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+.character-tile{ background: linear-gradient(180deg,#161616,#0f0f0f); border:1px solid #2a2a2a; border-radius:10px; padding:12px; cursor:pointer; display:flex; flex-direction:column; gap:8px; transition:transform .12s ease, box-shadow .12s ease }
+.character-tile:hover{ transform:translateY(-4px); box-shadow:0 10px 30px rgba(0,0,0,0.6) }
+.character-tile .tile-name{ font-weight:700; color:#fff }
+.character-tile .tile-class{ color:#bbb; font-size:13px }
+
+.character-actions{ display:flex; align-items:center; justify-content:center; padding-top:8px }
+
 .profile-empty {
   padding: 20px;
 }

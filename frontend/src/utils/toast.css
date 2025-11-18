@@ -1,0 +1,8 @@
+/* Minimal toast styles */
+.simple-toast{ padding:10px 14px; border-radius:8px; color:#111; box-shadow:0 6px 18px rgba(0,0,0,0.4); font-weight:600; min-width:160px }
+.simple-toast-info{ background:#eee }
+.simple-toast-success{ background:#d6f7d6 }
+.simple-toast-error{ background:#ffd6d6 }
+
+/* ensure toasts appear above app UI */
+.simple-toast{ position:fixed; right:16px; z-index:9999 }

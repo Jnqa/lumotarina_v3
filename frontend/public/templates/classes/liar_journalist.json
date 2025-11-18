@@ -1,6 +1,7 @@
 {
   "id": "liar_journalist",
   "name": "Журналист-мастер лжи",
+  "hp": 7,
   "description": "Умеет мастерски врать и создавать фейки, манипулирует собеседниками.",
   "abilities": [
         {"Strength":5}, 
@@ -20,6 +21,7 @@
         {"Survival":0},
         {"Crafting":0}
     ],
+  "icon": "icons/liar_journalist.png",
   "inventory": [["Блокнот", "Пистолет-муляж"]],
   "skills": [
         {

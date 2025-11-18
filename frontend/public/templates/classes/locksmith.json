@@ -1,6 +1,7 @@
 {
   "id": "locksmith",
   "name": "Взломщик",
+  "hp": 12,
   "description": "Специалист по замкам и ловушкам, умеет вскрывать сложные механизмы.",
   "abilities": [
         {"Strength":0}, 
@@ -20,6 +21,7 @@
         {"Survival":0},
         {"Crafting":0}
     ],
+  "icon": "icons/locksmith.png",
   "inventory": [["Отмычки"], ["Фонарик"]],
   "skills": [
         {

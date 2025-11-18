@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 
-const BACKEND_URL = 'http://10.47.7.21:3001'; // или ваш реальный backend
+const BACKEND_URL = 'http://localhost:3001'; // или ваш реальный backend
 
 function getTgIdFromUrl() {
   const params = new URLSearchParams(window.location.search);

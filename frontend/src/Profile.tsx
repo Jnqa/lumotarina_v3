@@ -1,8 +1,9 @@
 import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Profile.css';
+import { showToast } from './utils/toast';
 
-const BACKEND_URL = 'http://10.47.7.21:3001';
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
 
 function getSession() {
   try {
@@ -23,12 +24,26 @@ export default function Profile() {
   const [menuOpen, setMenuOpen] = useState(false);
   const session = getSession();
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const [characters, setCharacters] = useState<any[] | null>(null);
 
   useEffect(() => {
     if (!session.tgId) return;
-    fetch(`${BACKEND_URL}/auth/user/${session.tgId}`)
+    fetch(`${API_BASE}/auth/user/${session.tgId}`)
       .then(res => res.ok ? res.json() : null)
       .then(data => setUser(data));
+    // load user's characters
+    fetch(`${API_BASE}/characters/user/${session.tgId}`)
+      .then(res => res.ok ? res.json() : [])
+      .then(data => {
+        // backend returns object map or array; normalize to array
+        if (!data) return setCharacters([]);
+        if (Array.isArray(data)) return setCharacters(data.filter(Boolean));
+        if (typeof data === 'object') {
+          const arr = Object.entries(data).map(([k, v]) => ({ id: k, ...(v || {}) }));
+          return setCharacters(arr);
+        }
+        setCharacters([]);
+      });
   }, [session.tgId]);
 
   useEffect(() => {
@@ -60,7 +75,7 @@ export default function Profile() {
           </button>
           {menuOpen && (
             <div className="profile-menu">
-              <button className="profile-menu-item" onClick={() => alert('Edit profile - not implemented yet')}>Edit Profile</button>
+              <button className="profile-menu-item" onClick={() => showToast('Edit profile - not implemented yet', { type: 'info' })}>Edit Profile</button>
               <button className="profile-menu-item" onClick={clearSession}>Logout</button>
             </div>
           )}
@@ -74,14 +89,30 @@ export default function Profile() {
         </section>
 
         <section className="profile-character">
-          <h3>Персонаж:</h3>
-          <div className="character-card">
-            <div className="character-info">
-              <div className="no-character">Нет персонажа</div>
-            </div>
-            <div className="character-actions">
-              <button className="primary-btn" onClick={() => { window.location.href = '/character/create' }}>Создать Персонажа</button>
-            </div>
+          <h3>Персонажи:</h3>
+          <div className="character-list">
+            {characters === null && <div>Загрузка...</div>}
+            {characters && characters.length === 0 && (
+              <div className="character-card">
+                <div className="character-info"><div className="no-character">Нет персонажа</div></div>
+                <div className="character-actions">
+                  <button className="primary-btn" onClick={() => { window.location.href = '/character/create' }}>Создать Персонажа</button>
+                </div>
+              </div>
+            )}
+            {characters && characters.length > 0 && (
+              <div className="character-grid">
+                {characters.map((c: any) => (
+                  <div key={c.id} className="character-tile" onClick={() => { nav('/character/edit', { state: { character: c } }); }}>
+                    <div className="tile-name">{c.name || 'Без имени'}</div>
+                    <div className="tile-class">{c.class || ''}</div>
+                  </div>
+                ))}
+                <div className="character-actions">
+                  <button className="primary-btn" onClick={() => { window.location.href = '/character/create' }}>Создать Персонажа</button>
+                </div>
+              </div>
+            )}
           </div>
         </section>
       </main>

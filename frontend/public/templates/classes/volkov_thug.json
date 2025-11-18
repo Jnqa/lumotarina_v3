@@ -1,6 +1,7 @@
 {
   "id": "volkov_thug",
   "name": "Громила Волкова",
+  "hp": 14,
   "description": "Ловкий боец, умеет драться и метать ножи.",
   "abilities": [
         {"Strength":10}, 
@@ -20,6 +21,7 @@
         {"Survival":0},
         {"Crafting":0}
     ],
+  "icon": "icons/volkov_thug.png",
   "inventory": [["Метательный нож"], ["Кастет", "Нож-бабочка"]],
   "skills": [
         {

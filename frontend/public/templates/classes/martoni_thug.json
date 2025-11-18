@@ -1,6 +1,7 @@
 {
   "id": "martoni_thug",
   "name": "Громила Мартони",
+  "hp": 25,
   "description": "Сильный стрелок, туповат, но очень вынослив.",
   "abilities": [
         {"Strength":20}, 
@@ -20,6 +21,7 @@
         {"Survival":0},
         {"Crafting":0}
     ],
+  "icon": "icons/martoni_thug.png",
   "inventory": [["Пистолет (d20 патронов)"], ["Телескопическая электро-дубинка"]],
   "skills": [
         {
