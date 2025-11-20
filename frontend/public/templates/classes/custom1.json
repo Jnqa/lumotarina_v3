@@ -1,6 +1,7 @@
 {
   "id": "custom",
   "name": "Кастомка 1",
+  "defense": 1,
   "hp": 1,
   "hidden": true,
   "description": "Умеешь ??",

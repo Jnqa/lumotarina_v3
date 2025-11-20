@@ -33,6 +33,22 @@ router.get('/user/:id', async (req, res) => {
   }
 });
 
+// Получить одного персонажа
+router.get('/user/:id/:charId', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  try {
+    const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
+    const snap = await charRef.once('value');
+    const data = snap.val();
+    if (!data) return res.status(404).json({ error: 'Not found' });
+    res.json(data);
+  } catch (e) {
+    console.error('GET /characters/user/:id/:charId error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Создать нового персонажа
 router.post('/user/:id', async (req, res) => {
   const tg_id = req.params.id;
@@ -189,4 +205,70 @@ router.delete('/user/:id/:charId/items/:index', async (req, res) => {
   }
 });
 
+// Получить/обновить заметку персонажа
+router.get('/user/:id/:charId/note', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  try {
+    const noteRef = admin.database().ref(`characters/${tg_id}/${charId}/note`);
+    const snap = await noteRef.once('value');
+    const note = snap.val();
+    res.json({ note: note || '' });
+  } catch (e) {
+    console.error('GET /characters/user/:id/:charId/note error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.post('/user/:id/:charId/note', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  const { note } = req.body;
+  // note can be empty string; normalize to string
+  try {
+    const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
+    await charRef.transaction(current => {
+      if (!current) return current;
+      return { ...current, note: typeof note === 'string' ? note : '' };
+    });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('POST /characters/user/:id/:charId/note error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Получить/обновить изображение персонажа
+router.get('/user/:id/:charId/picture', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  try {
+    const picRef = admin.database().ref(`characters/${tg_id}/${charId}/picture`);
+    const snap = await picRef.once('value');
+    const picture = snap.val();
+    res.json({ picture: picture || 'profile_picture_00.jpg' });
+  } catch (e) {
+    console.error('GET /characters/user/:id/:charId/picture error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.post('/user/:id/:charId/picture', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  const { picture } = req.body;
+  try {
+    const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
+    await charRef.transaction(current => {
+      if (!current) return current;
+      return { ...current, picture: typeof picture === 'string' ? picture : 'profile_picture_00.jpg' };
+    });
+    res.json({ success: true });
+  } catch (e) {
+    console.error('POST /characters/user/:id/:charId/picture error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 module.exports = router;
+

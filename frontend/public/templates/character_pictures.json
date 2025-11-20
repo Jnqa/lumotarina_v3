@@ -1,0 +1,29 @@
+{
+  "pictures": [
+    { "file": "profile_picture_00.jpg", "tag": "default" },
+    { "file": "profile_picture_01.jpg", "tag": "male" },
+    { "file": "profile_picture_02.jpg", "tag": "female" },
+    { "file": "profile_picture_03.jpg", "tag": "male" },
+    { "file": "profile_picture_04.jpg", "tag": "female" },
+    { "file": "profile_picture_05.jpg", "tag": "male" },
+    { "file": "profile_picture_06.jpg", "tag": "female" },
+    { "file": "profile_picture_07.jpg", "tag": "male" },
+    { "file": "profile_picture_08.jpg", "tag": "female" },
+    { "file": "profile_picture_09.jpg", "tag": "male" },
+    { "file": "profile_picture_10.jpg", "tag": "female" },
+    { "file": "profile_picture_11.jpg", "tag": "male" },
+    { "file": "profile_picture_12.jpg", "tag": "female" },
+    { "file": "profile_picture_13.jpg", "tag": "male" },
+    { "file": "profile_picture_14.jpg", "tag": "female" },
+    { "file": "profile_picture_15.jpg", "tag": "male" },
+    { "file": "profile_picture_16.jpg", "tag": "female" },
+    { "file": "profile_picture_17.jpg", "tag": "male" },
+    { "file": "profile_picture_18.jpg", "tag": "female" },
+    { "file": "profile_picture_19.jpg", "tag": "male" },
+    { "file": "profile_picture_20.jpg", "tag": "female" },
+    { "file": "profile_picture_21.jpg", "tag": "male" },
+    { "file": "profile_picture_22.jpg", "tag": "female" },
+    { "file": "profile_picture_23.jpg", "tag": "male" },
+    { "file": "profile_picture_24.jpg", "tag": "female" }
+  ]
+}

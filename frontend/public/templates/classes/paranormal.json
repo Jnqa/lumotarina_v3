@@ -1,6 +1,7 @@
 {
   "id": "paranormal",
   "name": "Паранормал",
+  "defense": 5,
   "hp": 50,
   "hidden": true,
   "description": "Стал паранормальным, умеешь использовать Люмион.",

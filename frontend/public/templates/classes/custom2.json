@@ -3,6 +3,7 @@
   "name": "Кастомка 2",
   "hidden": true,
   "hp": 1,
+  "defense": 1,
   "description": "Умеешь ??",
   "abilities": [
         {"Strength":0}, 

@@ -2,9 +2,9 @@
 .card-wrap{ display:flex; gap:12px; flex-wrap:wrap }
 .char-card-visual{ width:320px; min-height: 400px; background:linear-gradient(180deg,#111,#070707); border:1px solid #222; border-radius:12px; padding:8px; color:#ddd; display:flex; flex-direction:column; border: #00000010 4px solid;}
 .char-card-visual{ position:relative; overflow:hidden }
-.top-bars{ display:flex; flex-direction:column; gap:2px; }
+.top-bars{ display:flex; flex-direction:row; gap:8px; align-items:center; }
 .armor-bar{ height:6px; background:linear-gradient(90deg,#f2d879,#c48d09); border-radius:6px }
-.hp-bar{ height:8px; border-radius:6px; display:flex; align-items:center; padding:0px; gap:4px }
+.hp-bar{ height:8px; border-radius:6px; display:flex; align-items:center; padding:0px; gap:4px; flex:1 }
 .hp-label{ color:#ddd; font-weight:700; margin-right:6px }
 .hp-meter{ flex:1; height:10px; background:#3a1a1a; border-radius:6px; overflow:hidden }
 .hp-fill{ height:100%; background:linear-gradient(90deg,#ffb3b3,#ff4d4d) }
@@ -20,6 +20,7 @@ y.hp-info{ display:flex; gap:6px; align-items:center; margin-left:8px }
 .top-bars{ background: rgba(0,0,0,0.45); padding:8px; border-radius:8px }
 .main-row{ gap:12px; margin-top:8px; justify-content:space-between; display:flex; align-items:center; opacity:0.8 }
 .level{ font-weight:700; width:40px; height:40px; border-radius:50%; background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; z-index:3 }
+.defense{ font-weight:700; color: #ffffff; width:40px; height:20px; border-radius:25%; background:rgba(4, 86, 134, 0.007); display:flex; align-items:center; justify-content:center; z-index:3 }
 .class-icon{ width:40px; height:40px; border-radius:50%; background:rgba(0,0,0,0.55); display:flex; align-items:center; justify-content:center; z-index:3 }
 .class-icon img{ width:28px; height:28px; border-radius:6px }
 .main-row, .top-bars, .name-row, .highlights{ position:relative; z-index:2 }
@@ -51,6 +52,10 @@ y.hp-info{ display:flex; gap:6px; align-items:center; margin-left:8px }
 .abilities-details[open] .abilities-grid{ padding:8px }
 
 .char-card-details{ flex:1; min-width:320px; max-width:350px; }
+.char-card-notes{ flex:1; min-width:320px; max-width:350px; }
+.char-card-notes details{ background: #0e0e0e; border:1px solid #222; border-radius:12px; padding:0; }
+.char-card-notes summary{ list-style:none; cursor:pointer; padding:8px 12px; display:flex; justify-content:space-between; align-items:center }
+.note-input{ background:#1a1a1a; border:1px solid #333; border-radius:8px; color:#fff; padding:8px; font-size:14px; font-family:inherit; resize:vertical; min-height:10px !important; width:'100%'}
 .section{ background:#0e0e0e; border:1px solid #222; border-radius:16px; padding:10px; margin-bottom:10px }
 .section-header{ font-weight:700; display:flex; justify-content:space-between; align-items:center }
 .abilities-grid{ display:flex; flex-direction:column; gap:8px; margin-top:8px }
@@ -94,7 +99,8 @@ y.hp-info{ display:flex; gap:6px; align-items:center; margin-left:8px }
 .section-add{ background:transparent; border:none; color:#fff; font-size:16px; cursor:pointer }
 
 .actions{ display:flex; gap:8px; justify-content:flex-end }
-.choose-btn{ background:linear-gradient(180deg,#6b5cff,#4a38d1); color:#fff; padding:8px 12px; border-radius:8px; border:none }
+.simple-btn{ color:#fff; padding:8px 12px; border:none; font-size: small; }
+.blue-btn{ background:linear-gradient(180deg,#6b5cff,#4a38d1); color:#fff; padding:8px 12px; border-radius:8px; border:none }
 .save-btn{ background:linear-gradient(180deg,#035734,#113f0b); color:#fff; padding:8px 12px; border-radius:8px; border:none }
 .delete-btn{ background:linear-gradient(180deg,#240505,#570303); color:#fff; padding:8px 12px; border-radius:8px; border:none }
 .edit-btn{ color:#fff; border: 2px; }

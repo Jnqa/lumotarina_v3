@@ -1,6 +1,7 @@
 {
   "id": "volkov_thug",
   "name": "Громила Волкова",
+  "defense": 10,
   "hp": 14,
   "description": "Ловкий боец, умеет драться и метать ножи.",
   "abilities": [

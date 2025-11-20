@@ -1,6 +1,7 @@
 {
   "id": "bartender",
   "name": "Бармен",
+  "defense": 5,
   "hp": 10,
   "description": "Тот ещё болтун.",
   "abilities": [

@@ -1,6 +1,7 @@
 {
   "id": "martoni_thug",
   "name": "Громила Мартони",
+  "defense": 9,
   "hp": 25,
   "description": "Сильный стрелок, туповат, но очень вынослив.",
   "abilities": [

@@ -1,6 +1,7 @@
 {
 "id": "biotech_specialist",
 "name": "Биотехнолог",
+"defense": 2,
 "hp": 10,
 "description": "Ученый, совмещающий медицину и технологии. Работает с имплантами, сыворотками и нейроинтерфейсами.",
 "icon": "icons/biotech_specialist.png",

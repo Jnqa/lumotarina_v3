@@ -1,6 +1,7 @@
 {
   "id": "mirain_graduate",
   "name": "Ученик Академии Мирайна",
+  "defense": 4,
   "hp": 7,
   "description": "Элитный специалист по высоким технологиям и системам ИИ.",
   "icon": "icons/mirain_graduate.png",

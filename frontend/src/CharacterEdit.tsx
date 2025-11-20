@@ -48,14 +48,53 @@ export default function CharacterEdit(){
   const [showAllSkills, setShowAllSkills] = useState<boolean>(false);
   
   const [showNewInv, setShowNewInv] = useState<boolean>(false);
+  const [noteEditMode, setNoteEditMode] = useState<boolean>(false);
+  const [noteText, setNoteText] = useState<string | null>(null);
+  const [notesOpen, setNotesOpen] = useState<boolean>(false);
+  const [pictures, setPictures] = useState<any[]>([]);
+  const [pictureModalOpen, setPictureModalOpen] = useState<boolean>(false);
+  const [pictureFilter, setPictureFilter] = useState<string>('all');
   // helper to force reload of metadata
   async function refreshMetadata(){
-    try{ const ab = await fetch('/templates/abilities.json'); if (ab.ok){ setAbilitiesMeta(await ab.json()); }
+    try{
+      const ab = await fetch('/templates/abilities.json'); if (ab.ok){ setAbilitiesMeta(await ab.json()); }
     }catch(e){}
+
+    // If we have a synced character and a logged-in session, attempt to refresh the character from server
+    try {
+      const session = JSON.parse(localStorage.getItem('session') || '{}');
+      const userId = session?.tgId || session?.uid || session?.userId || null;
+      const remoteId = character? (character._remoteId || character.id || character._id || character.remoteId) : null;
+      if (userId && remoteId) {
+        try {
+          const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}`);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data) {
+              setCharacter(data);
+              setNoteText(data.note ?? '');
+              setNotesFetchedFor(remoteId);
+              try { localStorage.setItem('last_created_character', JSON.stringify(data)); } catch(e){}
+              showToast('💹 Данные обновлены', { type: 'success' });
+            }
+          } else {
+            // non-ok: still proceed to refresh metadata locally
+            showToast('Не удалось получить персонажа с сервера: ' + resp.status, { type: 'error' });
+          }
+        } catch (e) {
+          showToast('Ошибка соединения при обновлении персонажа', { type: 'error' });
+        }
+      } else {
+        // not logged-in or not synced; notify user that only local metadata refreshed
+        showToast('Локальные шаблоны обновлены', { type: 'success' });
+      }
+    } catch (e) {
+      // ignore session parsing errors
+    }
+
     // re-run class meta load by toggling class (triggered by effect)
     setClassMeta(null);
     setTimeout(()=> setClassMeta(classMeta), 50);
-    showToast('Обновлено', { type: 'success' });
   }
 
   useEffect(() => {
@@ -70,6 +109,11 @@ export default function CharacterEdit(){
       const arr = data.action_types || data.actionTypes || [];
       for (const it of arr) if (it && it.type) map[it.type] = it;
       setActionTypesMap(map);
+    }).catch(()=>{});
+
+    // load character pictures manifest
+    fetch('/templates/character_pictures.json').then(r => r.ok ? r.json() : null).then(data => {
+      if (data && Array.isArray(data.pictures)) setPictures(data.pictures);
     }).catch(()=>{});
   }, []);
 
@@ -131,6 +175,18 @@ export default function CharacterEdit(){
     }
     loadClassMeta();
   }, [character?.class]);
+
+  // keep noteText in sync with character.note when character loads/changes
+  useEffect(() => {
+    if (!character) return;
+    setNoteText(character.note ?? '');
+  }, [character]);
+
+  // initialize notesOpen depending on whether a note exists; keep in sync when character changes
+  useEffect(() => {
+    if (!character) { setNotesOpen(false); return; }
+    setNotesOpen(!!(character.note && String(character.note).trim()));
+  }, [character]);
 
   if (!character) return (
     <div style={{padding:16}}>
@@ -285,10 +341,100 @@ export default function CharacterEdit(){
     }catch(e){ showToast('Ошибка соединения', { type: 'error' }); }
   }
 
+  // Save a note for the character (optimistic local update + server POST)
+  async function saveNote() {
+    if (!character) return;
+    const newNote = noteText ?? '';
+    // optimistic local update
+    setCharacter((c:any) => ({ ...c, note: newNote }));
+    try { localStorage.setItem('last_created_character', JSON.stringify({ ...(character||{}), note: newNote })); } catch(e){}
+
+    const session = JSON.parse(localStorage.getItem('session') || '{}');
+    const userId = session?.tgId || session?.uid || session?.userId || null;
+    const remoteId = getRemoteId();
+    if (userId && remoteId) {
+      try {
+        const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}/note`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ note: newNote })
+        });
+        if (resp.ok) {
+          showToast('Заметка сохранена', { type: 'success' });
+          setNoteEditMode(false);
+        } else {
+          const txt = await resp.text();
+          showToast('Ошибка при сохранении заметки: ' + (txt || resp.status), { type: 'error' });
+        }
+      } catch (e) {
+        showToast('Ошибка соединения при сохранении заметки', { type: 'error' });
+      }
+    } else {
+      showToast('Заметка сохранена локально (неавторизовано)', { type: 'info' });
+      setNoteEditMode(false);
+    }
+  }
+
   // Resolve the remote id of the character (support several possible field names)
   function getRemoteId() {
     return character? (character._remoteId || character.id || character._id || character.remoteId) : null;
   }
+
+  // Fetch the persisted note from server when character is synced (and avoid refetching)
+  const [notesFetchedFor, setNotesFetchedFor] = useState<string | null>(null);
+  const [fetchedCharacterFor, setFetchedCharacterFor] = useState<string | null>(null);
+  useEffect(() => {
+    const remoteId = getRemoteId();
+    if (!remoteId) return;
+    const session = JSON.parse(localStorage.getItem('session') || '{}');
+    const userId = session?.tgId || session?.uid || session?.userId || null;
+    if (!userId) return;
+    if (notesFetchedFor === remoteId) return; // already fetched for this remote id
+
+    (async () => {
+      try {
+        const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}/note`);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data && typeof data.note !== 'undefined' && data.note !== null) {
+            setCharacter((c:any) => ({ ...(c||{}), note: data.note }));
+            setNoteText(data.note ?? '');
+          }
+        }
+      } catch (e) {
+        // ignore network errors; leave local state as-is
+      } finally {
+        setNotesFetchedFor(remoteId);
+      }
+    })();
+  }, [character?.id, character?._id, character?._remoteId, character?.remoteId, API_BASE, notesFetchedFor]);
+
+  // Fetch full character from server on initial load (so picture and other fields come from DB)
+  useEffect(() => {
+    const remoteId = getRemoteId();
+    if (!remoteId) return;
+    const session = JSON.parse(localStorage.getItem('session') || '{}');
+    const userId = session?.tgId || session?.uid || session?.userId || null;
+    if (!userId) return;
+    if (fetchedCharacterFor === remoteId) return; // already fetched
+
+    (async () => {
+      try {
+        const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}`);
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data) {
+            setCharacter(data);
+            setNoteText(data.note ?? '');
+            setNotesFetchedFor(remoteId);
+            try { localStorage.setItem('last_created_character', JSON.stringify(data)); } catch(e){}
+          }
+        }
+      } catch (e) {
+        // ignore network errors
+      } finally {
+        setFetchedCharacterFor(remoteId);
+      }
+    })();
+  }, [character?.id, character?._id, character?._remoteId, character?.remoteId, API_BASE, fetchedCharacterFor]);
 
   // Add inventory item (call backend if character is synced, otherwise local-only)
   async function addInventoryItem(value: string) {
@@ -341,6 +487,10 @@ export default function CharacterEdit(){
   }
 
   // (removed unused displayMod helper)
+  // compute defense display: base defense from class + floor(Dexterity / 10)
+  const _dex = (character.abilities && character.abilities['Dexterity']) || 0;
+  const _baseDef = (classMeta && (classMeta.defense || classMeta.defence)) || 0;
+  const _defenseComputed = _baseDef + Math.floor(_dex / 10);
 
   return (
     <div className="char-edit-root">
@@ -353,8 +503,9 @@ export default function CharacterEdit(){
       <div className="card-wrap">
         <div className="char-card-visual">
           <div className="top-bars">
+            <div className="defense" title={"Defense: " + (_baseDef || 0) + " + Dex/10"}>🛡{_defenseComputed}</div>
             <div className="hp-bar">
-              <div className="hp-label">HP</div>
+              <div className="hp-label"> ❤</div>
                 {editMode && (
                   <>
                     <button className="hp-btn" onClick={() => setCharacter((c:any)=> ({...c, hp: Math.max(0, (c.hp||0)-1)}))}>−</button>
@@ -373,9 +524,9 @@ export default function CharacterEdit(){
               </div>
             </div>
           </div>
-          <div className="avatar"><img src="/profile_pictures/profile_picture_00.jpg" alt="avatar"/></div>
+          <div className="avatar"><img src={`/profile_pictures/${character.picture || 'profile_picture_00.jpg'}`} alt="avatar"/></div>
           <div className="main-row">
-            <div className="level">lvl {character.level || 1}</div>
+            <div className="level">{character.level || 1}</div>
             <div className="class-icon" onClick={() => {
               if (classMeta) setAbilityModal({ title: classMeta.name || character.class, desc: classMeta.description || JSON.stringify(classMeta,null,2), extra:{ type: 'class' } });
               else setAbilityModal({ title: character.class || 'Класс', desc: 'Данных класса нет', extra:{ type: 'class' } });
@@ -383,6 +534,11 @@ export default function CharacterEdit(){
               {classIconUrl ? <img src={classIconUrl} alt={character.class} style={{width:48,height:48,objectFit:'cover',borderRadius:8}} /> : (character.class || '')}
             </div>
           </div>
+          {editMode && (
+            <div className="name-row">
+              <button className="simple-btn" onClick={() => setPictureModalOpen(true)}>Изменить изображение</button>
+            </div>
+          )}
           <div className="name-row">
             {editMode ? <input value={character.name||''} onChange={e=>changeName(e.target.value)} /> : <h2>{character.name}</h2>}
           </div>
@@ -418,10 +574,31 @@ export default function CharacterEdit(){
             </div>
           </div>
         </div>
-
+        <div className="char-card-notes">
+          <details open={notesOpen} onToggle={(e:any)=> setNotesOpen(e.currentTarget.open)}>
+            <summary className="section-header">Заметки  
+                <button className="simple-btn" onClick={(e)=>{ e.stopPropagation(); e.preventDefault(); setNotesOpen(true); setNoteEditMode(true); }}>📝</button>
+                </summary>
+            <div style={{padding:8}}>
+              {noteEditMode ? (
+                <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                  <textarea className="note-input" value={noteText||''} onChange={(e)=>setNoteText(e.target.value)} />
+                  <div style={{display:'flex',gap:8,justifyContent:'flex-end'}}>
+                    <button className="save-btn" onClick={saveNote}>Сохранить</button>
+                    <button className="delete-btn" onClick={()=>{ setNoteEditMode(false); setNoteText(character.note || ''); }}>Отмена</button>
+                  </div>
+                </div>
+              ) : (
+                <div style={{display:'flex',flexDirection:'column',gap:8}}>
+                  <div style={{whiteSpace:'pre-wrap',minHeight:48,background:'rgba(255,255,255,0.02)',padding:8,borderRadius:6}}>{character.note || 'Нет заметок'}</div>
+                </div>
+              )}
+            </div>
+          </details>
+        </div>
         <div className="char-card-details">
           <div className="section abilities-section">
-            <details className="abilities-details" open>
+            <details className="abilities-details" >
               <summary className="section-header">Способности <span className="small">AbilityPoints: {character.abilityPoints||0}</span></summary>
               <div className="abilities-grid">
                 {ABILITY_ORDER.map((k)=>{
@@ -579,6 +756,52 @@ export default function CharacterEdit(){
                 }
                 return null;
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {pictureModalOpen && (
+        <div className="ability-modal" onClick={() => setPictureModalOpen(false)}>
+          <div className="ability-modal-content" onClick={(e)=>e.stopPropagation()} style={{width:520,maxWidth:'95%'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+              <strong>Выберите изображение</strong>
+              <button className="ability-modal-close" onClick={() => setPictureModalOpen(false)}>×</button>
+            </div>
+            <div style={{display:'flex',gap:8,marginBottom:8}}>
+              <button className={`simple-btn`} onClick={()=>setPictureFilter('all')}>Все</button>
+              <button className={`simple-btn`} onClick={()=>setPictureFilter('default')}>Default</button>
+              <button className={`simple-btn`} onClick={()=>setPictureFilter('male')}>Male</button>
+              <button className={`simple-btn`} onClick={()=>setPictureFilter('female')}>Female</button>
+            </div>
+            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(90px,1fr))',gap:8,maxHeight:360,overflow:'auto'}}>
+              {pictures.filter(p => pictureFilter==='all' ? true : p.tag === pictureFilter).map((p:any)=> (
+                <div key={p.file} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6}}>
+                  <img src={`/profile_pictures/${p.file}`} alt={p.file} style={{width:80,height:80,objectFit:'cover',borderRadius:8,border: (character.picture===p.file? '2px solid #6b5cff' : '1px solid #222') ,cursor:'pointer'}} onClick={async()=>{
+                    // optimistic update
+                    const next = {...character, picture: p.file};
+                    setCharacter(next);
+                    try { localStorage.setItem('last_created_character', JSON.stringify(next)); } catch(e){}
+                    // persist to server when possible
+                    const session = JSON.parse(localStorage.getItem('session') || '{}');
+                    const userId = session?.tgId || session?.uid || session?.userId || null;
+                    const remoteId = getRemoteId();
+                    if (userId && remoteId) {
+                      try {
+                        const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}/picture`, {
+                          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ picture: p.file })
+                        });
+                        if (resp.ok) showToast('Изображение сохранено', { type: 'success' });
+                        else { const txt = await resp.text(); showToast('Ошибка: '+(txt||resp.status), { type: 'error' }); }
+                      } catch (e) { showToast('Ошибка соединения при сохранении изображения', { type: 'error' }); }
+                    } else {
+                      showToast('Изображение изменено локально (неавторизовано)', { type: 'info' });
+                    }
+                    setPictureModalOpen(false);
+                  }} />
+                  <div style={{fontSize:12}}>{p.file.replace('.jpg','')}</div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
