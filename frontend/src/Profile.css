@@ -71,6 +71,15 @@
   gap: 12px;
 }
 
+.simple-btn {
+  background: linear-gradient(180deg,#2b2b2b,#1f1f1f);
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .square-btn {
   aspect-ratio: 1 / 1;
   background: linear-gradient(180deg,#2b2b2b,#1f1f1f);

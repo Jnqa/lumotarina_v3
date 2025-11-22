@@ -49,6 +49,43 @@ router.get('/user/:id/:charId', async (req, res) => {
   }
 });
 
+// Получить список всех персонажей во всей БД (ownerId, charId, name, picture)
+// WARNING: may return large payload on big DBs; used by master-room for selecting players
+router.get('/list', async (req, res) => {
+  try {
+    // Read users once to map ownerId -> displayName
+    const usersRef = admin.database().ref('users');
+    const usersSnap = await usersRef.once('value');
+    const users = usersSnap.val() || {};
+
+    const rootRef = admin.database().ref('characters');
+    const snap = await rootRef.once('value');
+    const out = [];
+    const defaultPic = 'profile_picture_00.jpg';
+    snap.forEach(userSnap => {
+      const userId = userSnap.key;
+      const chars = userSnap.val();
+      if (!chars) return;
+      const ownerDisplayName = (users[userId] && users[userId].displayName) ? users[userId].displayName : 'Игрок';
+      Object.keys(chars).forEach(charId => {
+        const ch = chars[charId];
+        if (!ch) return;
+        out.push({
+          ownerId: userId,
+          ownerDisplayName,
+          charId: charId,
+          name: ch.name || ch.title || `char_${charId}`,
+          picture: ch.picture || defaultPic,
+        });
+      });
+    });
+    res.json(out);
+  } catch (e) {
+    console.error('GET /characters/list error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
 // Создать нового персонажа
 router.post('/user/:id', async (req, res) => {
   const tg_id = req.params.id;

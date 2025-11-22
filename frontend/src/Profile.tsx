@@ -25,6 +25,7 @@ export default function Profile() {
   const session = getSession();
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [characters, setCharacters] = useState<any[] | null>(null);
+  const [showRoomConfirm, setShowRoomConfirm] = useState<boolean>(false);
 
   useEffect(() => {
     if (!session.tgId) return;
@@ -117,8 +118,10 @@ export default function Profile() {
 
       <main className="profile-main">
         <section className="profile-actions-grid">
-          <button className="square-btn lore-btn" onClick={() => nav('/lore')}><span>Lore</span></button>
-          <button className="square-btn map-btn" onClick={() => nav('/lore/map')}><span>Map</span></button>
+          <button className="simple-btn" onClick={() => nav('/intro')}>Введение</button>
+          <button className="simple-btn" onClick={() => setShowRoomConfirm(true)}>Комната Ведущего</button>
+          <button className="square-btn lore-btn" onClick={() => nav('/lore')}><span>Лор</span></button>
+          <button className="square-btn map-btn" onClick={() => nav('/lore/map')}><span>Карта</span></button>
         </section>
 
         <section className="profile-character">
@@ -154,6 +157,19 @@ export default function Profile() {
           </div>
         </section>
       </main>
+
+      {showRoomConfirm && (
+        <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.6)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:60}} onClick={()=>setShowRoomConfirm(false)}>
+          <div style={{background:'#0d0d0d',padding:16,borderRadius:8,width:420}} onClick={(e)=>e.stopPropagation()}>
+            <h3>Это путь в комнату ведущего</h3>
+            <p>Ты действительно хочешь продолжить?</p>
+            <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:12}}>
+              <button className="delete-btn" onClick={()=>setShowRoomConfirm(false)}>Нет, вернуться</button>
+              <button className="save-btn" onClick={()=>{ setShowRoomConfirm(false); nav('/master-room'); }}>Да, продолжить</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

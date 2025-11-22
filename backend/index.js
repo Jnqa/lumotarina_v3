@@ -104,6 +104,20 @@ app.get('/users', async (req, res) => {
   }
 });
 
+// Endpoint: получить displayName пользователя по id (используется в MasterRoom)
+app.get('/users/:id/displayName', async (req, res) => {
+  const id = req.params.id;
+  try {
+    const nameRef = admin.database().ref(`users/${id}/displayName`);
+    const snap = await nameRef.once('value');
+    const displayName = snap.val() || 'Игрок';
+    res.json({ displayName });
+  } catch (err) {
+    console.error('GET /users/:id/displayName error', err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Firebase Admin SDK init
 admin.initializeApp({
   credential: admin.credential.cert({

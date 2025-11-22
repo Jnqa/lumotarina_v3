@@ -9,6 +9,8 @@ import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import App from './App.tsx';
 import Profile from './Profile';
+import Intro from './Intro';
+import MasterRoom from './MasterRoom';
 import './index.css';
 import './utils/toast.css';
 
@@ -18,6 +20,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/intro" element={<Intro />} />
+        <Route path="/master-room" element={<MasterRoom />} />
         <Route path="/editor/classes" element={<ClassesEditor />} />
         <Route path="/lore" element={<Lore />} />
         <Route path="/lore/map" element={<LoreMap />} />
