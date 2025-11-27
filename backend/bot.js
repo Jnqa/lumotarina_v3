@@ -4,7 +4,7 @@ require('dotenv').config();
 
 const bot = new TelegramBot(process.env.TELEGRAM_BOT_TOKEN, { polling: true });
 
-const FRONTEND_URL = 'https://dnd.lumotarina.ru/'; // 'https://lumotarina.ru'; // 
+const FRONTEND_URL = 'https://dnd.lumotarina.ru'; // 'https://lumotarina.ru'; // 
 
 // Временное хранилище кодов: { tg_id: { code, expires } }
 const codes = {};
