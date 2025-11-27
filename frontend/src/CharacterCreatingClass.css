@@ -27,10 +27,35 @@
 }
 
 /* New grid + detail panel styles */
-.class-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-top:12px }
-.class-tile{ background:linear-gradient(180deg,#0e0e0e,#070707); border:1px solid #222; padding:12px; border-radius:8px; display:flex; align-items:center; justify-content:center; min-height:72px; cursor:pointer }
-.class-tile .tile-title{ color:#ddd; font-weight:700; text-align:center; font-size:14px }
+.class-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap:8px; margin-top:8px }
+.class-tile{ background:linear-gradient(180deg,#0e0e0e,#070707); border:1px solid #222; padding:8px; border-radius:6px; display:flex; align-items:center; justify-content:center; min-height:48px; cursor:pointer }
+.class-tile .tile-title{ color:#ddd; font-weight:700; text-align:center; font-size:12px; line-height:1 }
 .class-tile.selected{ box-shadow:0 0 0 3px rgba(43,102,255,0.12); border-color:#2b66ff }
+
+/* highlight classes discovered via preview answers */
+.class-tile.found{ box-shadow:0 0 0 3px rgba(35,200,135,0.12); border-color:#23c887 }
+
+.preview-spoiler summary{ list-style:none; padding:8px; background:transparent; border-radius:8px }
+.preview-spoiler[open] .char-preview{ margin-top:8px }
+
+/* mobile tweaks for narrow screens (390px) */
+@media (max-width:420px){
+  .class-grid{ grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap:6px }
+  .class-tile{ padding:6px; min-height:44px }
+  .class-tile .tile-title{ font-size:11px }
+  .ability-cell{ min-height:36px; padding:2px }
+  .ability-name{ font-size:11px }
+  .ability-val{ font-size:12px }
+}
+@media (max-width:390px){
+  .class-grid{ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+  .class-tile{ padding:6px; min-height:44px }
+  .ability-cell{ min-height:34px; padding:2px }
+  .ability-name{ font-size:11px }
+  .ability-val{ font-size:12px }
+  .char-preview{ padding:6px }
+  .char-preview pre{ white-space:pre-wrap; word-break:break-word; font-size:12px }
+}
 
 .detail-panel{ margin-top:16px; background:#0b0b0b; border:1px solid #222; padding:14px; border-radius:10px; color:#ddd }
 .detail-header h3{ margin:0 0 8px 0; font-size:18px }
@@ -42,16 +67,52 @@
 .detail-inventory .inv-btn{ padding:6px 10px }
 
 .detail-abilities{ margin-top:8px }
-.abilities-grid.grid-4x4{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px }
-.ability-cell{ background:linear-gradient(180deg,#111,#070707); border:1px solid #1a1a1a; border-radius:8px; padding:8px; min-height:56px; display:flex; align-items:center; justify-content:center }
-.ability-inner{ display:flex; flex-direction:column; align-items:center }
-.ability-name{ font-size:12px; color:#cfcfcf }
-.ability-val{ font-size:16px; font-weight:700; color:#fff }
+.abilities-grid.grid-4x4{ display:grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap:8px }
+.abilities-grid.responsive{ display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:8px }
+.ability-cell{ background:linear-gradient(180deg,#111,#070707); border:1px solid #1a1a1a; border-radius:10px; padding:6px 10px; min-height:36px; min-width:0; display:flex; align-items:center; justify-content:space-between; box-sizing:border-box; overflow:hidden }
+.ability-inner{ display:flex; flex-direction:row; align-items:center; gap:8px; min-width:0 }
+.ability-name{ font-size:clamp(11px,1.6vw,13px); color:#cfcfcf; text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100% }
+.ability-val{ font-size:clamp(12px,1.8vw,14px); font-weight:700; color:#fff; margin-left:8px; flex:0 0 auto }
 .ability-empty{ color:#666 }
+
+/* Ensure at least two columns on small/medium widths */
+@media (max-width:720px){
+  .abilities-grid.responsive{ grid-template-columns: repeat(2, 1fr); gap:6px }
+  .ability-cell{ padding:6px; min-height:34px }
+  .ability-name{ font-size:12px }
+  .ability-val{ font-size:12px }
+}
+
+/* Compact layout and inline pill mode for very narrow viewports */
+@media (max-width:520px){
+  .abilities-grid.responsive{ grid-template-columns: repeat(2, 1fr); gap:6px }
+  .ability-inner{ align-items:center; gap:6px }
+  .ability-name{ font-size:11px }
+  .ability-val{ font-size:12px }
+}
+
+@media (max-width:390px){
+  /* switch to horizontal pill-scroller to avoid a single tall column */
+  .abilities-grid.responsive{ display:flex; gap:6px; overflow-x:auto; padding-bottom:6px }
+  .ability-cell{ flex:0 0 auto; min-width:120px; border-radius:999px; padding:6px 10px; display:flex; align-items:center; justify-content:flex-start; overflow:visible }
+  .ability-inner{ flex-direction:row; align-items:center; gap:8px; min-width:0 }
+  .ability-name{ max-width:80px; text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis }
+  .ability-val{ margin-left:8px }
+}
 
 .detail-skills{ margin-top:12px }
 .detail-skills h4{ margin:0 0 8px 0 }
 .skill-details summary{ cursor:pointer; font-weight:700 }
 .skill-details ul{ margin:6px 0 0 18px; color:#ccc }
+
+/* Separate skills panel like CharacterEdit */
+.skills-panel{ margin-top:12px; background:#0e0e0e; border:1px solid #222; border-radius:10px; padding:10px; color:#ddd }
+.skills-panel .skill-group{ margin-bottom:8px; border-top:1px solid rgba(255,255,255,0.02); padding-top:8px }
+.skills-panel .skill-group summary{ list-style:none; cursor:pointer; padding:8px; display:flex; align-items:center; gap:8px; font-weight:800 }
+.skills-panel .skill-group-items{ display:flex; flex-direction:column; gap:6px; padding:8px }
+.skills-panel .skill-row{ display:flex; gap:8px; align-items:flex-start; padding:6px; border-radius:6px; background:transparent }
+.skills-panel .skill-row:hover{ background:rgba(255,255,255,0.02) }
+.skills-panel .skill-row strong{ font-size:13px }
+.skills-panel .skill-row div{ color:#ccc }
 
 .detail-actions{ margin-top:12px; display:flex; justify-content:flex-end }

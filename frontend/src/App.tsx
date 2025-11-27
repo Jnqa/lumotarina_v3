@@ -3,7 +3,17 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './App.css';
 
-const BACKEND_URL = 'http://localhost:3001'; // или ваш реальный backend
+// Determine backend URL: prefer runtime `window.__RUNTIME__.VITE_API_BASE`, then build-time Vite env, then localhost
+const BACKEND_URL = (() => {
+  try {
+    // @ts-ignore
+    if (typeof window !== 'undefined' && (window as any).__RUNTIME__ && (window as any).__RUNTIME__.VITE_API_BASE) {
+      // @ts-ignore
+      return (window as any).__RUNTIME__.VITE_API_BASE;
+    }
+  } catch (e) {}
+  return (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
+})();
 
 function getTgIdFromUrl() {
   const params = new URLSearchParams(window.location.search);

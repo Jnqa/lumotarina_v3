@@ -1,0 +1,66 @@
+version: '3.9'
+services:
+  nginx-proxy:
+    image: nginx:stable
+    volumes:
+      - ./infra/nginx/proxy.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./letsencrypt:/etc/letsencrypt
+      - ./certbot-www:/var/www/certbot
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - web
+    restart: always
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./letsencrypt:/etc/letsencrypt
+      - ./certbot-www:/var/www/certbot
+    networks:
+      - web
+    restart: "no"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=production
+      - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/firebase_sa.json
+    # Load additional env vars (including FIREBASE_*) from host file
+    env_file:
+      - /secrets/lumotarina/.env
+    volumes:
+      - /srv/lumotarina_v3/secrets/firebase_sa.json:/run/secrets/firebase_sa.json:ro
+    expose:
+      - "3001"
+    networks:
+      - web
+    restart: always
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        - VITE_API_BASE=https://api-dnd.lumotarina.ru
+    volumes:
+      # Optionally mount runtime config (config.js) to change API base without rebuild
+      - ./runtime/config.js:/usr/share/nginx/html/config.js:ro
+    expose:
+      - "80"
+    networks:
+      - web
+    restart: always
+
+volumes:
+  letsencrypt:
+
+networks:
+  web:
+    external: false

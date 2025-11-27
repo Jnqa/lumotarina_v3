@@ -33,6 +33,9 @@ const ABILITY_LABELS: Record<string, string> = {
   Lumion: 'Люмион',
   Survival: 'Выживание',
   Crafting: 'Ремёсла',
+  Athletics: 'Атлетика',
+  Acrobatics: 'Акробатика',
+  History: 'История',
 };
 
 export default function CharacterCreatingClass() {
@@ -167,6 +170,30 @@ export default function CharacterCreatingClass() {
 
   const subs = allClasses ? flattenSubs(allClasses) : [];
 
+  const [abilitiesMeta, setAbilitiesMeta] = useState<any | null>(null);
+  const [actionTypes, setActionTypes] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const r = await fetch('/templates/abilities.json');
+        if (!r.ok) return;
+        const j = await r.json();
+        setAbilitiesMeta(j);
+      } catch (e) { /* ignore */ }
+    })();
+    // load action types (for skills panel)
+    (async () => {
+      try {
+        const r2 = await fetch('/templates/classes.json');
+        if (!r2.ok) return;
+        const cj = await r2.json();
+        const at = cj?.action_types || cj?.actionTypes || cj?.action_types || [];
+        setActionTypes(at || []);
+      } catch (e) { /* ignore */ }
+    })();
+  }, []);
+
   const MAX_INV_DEFAULT = 2;
 
   // modal state for naming character before creation
@@ -254,8 +281,9 @@ export default function CharacterCreatingClass() {
         {subs.filter(visible).map((sub: any) => {
           const idKey = sub.id || sub.class || sub.name || String(Math.random());
           const isActive = activeClassId === idKey;
+          const isFound = Array.isArray(preview?.foundClasses) && preview.foundClasses.includes(idKey);
           return (
-            <div key={idKey} className={`class-tile ${isActive ? 'selected' : ''}`} onClick={() => setActiveClassId(idKey)}>
+            <div key={idKey} className={`class-tile ${isActive ? 'selected' : ''} ${isFound ? 'found' : ''}`} onClick={() => setActiveClassId(idKey)}>
               {/* if image available in class JSON you could render it here; otherwise show name */}
               <div className="tile-content">
                 <div className="tile-title">{sub.name || sub.id || sub.text}</div>
@@ -279,13 +307,14 @@ export default function CharacterCreatingClass() {
         while (abilArr.length < 16) abilArr.push([``, 0]);
 
         return (
+          <>
           <div className="detail-panel">
             <div className="detail-header">
               <h3>{sub.name} - <span className="detail-desc">{sub.description}</span></h3>
             </div>
 
             <div className="detail-inventory">
-              <div className="inventory-list">
+              <div className="inventory-list">🎒:
                 {invList.length === 0 && <div className="no-inv">—</div>}
                 {invList.map((it) => {
                   const selected = selectedInv.includes(it);
@@ -308,41 +337,91 @@ export default function CharacterCreatingClass() {
             </div>
 
             <div className="detail-abilities">
-              <div className="abilities-grid grid-4x4">
-                {abilArr.map(([k, v], idx) => (
-                  <div key={idx} className="ability-cell">
-                    {k ? (
-                      <div className="ability-inner"><div className="ability-name">{ABILITY_LABELS[k] || k}</div><div className="ability-val">{v}</div></div>
-                    ) : <div className="ability-empty">—</div>}
+              {(() => {
+                const abilitiesObj = mergeAbilitiesObjects(sub.abilities || {});
+                // Use canonical keys order from abilities metadata when available,
+                // otherwise fall back to the built-in labels object.
+                const canonical = abilitiesMeta ? Object.keys(abilitiesMeta) : Object.keys(ABILITY_LABELS);
+                if (!canonical || canonical.length === 0) return <div className="small">— Нет способностей</div>;
+                // Build entries ensuring missing abilities show as 0
+                const entries: Array<[string, number]> = canonical.map(k => [k, Number(abilitiesObj[k] || 0)]);
+                return (
+                  <div className="abilities-grid responsive">
+                    {entries.map(([k, v]) => {
+                      const meta = abilitiesMeta && abilitiesMeta[k];
+                      const label = (meta && meta.name) || ABILITY_LABELS[k] || k;
+                      const color = (meta && meta.color) || 'transparent';
+                      const icon = (meta && (meta.icon || meta.iconEmoji || meta.iconEmoji)) || '';
+                      return (
+                        <div key={k} className="ability-cell" style={{borderColor: color || undefined}}>
+                          {k ? (
+                            <>
+                              <div className="ability-inner">
+                                <div style={{display:'flex',alignItems:'center',gap:8}}>
+                                  <div style={{fontSize:18}}>{icon}</div>
+                                  <div className="ability-name">{label}</div>
+                                </div>
+                              </div>
+                              <div className="ability-val">{v}</div>
+                            </>
+                          ) : <div className="ability-empty">—</div>}
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
-              </div>
+                );
+              })()}
+
+                
             </div>
 
-            {Array.isArray(sub.skills) && sub.skills.length > 0 && (
-              <div className="detail-skills">
-                <h4>Навыки (skills)</h4>
-                {sub.skills.map((sec: any, si: number) => (
-                  <div key={si} className="skill-section">
-                    {Object.entries(sec).map(([secName, items]: any) => (
-                      <details key={secName} className="skill-details">
-                        <summary>{secName}</summary>
-                        <ul>
-                          {Array.isArray(items) ? items.map((it:any, ix:number) => (
-                            <li key={ix}>({it.level ? `${it.level}` : '?' } уровень) - <strong>{it.name}</strong> — {it.effect}</li>
-                          )) : null}
-                        </ul>
-                      </details>
-                    ))}
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* skills panel is rendered separately below */}
 
             <div className="detail-actions">
               <button className="choose-btn" onClick={() => { setPendingClass(sub); setCharName(''); setNamingModalOpen(true); }}>Выбрать</button>
             </div>
           </div>
+
+          {/* skills panel (separate) */}
+          {(() => {
+            const skillsObj = (sub && Array.isArray(sub.skills) && sub.skills[0]) ? sub.skills[0] : (sub && sub.skills) || {};
+            if (!skillsObj) return null;
+            const types = actionTypes || [];
+            if (!types || types.length === 0) return null;
+            function getItemsForType(sk:any, t:string) {
+              if (!sk) return [];
+              const tt = (t || '').toLowerCase();
+              if (tt.includes('active')) return sk.actions || sk.active || [];
+              if (tt.includes('short')) return sk.ShortRest || sk.short_rest || sk.shortRest || sk.Short_Rest || sk.Short || [];
+              if (tt.includes('long')) return sk.LongRest || sk.long_rest || sk.longRest || sk.Long || [];
+              if (tt.includes('pass')) return sk.Passive || sk.passive || [];
+              return sk[t] || [];
+            }
+
+            return (
+              <div className="skills-panel">
+                {types.map((at: any) => {
+                  const items = getItemsForType(skillsObj, at.type || at.key || '');
+                  if (!items || items.length === 0) return null;
+                  return (
+                    <details key={at.type} className="skill-group">
+                      <summary style={{display:'flex',alignItems:'center',gap:8}}>{at.icon || ''} <span style={{fontWeight:700}}>{at.name || at.type}</span></summary>
+                      <div className="skill-group-items">
+                        {items.map((it: any, ix: number) => (
+                          <div key={ix} className="skill-row" onClick={() => {/* noop for now */}}>
+                            <div style={{flex:'0 0 28px', textAlign:'center'}}>{it.level ? `L${it.level}` : ''}</div>
+                            <div style={{flex:1}}><strong>{it.name}</strong> — <span style={{color:'#bbb'}}>{it.effect || it.description || ''}</span></div>
+                          </div>
+                        ))}
+                      </div>
+                    </details>
+                  );
+                })}
+              </div>
+            );
+          })()}
+
+          </>
         );
       })()}
 
@@ -362,10 +441,12 @@ export default function CharacterCreatingClass() {
 
       {/* preview moved to the bottom */}
       <div style={{ marginTop: 18 }}>
-        <h4>Предварительный просмотр</h4>
-        <div className="char-preview">
-          <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(preview, null, 2)}</pre>
-        </div>
+        <details className="preview-spoiler">
+          <summary style={{cursor:'pointer', fontWeight:100, fontSize:10}}>🧪Dev Panel</summary>
+          <div className="char-preview" style={{marginTop:8}}>
+            <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(preview, null, 2)}</pre>
+          </div>
+        </details>
       </div>
     </div>
   );

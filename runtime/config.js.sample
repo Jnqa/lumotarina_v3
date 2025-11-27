@@ -1,0 +1,4 @@
+// Copy this file to `runtime/config.js` and edit the value to change API base at runtime
+window.__RUNTIME__ = {
+  VITE_API_BASE: 'https://api-dnd.lumotarina.ru'
+};
