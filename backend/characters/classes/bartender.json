@@ -1,0 +1,89 @@
+{
+  "id": "bartender",
+  "name": "Бармен",
+  "defense": 5,
+  "hp": 10,
+  "description": "Тот ещё болтун.",
+  "abilities": [
+        {"Strength":-20}, 
+        {"Dexterity":20}, 
+        {"Constitution":7},
+        {"Intelligence":10},
+        {"Wisdom":10},
+        {"Charisma":30},
+        {"Perception":-10},
+        {"Willpower":-5},
+        {"Engineering":-20},
+        {"Lumion":0},
+        {"Medicine":-10},
+        {"Lockpicking":10},
+        {"Stealth":10},
+        {"Nature":0},
+        {"Survival":0},
+        {"Crafting":0}
+    ],
+  "icon": "icons/bartender.png",
+  "inventory": [["Бутылка рома"]],
+  "skills": [
+        {
+        "actions": [
+            {
+            "name": "Щелчок",
+            "effect": "Привлекаешь внимание цели на себя",
+            "level": 1
+            }
+        ],
+        "ShortRest": [
+            {
+            "name": "Переброс",
+            "effect": "Можно перебросить неудачный бросок.",
+            "level": 1    
+            },
+            {
+            "name": "Двойной",
+            "effect": "Два броска суммируются в один.",
+            "level": 1    
+            },
+            {
+            "name": "Не-а",
+            "effect": "Отменяет ход противника или любого игрока.",
+            "level": 1    
+            }
+        ],
+        "LongRest": [
+            {
+            "name": "Критический успех",
+            "effect": "Усиливает бросок на критический успех.",
+            "level": 3
+            },
+            {
+            "name": "Кстати, нет",
+            "effect": "Ослабляет бросок на критический провал.",
+            "level": 3
+            }
+        ],
+        "Passive": [
+            {
+            "name": "Кстати, ещё кое-что",
+            "effect": "Дополнительное действие LR.",
+            "level": 3
+            },
+            {
+            "name": "Кстати, а ещё",
+            "effect": "Дополнительное действие SR.",
+            "level": 3
+            },
+            {
+            "name": "Дружелюбие",
+            "effect": "Поывышенная возможность дружелюбия.",
+            "level": 1
+            },
+            {
+            "name": "Есть разговор",
+            "effect": "Пермонажи охотнее идут на контакт.",
+            "level": 1
+            }
+       ]
+}
+]
+}

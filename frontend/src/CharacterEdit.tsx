@@ -3,7 +3,7 @@ import { showToast } from './utils/toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './CharacterEdit.css';
 
-const ABILITY_ORDER = ['Strength','Dexterity','Constitution','Intelligence','Wisdom','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting'];
+const ABILITY_ORDER = ['Strength','Dexterity','Constitution','Intelligence','Wisdom','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
 
 const ABILITY_EMOJI: Record<string,string> = {
   Strength: '💪',
@@ -22,6 +22,9 @@ const ABILITY_EMOJI: Record<string,string> = {
   Nature: '🌿',
   Survival: '🏕️',
   Crafting: '🔨',
+  Athletics: '🤾‍♂️',
+  Acrobatics: '🤸‍♂️',
+  History: '📜',
 };
 
 function clamp(v:number, min= -999, max=999){ return Math.max(min, Math.min(max, v)); }
@@ -32,12 +35,135 @@ export default function CharacterEdit(){
   const state: any = (loc.state as any) || {};
   const charFromState = state.character || null;
 
-  const persisted = (() => {
-    try { return JSON.parse(localStorage.getItem('last_created_character') || 'null'); } catch (e) { return null; }
-  })();
-
-  const initial = charFromState || persisted;
+  // Do not rely on localStorage for character state anymore; prefer navigation state and server
+  const initial = charFromState || null;
   const [character, setCharacter] = useState<any>(initial);
+  
+  if (initial?.id) {
+     // quiet: do not log initial character load in production
+  } else {
+     // quiet: do not log character load without ID in production
+  }
+
+  // If there is no initial character (no state and nothing persisted), but the URL
+  // contains a character id (e.g. ?charId=2 or ?id=2), try to fetch it from server.
+  // This helps when the user opened /character/edit directly or reloaded the page.
+  useEffect(() => {
+    // If we already have a useful initial character (it contains an id or charId),
+    // skip fetching from URL. But if `initial` exists without any id fields, we
+    // must still try to fetch by URL because persisted state may be incomplete.
+    if (initial && (initial.id || initial.charId || initial._id || initial._remoteId || initial.remoteId)) return;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlCharId = params.get('charId') || params.get('id');
+      if (!urlCharId) return;
+      const session = JSON.parse(localStorage.getItem('session') || '{}');
+      const userId = session?.tgId || session?.uid || session?.userId || null;
+      if (!userId) return;
+      (async () => {
+        try {
+          const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(urlCharId)}`);
+          console.log('[CharacterEdit.initFetch] resp:', resp);
+          if (!resp.ok) return;
+          const data = await resp.json();
+            if (data) {
+            setCharacter(data);
+            try { localStorage.setItem('last_opened_character', JSON.stringify({ ownerId: userId, charId: urlCharId })); } catch(e) {}
+          }
+        } catch (e) {
+          // ignore network errors
+        }
+      })();
+    } catch (e) { /* ignore */ }
+  }, []);
+
+  // Helper: ensure the character has an `id`. If missing, attempt to resolve it
+  // using URL param or by listing user's characters and matching name+picture.
+  async function ensureCharacterId(c: any) {
+    if (!c) return null;
+
+    // If MasterRoom or other parts set `charId`/`ownerId`, accept that as remote id
+    if ((c.charId || c._charId) && c.ownerId) {
+      const attached = { ...(c||{}), id: c.charId };
+      try { setCharacter(attached); } catch (e) { /* ignore */ }
+      return attached;
+    }
+
+    if (c.id || c._remoteId || c._id || c.remoteId) return c;
+
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlCharId = params.get('charId') || params.get('id');
+      const session = JSON.parse(localStorage.getItem('session') || '{}');
+      const userId = session?.tgId || session?.uid || session?.userId || null;
+      if (!userId) return c;
+
+      // 1) If URL contains charId, try to fetch it
+      if (urlCharId) {
+        console.log('🧨[CharacterEdit.ensureCharacterId] urlCharId:', urlCharId);
+        try {
+          const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(urlCharId)}`);
+          console.log('[CharacterEdit.ensureCharacterId] resp for urlCharId:', resp);
+          if (resp.ok) {
+            const data = await resp.json();
+              if (data) {
+              // ensure id field
+              data.id = data.id || urlCharId;
+              setCharacter(data);
+              try { localStorage.setItem('last_opened_character', JSON.stringify({ ownerId: userId, charId: urlCharId })); } catch(e) {}
+              return data;
+            }
+          }
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      // 2) Try to find by listing user's characters and matching name+picture
+      try {
+        const listResp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}`);
+        console.log('💛[CharacterEdit.ensureCharacterId] listResp:', listResp);
+        if (listResp.ok) {
+          const chars = await listResp.json();
+          const entries = Array.isArray(chars) ? chars : Object.keys(chars||{}).map(k => ({ id: k, ...chars[k] }));
+          const match = entries.find((ch:any) => (ch.name === (c.name || '')) && ((ch.picture || '') === (c.picture || '')) );
+          console.log('🧨match:', match);
+            if (match && match.id) {
+            // fetch full data for this id to get all fields
+            try {
+              const resp2 = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(match.id)}`);
+                if (resp2.ok) {
+                const full = await resp2.json();
+                full.id = full.id || match.id;
+                setCharacter(full);
+                try { localStorage.setItem('last_opened_character', JSON.stringify({ ownerId: userId, charId: match.id })); } catch(e) {}
+                return full;
+              }
+            } catch (e) { /* ignore */ }
+            // if fetching full fails, attach id and return
+            const attached = { ...(c||{}), id: match.id };
+            setCharacter(attached);
+            return attached;
+          }
+        }
+      } catch (e) {
+        console.log('❗[CharacterEdit.ensureCharacterId] list error 1:', e);
+        // ignore
+      }
+    } catch (e) {
+      // ignore
+    }
+    console.log('❗c:', c);
+    return c;
+  }
+
+  // Run id resolution when a character exists in state but lacks id
+  useEffect(() => {
+    if (!character) return;
+    if (character.id || character._remoteId || character._id || character.remoteId || character.charId) return;
+    // resolve and set id if possible
+    ensureCharacterId(character).catch(() => {});
+  }, [character]);
   const [editMode, setEditMode] = useState(false);
   const [abilitiesMeta, setAbilitiesMeta] = useState<any>(null);
   const [abilityModal, setAbilityModal] = useState<any>(null);
@@ -62,31 +188,21 @@ export default function CharacterEdit(){
 
     // If we have a synced character and a logged-in session, attempt to refresh the character from server
     try {
-      const session = JSON.parse(localStorage.getItem('session') || '{}');
-      const userId = session?.tgId || session?.uid || session?.userId || null;
-      const remoteId = character? (character._remoteId || character.id || character._id || character.remoteId) : null;
-      if (userId && remoteId) {
+      const { ownerId, charId } = getOwnerAndChar();
+      if (ownerId && charId) {
         try {
-          const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}`);
+          const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(ownerId)}/${encodeURIComponent(charId)}`);
           if (resp.ok) {
             const data = await resp.json();
             if (data) {
               setCharacter(data);
               setNoteText(data.note ?? '');
-              setNotesFetchedFor(remoteId);
-              try { localStorage.setItem('last_created_character', JSON.stringify(data)); } catch(e){}
-              showToast('💹 Данные обновлены', { type: 'success' });
+              setNotesFetchedFor(charId);
             }
-          } else {
-            // non-ok: still proceed to refresh metadata locally
-            showToast('Не удалось получить персонажа с сервера: ' + resp.status, { type: 'error' });
           }
         } catch (e) {
-          showToast('Ошибка соединения при обновлении персонажа', { type: 'error' });
+          console.error('Error fetching character from server:', e);
         }
-      } else {
-        // not logged-in or not synced; notify user that only local metadata refreshed
-        showToast('Локальные шаблоны обновлены', { type: 'success' });
       }
     } catch (e) {
       // ignore session parsing errors
@@ -314,7 +430,6 @@ export default function CharacterEdit(){
           });
           if (resp.ok) {
             showToast('Навык сохранён на сервере', { type: 'success' });
-            try { localStorage.setItem('last_created_character', JSON.stringify(next)); } catch(e){}
           } else {
             const txt = await resp.text();
             showToast('Ошибка при сохранении навыка: ' + (txt || resp.status), { type: 'error' });
@@ -331,14 +446,75 @@ export default function CharacterEdit(){
   async function saveToServer(){
     const session = JSON.parse(localStorage.getItem('session') || '{}');
     const userId = session?.tgId || session?.uid || session?.userId || null;
-    if (!userId) { showToast('Нужно войти в аккаунт чтобы сохранять изменения.', { type: 'error' }); return; }
-    const remoteId = character._remoteId || character.id || character._id || character.remoteId;
+    // derive owner and charId (prefer character.ownerId if editing someone else's entry)
+    const { ownerId: derivedOwner, charId: derivedCharId } = getOwnerAndChar();
+    const ownerToUse = character?.ownerId || derivedOwner || userId;
+    if (!ownerToUse) { showToast('Нужно войти в аккаунт чтобы сохранять изменения.', { type: 'error' }); return; }
+    let remoteId = derivedCharId || character.charId || character.id || character._remoteId || character._id || character.remoteId;
+    // If we don't have a remoteId, try to find matching character on server by name+picture
+    if (!remoteId) {
+      try {
+        const listResp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}`);
+        if (listResp.ok) {
+          const chars = await listResp.json();
+          const entries = Array.isArray(chars) ? chars : Object.keys(chars||{}).map(k => ({ id: k, ...chars[k] }));
+          const match = entries.find((c:any) => (c.name === character.name) && ((c.picture || '') === (character.picture || '')) );
+          if (match && match.id) {
+            remoteId = match.id;
+          }
+        }
+      } catch (e) {
+        // ignore lookup errors here; will produce not-synced message below
+      }
+    }
     if (!remoteId) { showToast('Персонаж не синхронизирован. Создайте персонажа заново.', { type: 'error' }); return; }
     try{
-      const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}`, { method: 'PUT', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(character)});
-      if (resp.ok){ showToast('Сохранено', { type: 'success' }); setEditMode(false); localStorage.setItem('last_created_character', JSON.stringify(character)); }
-      else { const txt = await resp.text(); showToast('Ошибка: '+ (txt||resp.status), { type: 'error' }); }
-    }catch(e){ showToast('Ошибка соединения', { type: 'error' }); }
+      const payload: any = { ...character };
+      delete payload.id; delete payload._id; delete payload.remoteId; delete payload._remoteId; delete payload.ownerId;
+      try {
+        const check = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(ownerToUse)}/${encodeURIComponent(remoteId)}`);
+        if (!check.ok) {
+          const listResp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(ownerToUse)}`);
+          if (listResp.ok) {
+            const chars = await listResp.json();
+            const entries = Array.isArray(chars) ? chars : Object.keys(chars||{}).map(k => ({ id: k, ...chars[k] }));
+            const match = entries.find((c:any) => (c.name === character.name) && ((c.picture || '') === (character.picture || '')) );
+            if (match && match.id) {
+              remoteId = match.id;
+            } else {
+              console.error('[CharacterEdit.saveToServer] No matching character found');
+              showToast('Не удалось найти соответствующий персонаж на сервере. Сохранение отменено, чтобы не создать дубликат.', { type: 'error' });
+              return;
+            }
+          } else {
+            console.error('[CharacterEdit.saveToServer] Failed to list characters');
+            showToast('Не удалось проверить существование персонажа на сервере. Сохранение отменено.', { type: 'error' });
+            return;
+          }
+        }
+      } catch (e) {
+        console.error('[CharacterEdit.saveToServer] Exception during character check:', e);
+        showToast('Ошибка соединения при проверке персонажа на сервере', { type: 'error' });
+        return;
+      }
+
+      const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(ownerToUse)}/${encodeURIComponent(remoteId)}`, { method: 'PUT', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify(payload)});
+      if (resp.ok){
+        // prefer server-returned representation when available
+        let updated = character;
+        try { const j = await resp.json(); if (j) updated = j; } catch(e) { /* ignore non-json response */ }
+        setCharacter(updated);
+        setEditMode(false);
+        showToast('Сохранено', { type: 'success' });
+      } else {
+        const txt = await resp.text(); 
+        console.error('[CharacterEdit.saveToServer] PUT error:', resp.status, txt);
+        showToast('Ошибка: '+ (txt||resp.status), { type: 'error' });
+      }
+    }catch(e){ 
+      console.error('[CharacterEdit.saveToServer] Exception:', e);
+      showToast('Ошибка соединения', { type: 'error' }); 
+    }
   }
 
   // Save a note for the character (optimistic local update + server POST)
@@ -347,7 +523,7 @@ export default function CharacterEdit(){
     const newNote = noteText ?? '';
     // optimistic local update
     setCharacter((c:any) => ({ ...c, note: newNote }));
-    try { localStorage.setItem('last_created_character', JSON.stringify({ ...(character||{}), note: newNote })); } catch(e){}
+    // no local persistence
 
     const session = JSON.parse(localStorage.getItem('session') || '{}');
     const userId = session?.tgId || session?.uid || session?.userId || null;
@@ -375,23 +551,55 @@ export default function CharacterEdit(){
 
   // Resolve the remote id of the character (support several possible field names)
   function getRemoteId() {
-    return character? (character._remoteId || character.id || character._id || character.remoteId) : null;
+    // prefer last_opened_character if present, then URL param, then character fields
+    try {
+      try {
+        const last = JSON.parse(localStorage.getItem('last_opened_character') || 'null');
+        if (last && last.charId) return last.charId;
+      } catch (e) { /* ignore parse errors */ }
+      const params = new URLSearchParams(window.location.search);
+      const urlCharId = params.get('charId') || params.get('id');
+      if (urlCharId) return urlCharId;
+    } catch (e) { /* ignore */ }
+    return character ? (character.charId || character.id || character._remoteId || character._id || character.remoteId) : null;
+  }
+
+  // Derive both ownerId and charId for calls that need both (prefer explicit ownerId on character)
+  function getOwnerAndChar() {
+    // Check navigation state first (supports nav(..., { state: { character } })
+    const navState: any = (loc.state as any) || {};
+    const navChar = navState.character || navState;
+    const params = new URLSearchParams(window.location.search);
+    const urlCharId = params.get('charId') || params.get('id');
+    const session = JSON.parse(localStorage.getItem('session') || '{}');
+    const sessionUserId = session?.tgId || session?.uid || session?.userId || null;
+
+    // fallback to last opened character stored locally
+    let stored: any = null;
+    try {
+      stored = JSON.parse(localStorage.getItem('last_opened_character') || 'null');
+    } catch(e) { /* ignore */ }
+
+    const ownerId = (navState && (navState.ownerId || navState.owner)) || character?.ownerId || (stored && stored.ownerId) || sessionUserId;
+    const charId = urlCharId || (navChar && (navChar.charId || navChar.id || navChar._remoteId || navChar._id || navChar.remoteId)) || (character ? (character.charId || character.id || character._remoteId || character._id || character.remoteId) : null) || (stored && stored.charId) || null;
+
+    // debug: show where charId came from when missing earlier
+    console.log('[CharacterEdit.getOwnerAndChar] navState:', navState, 'urlCharId:', urlCharId, 'characterIdFields:', character && (character.charId || character.id || character._remoteId || character._id || character.remoteId), 'stored:', stored, 'resolved ownerId:', ownerId, 'charId:', charId);
+
+    return { ownerId, charId };
   }
 
   // Fetch the persisted note from server when character is synced (and avoid refetching)
   const [notesFetchedFor, setNotesFetchedFor] = useState<string | null>(null);
   const [fetchedCharacterFor, setFetchedCharacterFor] = useState<string | null>(null);
   useEffect(() => {
-    const remoteId = getRemoteId();
-    if (!remoteId) return;
-    const session = JSON.parse(localStorage.getItem('session') || '{}');
-    const userId = session?.tgId || session?.uid || session?.userId || null;
-    if (!userId) return;
-    if (notesFetchedFor === remoteId) return; // already fetched for this remote id
+    const { ownerId, charId } = getOwnerAndChar();
+    if (!ownerId || !charId) return;
+    if (notesFetchedFor === charId) return; // already fetched for this remote id
 
     (async () => {
       try {
-        const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}/note`);
+        const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(ownerId)}/${encodeURIComponent(charId)}/note`);
         if (resp.ok) {
           const data = await resp.json();
           if (data && typeof data.note !== 'undefined' && data.note !== null) {
@@ -402,39 +610,38 @@ export default function CharacterEdit(){
       } catch (e) {
         // ignore network errors; leave local state as-is
       } finally {
-        setNotesFetchedFor(remoteId);
+        setNotesFetchedFor(charId);
       }
     })();
-  }, [character?.id, character?._id, character?._remoteId, character?.remoteId, API_BASE, notesFetchedFor]);
+  }, [character?.id, character?.charId, character?._id, character?._remoteId, character?.remoteId, API_BASE, notesFetchedFor]);
 
   // Fetch full character from server on initial load (so picture and other fields come from DB)
   useEffect(() => {
-    const remoteId = getRemoteId();
-    if (!remoteId) return;
-    const session = JSON.parse(localStorage.getItem('session') || '{}');
-    const userId = session?.tgId || session?.uid || session?.userId || null;
-    if (!userId) return;
-    if (fetchedCharacterFor === remoteId) return; // already fetched
+    const { ownerId, charId } = getOwnerAndChar();
+    console.log('[CharacterEdit.fetchCharacterEffect] ownerId:', ownerId, 'charId:', charId, 'fetchedCharacterFor:', fetchedCharacterFor);
+    if (!ownerId || !charId) return;
+    if (fetchedCharacterFor === charId) return; // already fetched
 
     (async () => {
       try {
-        const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}`);
-        if (resp.ok) {
-          const data = await resp.json();
-          if (data) {
-            setCharacter(data);
-            setNoteText(data.note ?? '');
-            setNotesFetchedFor(remoteId);
-            try { localStorage.setItem('last_created_character', JSON.stringify(data)); } catch(e){}
+          const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(ownerId)}/${encodeURIComponent(charId)}`);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data) {
+              setCharacter(data);
+              try { localStorage.setItem('last_opened_character', JSON.stringify({ ownerId, charId })); } catch(e) {}
+              setNoteText(data.note ?? '');
+              setNotesFetchedFor(charId);
+            }
           }
-        }
       } catch (e) {
+        console.error('[CharacterEdit.fetchCharacterEffect] Exception:', e);
         // ignore network errors
       } finally {
-        setFetchedCharacterFor(remoteId);
+        setFetchedCharacterFor(charId);
       }
     })();
-  }, [character?.id, character?._id, character?._remoteId, character?.remoteId, API_BASE, fetchedCharacterFor]);
+  }, [character?.id, character?.charId, character?._id, character?._remoteId, character?.remoteId, API_BASE, fetchedCharacterFor]);
 
   // Add inventory item (call backend if character is synced, otherwise local-only)
   async function addInventoryItem(value: string) {
@@ -495,7 +702,7 @@ export default function CharacterEdit(){
   return (
     <div className="char-edit-root">
       <div style={{display:'flex',gap:8,alignItems:'center',justifyContent: 'space-between'}}>
-        <button className="char-back" onClick={() => nav(-1)}>← Назад</button>
+        <button className="char-back" onClick={() => nav('/')}>← Home</button>
         {!editMode && <button className="char-refresh" onClick={refreshMetadata}>Обновить</button>}
         <button className="edit-btn" onClick={()=> setEditMode(e=>!e)}>{editMode? '✖':'✍'}</button>
         {editMode && <button className="save-btn" onClick={saveToServer}>💾 Сохранить</button>}
@@ -781,7 +988,6 @@ export default function CharacterEdit(){
                     // optimistic update
                     const next = {...character, picture: p.file};
                     setCharacter(next);
-                    try { localStorage.setItem('last_created_character', JSON.stringify(next)); } catch(e){}
                     // persist to server when possible
                     const session = JSON.parse(localStorage.getItem('session') || '{}');
                     const userId = session?.tgId || session?.uid || session?.userId || null;

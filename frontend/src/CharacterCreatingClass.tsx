@@ -223,8 +223,7 @@ export default function CharacterCreatingClass() {
     }
 
     const char: any = {
-      id: Date.now().toString(),
-      name: charName || 'Примероний Фамилионов',
+      name: charName || 'Примерный Фамильонов',
       history: buildHistoryFromAnswers(preview.answers || {}),
       class: pendingClass.id || pendingClass.class || pendingClass.name,
       abilities: mergedAbilities,
@@ -251,19 +250,22 @@ export default function CharacterCreatingClass() {
       const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(char) });
       if (resp.ok) {
         const body = await resp.json();
-        if (body && body.id) char._remoteId = body.id;
+        if (body && body.id) {
+          char.id = body.id;
+        }
       } else {
         const text = await resp.text();
+        console.error('[CharacterCreatingClass] Server error:', resp.status, text);
         showToast('Ошибка при сохранении персонажа: ' + (text || resp.status), { type: 'error' });
         return;
       }
     } catch (e) {
+      console.error('[CharacterCreatingClass] Exception during save:', e);
       showToast('Не удалось сохранить персонажа на сервере. Проверьте соединение.', { type: 'error' });
       return;
     }
 
-    // once saved remotely, keep a short local pointer for immediate edit
-    try { localStorage.setItem('last_created_character', JSON.stringify(char)); } catch (e) {}
+    // Do not persist created character to localStorage; rely on server and navigation state
 
     // cleanup and navigate to edit
     setNamingModalOpen(false);

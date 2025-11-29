@@ -12,7 +12,7 @@
 .char-controls{ margin-top:12px; display:flex; gap:8px }
 .char-controls button{ padding:8px 12px; border-radius:8px; cursor:pointer; border: none; background: linear-gradient(180deg,#6b5cff,#4a38d1); color:#fff }
 .char-controls button[disabled]{ opacity:0.4; cursor:not-allowed }
-.char-summary{ margin-top:14px; background:#0f0f0f; padding:10px; border-radius:8px; border:1px solid #222 }
+.char-summary{ margin-top:16px; background: linear-gradient(180deg,#121d5a02,#17121f62); color:#dddddd54; padding:1px 20px 1px 20px;  border-radius:50px; border:1px solid #222 }
 .char-note{ color:#999 }
 
 /* City panel styles */

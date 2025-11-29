@@ -188,6 +188,49 @@ app.get('/users/:id/displayName', async (req, res) => {
   }
 });
 
+// Выводим все маршруты приложения
+function listAllRoutes(app) {
+  const routes = [];
+  app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+      const methods = Object.keys(middleware.route.methods)
+        .map((m) => m.toUpperCase())
+        .join(', ');
+      routes.push(`${methods} ${middleware.route.path}`);
+    } else if (middleware.name === 'router') {
+      middleware.handle.stack.forEach((handler) => {
+        if (handler.route) {
+          const methods = Object.keys(handler.route.methods)
+            .map((m) => m.toUpperCase())
+            .join(', ');
+          routes.push(`${methods} ${middleware.regexp}${handler.route.path}`);
+        }
+      });
+    }
+  });
+  return routes;
+}
+
+function cleanRoutes(app) {
+  const routes = listAllRoutes(app);
+  return routes.map(r => {
+    // r = "GET /^\\/profile\\/?(?=\\/|$)/i/:id"
+    // убираем regex-мусор
+    return r.replace(/\/\^\\/, '/')
+            .replace(/\\\/\?\(\?=\\\/\|\$\)\/i/g, '')
+            .replace(/\/\$/, '');
+  });
+}
+
+app.get('/help', (req, res) => {
+  const routes = listAllRoutes(app)
+    .map(r => r.replace(/\/\^\\/, '/')
+               .replace(/\\\/\?\(\?=\\\/\|\$\)\/i/g, '')
+               .replace(/\/\$/, ''));
+  res.type('text/plain');      // возвращаем как текст
+  res.send(routes.join('\n')); // соединяем переносами
+});
+
 // Firebase Admin SDK init
 admin.initializeApp({
   credential: admin.credential.cert({

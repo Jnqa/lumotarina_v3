@@ -138,8 +138,8 @@ export default function Profile() {
             )}
             {characters && characters.length > 0 && (
               <div className="character-grid">
-                {characters.map((c: any) => (
-                  <div key={c.id} className="character-tile" onClick={() => { nav('/character/edit', { state: { character: c } }); }}>
+                {characters.map((c: any, idx: number) => (
+                  <div key={c.id || idx} className="character-tile" onClick={() => { nav('/character/edit', { state: { character: c } }); }}>
                     <div className="tile-left">
                       <img src={`/profile_pictures/${c.picture || 'profile_picture_00.jpg'}`} alt={c.name || 'avatar'} />
                     </div>

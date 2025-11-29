@@ -102,12 +102,12 @@ Rebuild Example:
 `docker compose -f docker-compose.prod.yml build frontend`
 `docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate frontend`
 If you want to build fresh ignoring cache:
-`docker compose -f docker-compose.prod.yml build --no-cache frontend`
+``
 `docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate frontend`
 
 # build both images
 `docker compose -f docker-compose.prod.yml build backend frontend`
-`docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate backend frontend`
+`docker compose -f docker-compose.prod.yml up -d --no-deps --force-recreate backend frontend nginx-proxy`
 
 Single-command (rebuild-and-up)
 # This rebuilds images and recreates containers

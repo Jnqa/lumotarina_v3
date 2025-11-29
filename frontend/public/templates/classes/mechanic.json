@@ -24,7 +24,7 @@
         {"Survival":-5},
         {"Crafting":5}
     ],
-  "skills":
+  "skills":[
     { 
     "actions": [
         {
@@ -206,4 +206,5 @@
         }
     ]
     }
+]
 }

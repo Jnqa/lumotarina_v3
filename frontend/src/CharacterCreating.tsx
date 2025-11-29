@@ -36,6 +36,8 @@ export default function CharacterCreating() {
 	const [images, setImages] = useState<string[] | null>(null);
 	const [imagesLoading, setImagesLoading] = useState(false);
 	const [imagesError, setImagesError] = useState<string | null>(null);
+	const [showImageError, setShowImageError] = useState(false);
+	const [previewOpen, setPreviewOpen] = useState(false);
 	const [viewer, setViewer] = useState<string | null>(null);
 	// navigation state will handle class selection page; no local mode needed
 	const nav = useNavigate();
@@ -88,6 +90,11 @@ export default function CharacterCreating() {
 			setImagesLoading(false);
 		}
 	}, [currentId]);
+
+	// reset image error view when selection or images change
+	useEffect(() => {
+		setShowImageError(false);
+	}, [images, selected, imagesLoading]);
 
 // class loading moved to the dedicated class selection page component
 
@@ -272,7 +279,12 @@ export default function CharacterCreating() {
 									</div>
 								)}
 								{selected && !imagesLoading && (!images || images.length === 0) && (
-									<div className="char-image-hint">{imagesError || 'Изображения не найдены'}</div>
+									<div className="char-image-hint">
+										<button className="simple-btn" onClick={() => setShowImageError(prev => !prev)}>{'no media'}</button>
+										{showImageError && imagesError && (
+											<div className="char-image-error" style={{marginTop:8,whiteSpace:'pre-wrap',fontSize:12,color:'var(--muted)'}}>{imagesError}</div>
+										)}
+									</div>
 								)}
 							</div>
 							<div className="city-desc">{selected.description}</div>
@@ -293,8 +305,13 @@ export default function CharacterCreating() {
 			)}
 
 			<aside className="char-summary">
-				<h4>Предварительный просмотр</h4>
-				<pre>{JSON.stringify({ answers, abilities, cityLevel }, null, 2)}</pre>
+				<h4 style={{display:'flex',justifyContent:'space-between',cursor:'pointer'}} onClick={() => setPreviewOpen(p => !p)}>
+					<span>🗿 debug info</span>
+					<span style={{fontSize:10,color:'var(--muted)'}}>{previewOpen ? 'предпросмотр статистики' : '🧦'}</span>
+				</h4>
+				{previewOpen && (
+					<pre>{JSON.stringify({ answers, abilities, cityLevel }, null, 2)}</pre>
+				)}
 			</aside>
 		</div>
 	);

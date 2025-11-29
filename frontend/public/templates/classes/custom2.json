@@ -23,7 +23,7 @@
         {"Survival":0},
         {"Crafting":0}
     ],
-  "icon": "icons/custom_2.png",
+  "icon": "icons/custom2.png",
   "inventory": [["??"], ["??"] ],
   "skills": [
         {

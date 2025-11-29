@@ -1,59 +1,73 @@
-
 import { useEffect, useState } from 'react';
 import './ClassesEditor.css';
 
-const BACKEND_URL = 'http://10.47.7.21:3001';
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
 
 export default function ClassesEditor() {
-  const [data, setData] = useState<any>(null);
+  const [classes, setClasses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [actionTypes, setActionTypes] = useState<any[]>([]);
+  const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
+
+
+const [abilities, setAbilities] = useState<Record<string, any>>({});
 
   useEffect(() => {
-    fetch(`${BACKEND_URL}/characters/classes`)
+    async function fetchClasses() {
+      try {
+        const res = await fetch(`${API_BASE}/characters/classes`);
+        const json = await res.json();
+         // Подгружаем каждый класс отдельно
+        const details = await Promise.all(
+          json.map(async (name: string) => {
+            const res = await fetch(`${API_BASE}/characters/class/${name}`);
+            return await res.json();
+          })
+        );
+        setClasses(details);
+      
+      } catch (e) {
+        console.error('Error fetching classes:', e);
+      } finally {
+        setLoading(false);
+      }
+      fetch(`${API_BASE}/characters/abilities`)
       .then(res => res.json())
-      .then(setData)
-      .finally(() => setLoading(false));
+      .then(setAbilities)
+      .catch(console.error);
+      // Fetch action types
+      fetch(`${API_BASE}/characters/action_types`)
+      .then(res => res.json())
+      .then(setActionTypes);
+    }
+    fetchClasses();
   }, []);
 
-  if (loading) return <div>Загрузка...</div>;
-  if (!data) return <div>Ошибка загрузки данных</div>;
+  if (loading) return <div>💫Загрузка...</div>;
+  if (!classes.length) return <div>Ошибка загрузки данных</div>;
 
-  // Русские названия и цвета для статов
-  const statMeta: Record<string, { className: string }> = {
-    strength: { className: 'stats-bar-bg-strength' },
-    dexterity: { className: 'stats-bar-bg-dexterity' },
-    intelligence: { className: 'stats-bar-bg-intelligence' },
-    charisma: { className: 'stats-bar-bg-charisma' },
-    perception: { className: 'stats-bar-bg-perception' },
-    willpower: { className: 'stats-bar-bg-willpower' },
-    lumion: { className: 'stats-bar-bg-lumion' },
-  };
-
-  // Добавим Lumion в справочник, если его нет
-  if (data && data.stats_reference && !data.stats_reference.lumion) {
-    data.stats_reference.lumion = 'Лумион — основной ресурс/стат, отражающий силу, энергию и мастерство работы с паранормальным.';
-  }
-
-  function StatBar({ stat, value }: { stat: string; value: number }) {
-    const meta = statMeta[stat] || { className: '' };
-    // Получить русское название из справочника, иначе просто stat
-    let label = stat;
-    if (data && data.stats_reference && data.stats_reference[stat]) {
-      // Взять только первую часть до тире или скобки
-      label = data.stats_reference[stat].split(/[—(]/)[0].trim();
-    } else {
-      label = stat.charAt(0).toUpperCase() + stat.slice(1);
-    }
-    const percent = Math.max(0, Math.min(100, (value / 20) * 100));
-    return (
-      <div className="stats-bar-row">
-        <div className={`stats-bar-container`}> 
-          <div className={`stats-bar-fill ${meta.className}`} style={{ width: `${percent}%` }} />
-          <div className="stats-bar-value">{label}: {value}</div>
+function showTooltip(e: React.MouseEvent, text: string) {
+  const target = e.currentTarget as HTMLElement | null;
+  if (!target) return;
+  const rect = target.getBoundingClientRect();
+  setTooltip({ text, x: rect.left - 100, y: rect.top + 100 });
+}
+  
+function StatBar({ stat, value, abilities }: { stat: string; value: number; abilities: Record<string, any> }) {
+  const info = abilities[stat] || { color: '#aaa', icon: '', name: stat };
+  const percent = Math.max(0, Math.min(100, (value + 50) * 1)); // +50 чтобы отрицательные лучше видно
+  return (
+    <div className="stats-bar-row">
+      <div className="stats-bar-container">
+        <div className="stats-bar-fill" style={{ width: `${percent}%`, backgroundColor: info.color }} />
+        <div className="stats-bar-value">
+          {info.icon} {info.name}: {value > 0 ? '+' : ''}{value}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
+
 
   return (
     <div style={{ padding: 24 }}>
@@ -61,70 +75,86 @@ export default function ClassesEditor() {
       <table border={1} cellPadding={8} style={{ borderCollapse: 'collapse', width: '100%' }}>
         <thead>
           <tr>
-            <th>Класс</th>
-            <th>Подклассы</th>
+            <th>Название</th>
+            <th>Описание</th>
             <th>Статы</th>
             <th>Инвентарь</th>
             <th>Умения</th>
           </tr>
         </thead>
         <tbody>
-          {data.classes.map((cls: any) => (
-            cls.subclasses.map((sub: any, idx: number) => (
-              <tr key={cls.id + '-' + sub.id}>
-                {idx === 0 && (
-                  <td rowSpan={cls.subclasses.length} style={{ verticalAlign: 'top', minWidth: 140 }}>
-                    <div><b>{cls.name}</b></div>
-                    <div style={{ fontSize: 12, color: '#888', marginTop: 4 }}>{cls.description}</div>
-                  </td>
-                )}
-                <td><b>{sub.name}</b><br /><span style={{ fontSize: 12, color: '#888' }}>{sub.description}</span></td>
-                <td>
-                  {Object.entries(sub.base_stats).map(([stat, value]) => {
-                    const numValue = typeof value === 'number' ? value : Number(value);
-                    return (
-                      <StatBar key={stat} stat={stat} value={numValue} />
-                    );
-                  })}
-                </td>
-                <td>
-                  {Array.isArray(sub.inventory) && sub.inventory.length > 0 ? (
-                    <div>
-                      {sub.inventory.map((variant: string[], idx: number) => (
-                        <div key={idx} style={{ marginBottom: 4 }}>
-                          <span style={{ color: '#888', fontSize: 12 }}>Вариант {idx + 1}:</span>
-                          <ul style={{ margin: 0, paddingLeft: 18 }}>
-                            {variant.map((item: string, i: number) => (
-                              <li key={i}>{item}</li>
-                            ))}
-                          </ul>
-                        </div>
-                      ))}
+          {classes.map((cls) => (
+            <tr key={cls.id}>
+              <td>{cls.icon && <img src={`/templates/classes/${cls.icon}`} alt={cls.name} style={{ width: 32, height: 32 }} />}{cls.name}</td>
+              <td>{cls.description}</td>
+              <td>
+                {cls.abilities.map((a: Record<string, number>, idx: number) => {
+                  const statKey = Object.keys(a)[0];
+                  const value = a[statKey];
+                  return <StatBar key={idx} stat={statKey} value={value} abilities={abilities} />;
+                })}
+              </td>
+              <td>
+                {cls.inventory && cls.inventory.length > 0 ? (
+                  cls.inventory.map((variant: string[], idx: number) => (
+                    <div key={idx}>
+                      <b>Вариант {idx + 1}:</b>
+                      <ul>
+                        {variant.map((item, i) => <li key={i}>{item}</li>)}
+                      </ul>
                     </div>
-                  ) : <span style={{ color: '#aaa' }}>—</span>}
-                </td>
-                <td>
-                  {sub.abilities && sub.abilities.length > 0 ? (
-                    <ul style={{ margin: 0, paddingLeft: 18 }}>
-                      {sub.abilities.map((a: any, i: number) => (
-                        <li key={i}>{a.name}</li>
-                      ))}
-                    </ul>
-                  ) : <span style={{ color: '#aaa' }}>—</span>}
-                </td>
-              </tr>
-            ))
+                  ))
+                ) : <span style={{ color: '#aaa' }}>—</span>}
+              </td>
+              <td>
+                {cls.skills && cls.skills.length > 0 && actionTypes.map((meta) => {
+                  const key = meta.type === 'active' ? 'actions' :
+                              meta.type === 'short_rest' ? 'ShortRest' :
+                              meta.type === 'long_rest' ? 'LongRest' :
+                              'Passive';
+                  const skillList = cls.skills[0][key];
+                  if (!skillList || !Array.isArray(skillList) || skillList.length === 0) return null;
+
+                  return (
+                    <div key={meta.type} style={{ marginBottom: 8 }}>
+                      <div
+                        style={{ fontWeight: 'bold', cursor: 'pointer' }}
+                        onMouseEnter={(e) => showTooltip(e, meta.description)}
+                        onMouseLeave={() => setTooltip(null)}
+                      >
+                        {meta.icon} {meta.name}
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: 16 }}>
+                        {skillList.map((skill: any, idx2: number) => (
+                          <li key={idx2}>
+                            ({skill.level}) - <b>{skill.name}</b> -- {skill.effect}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>
-      <h3 style={{ marginTop: 32 }}>Пояснения к статам</h3>
-      <ul>
-        {Object.entries(data.stats_reference).map(([k, v]: any) => {
-          // Взять только первую часть до тире или скобки
-          const label = v.split(/[—(]/)[0].trim();
-          return <li key={k}><b>{label}</b>: {v}</li>;
-        })}
-      </ul>
+      {tooltip && (
+        <div
+          style={{
+            position: 'fixed',
+            left: tooltip.x,
+            top: tooltip.y,
+            background: '#332c199c',
+            border: '1px solid #ccc',
+            padding: 6,
+            borderRadius: 4,
+            zIndex: 1000,
+          }}
+        >
+          {tooltip.text}
+        </div>
+      )}
     </div>
   );
 }

@@ -9,6 +9,16 @@ const ABILITY_EMOJI: Record<string,string> = {
 };
 import './MasterRoom.css';
 
+// Ensure character objects always have ability keys present (fallback to 0)
+function normalizeAbilities<T extends Record<string, any>>(obj: T | null): T | null {
+  if (!obj) return obj;
+  const out: any = { ...obj, abilities: { ...(obj.abilities || {}) } };
+  for (const k of ABILITY_ORDER) {
+    if (out.abilities[k] === undefined || out.abilities[k] === null) out.abilities[k] = 0;
+  }
+  return out;
+}
+
 export default function MasterRoom(){
   const [diceHistory, setDiceHistory] = useState<Array<any>>([]);
   const [showCommands, setShowCommands] = useState(false);
@@ -152,9 +162,9 @@ export default function MasterRoom(){
         }));
       }
 
-      // attach ownerDisplayName where missing
-      const normalized = data.map((d:any)=> ({ ...d, ownerDisplayName: d.ownerDisplayName || displayNameCache[String(d.ownerId)] || d.ownerId }));
-      setAllCharacters(normalized);
+      // attach ownerDisplayName where missing and ensure abilities keys
+      const normalized = data.map((d:any)=> normalizeAbilities({ ...d, ownerDisplayName: d.ownerDisplayName || displayNameCache[String(d.ownerId)] || d.ownerId }));
+      setAllCharacters(normalized as any);
     }catch(e){ console.warn('loadAllCharacters error', e); }
   }
 
@@ -316,7 +326,8 @@ export default function MasterRoom(){
     try{
       const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(ownerId)}/${encodeURIComponent(charId)}`);
       if (!resp.ok) return null;
-      const data = await resp.json();
+      let data = await resp.json();
+      data = normalizeAbilities(data) as any;
       _charCache[key] = data;
       return data;
     }catch(e){ console.warn('fetchFullCharacter error', e); return null; }
@@ -701,7 +712,10 @@ export default function MasterRoom(){
                   </tbody>
                 </table>
               </div>
-              <div style={{display:'flex',justifyContent:'flex-end',marginTop:8}}><button className="simple-btn" onClick={() => setShowSelectModal(false)}>Готово</button></div>
+              <div style={{display:'flex',justifyContent:'flex-end',marginTop:8,gap:8}}>
+                <button className="simple-btn" onClick={() => { saveLobby([]); setShowSelectModal(false); }}>Убрать всех</button>
+                <button className="simple-btn" onClick={() => setShowSelectModal(false)}>Готово</button>
+              </div>
             </div>
           </div>
         )}

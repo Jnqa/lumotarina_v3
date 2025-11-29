@@ -12,13 +12,70 @@ router.get('/classes', (req, res) => {
   const filePath = path.join(__dirname, 'characters', 'classes.json');
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) return res.status(500).json({ error: 'Cannot read classes.json' });
+
     try {
-      res.json(JSON.parse(data));
+      const json = JSON.parse(data);
+      // Убираем .json из каждого класса
+      const classes = (json.classes || []).map(name => name.replace(/\.json$/, ''));
+      res.json(classes);
     } catch (e) {
       res.status(500).json({ error: 'Invalid JSON' });
     }
   });
 });
+
+router.get('/class/:name', (req, res) => {
+  const className = req.params.name;
+  const filePath = path.join(__dirname, 'characters', 'classes', `${className}.json`);
+
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) {
+      console.error(`Cannot read file for class ${className}:`, err);
+      return res.status(404).json({ error: `Class ${className} not found` });
+    }
+
+    try {
+      const json = JSON.parse(data);
+      res.json(json);
+    } catch (e) {
+      console.error(`Invalid JSON in ${className}.json:`, e);
+      res.status(500).json({ error: 'Invalid JSON' });
+    }
+  });
+});
+
+// Получить список abilities из JSON
+router.get('/abilities', (req, res) => {
+  const filePath = path.join(__dirname, 'characters', 'abilities.json');
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Cannot read abilities.json' });
+
+    try {
+      const json = JSON.parse(data);
+      res.json(json);
+    } catch (e) {
+      res.status(500).json({ error: 'Invalid JSON' });
+    }
+  });
+});
+
+// Получить типы умений из JSON
+router.get('/action_types', (req, res) => {
+  const filePath = path.join(__dirname, 'characters', 'classes.json');
+  fs.readFile(filePath, 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Cannot read classes.json' });
+
+    try {
+      const json = JSON.parse(data);
+      // Убираем .json из каждого класса
+      const action_types = (json.action_types);
+      res.json(action_types);
+    } catch (e) {
+      res.status(500).json({ error: 'Invalid JSON' });
+    }
+  });
+});
+
 
 // Получить персонажей пользователя
 router.get('/user/:id', async (req, res) => {
@@ -37,12 +94,16 @@ router.get('/user/:id', async (req, res) => {
 router.get('/user/:id/:charId', async (req, res) => {
   const tg_id = req.params.id;
   const charId = req.params.charId;
+  console.log(`[GET] /characters/user/${tg_id}/${charId}`);
   try {
     const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
     const snap = await charRef.once('value');
     const data = snap.val();
+    console.log(`[GET] Character found:`, data ? 'yes' : 'no', 'for id:', charId);
     if (!data) return res.status(404).json({ error: 'Not found' });
-    res.json(data);
+    // Add the id field since it's stored as the key in Firebase
+    const result = { ...data, id: charId };
+    res.json(result);
   } catch (e) {
     console.error('GET /characters/user/:id/:charId error', e);
     res.status(500).json({ error: 'Server error' });
@@ -93,16 +154,17 @@ router.post('/user/:id', async (req, res) => {
   console.log('POST /characters/user/:id incoming body:', JSON.stringify(character));
   try {
     const charsRef = admin.database().ref(`characters/${tg_id}`);
-    // Use a transaction-safe counter to allocate sequential numeric IDs under `counters/characters/<tg_id>`.
-    const counterRef = admin.database().ref(`counters/characters/${tg_id}`);
-    const counterResult = await counterRef.transaction(current => {
-      return (current === null ? 0 : current + 1);
+    // Get all existing character keys and find the max numeric id
+    const snapshot = await charsRef.once('value');
+    const existing = snapshot.val() || {};
+    let maxId = 0;
+    Object.keys(existing).forEach(key => {
+      const num = parseInt(key, 10);
+      if (!isNaN(num) && num > maxId) maxId = num;
     });
-    if (!counterResult.committed) {
-      throw new Error('Failed to allocate numeric id for new character');
-    }
-    const newId = String(counterResult.snapshot.val());
+    const newId = String(maxId + 1);
     const newCharRef = charsRef.child(newId);
+    character.id = Number(newId);
     await newCharRef.set(character);
     console.log(`Created character for ${tg_id} with id ${newId}`);
     res.json({ success: true, id: newId });
@@ -117,9 +179,11 @@ router.put('/user/:id/:charId', async (req, res) => {
   const tg_id = req.params.id;
   const charId = req.params.charId;
   const update = req.body;
+  console.log(`[PUT] /characters/user/${tg_id}/${charId}`, 'Updating with:', Object.keys(update).join(', '));
   try {
     const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
     await charRef.update(update);
+    console.log(`[PUT] Character updated successfully:`, charId);
     res.json({ success: true });
   } catch (e) {
     console.error('PUT /characters/user/:id/:charId error', e);
