@@ -1,40 +1,7 @@
 Deployment notes — lumotarina_v3
 ================================
 
-Objective
----------
-Prepare the project to be built and deployed on a remote server under:
-
-- Frontend: https://dnd.lumotarina.ru
-- Backend:  https://api-dnd.lumotarina.ru
-
-I provide a `docker-compose.prod.yml` that uses `nginx` as a reverse-proxy and `certbot` for Let's Encrypt certificate issuance.
-
-Quick checklist before deploying
----------------------------------
-1. Add DNS records:
-   - `dnd.lumotarina.ru` → your server IP
-   - `api-dnd.lumotarina.ru` → your server IP
-
-2. Copy service account JSON for Firebase to server and make it available to backend container.
-   - Option A (recommended): put file at `/srv/lumotarina_v3/secrets/firebase_sa.json` and mount it into the backend container, then set `GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/firebase_sa.json` (see notes below).
-   - Option B: keep secrets in an env-file on the host at `/secrets/lumotarina/.env` (one-line `KEY=VALUE` pairs). `docker-compose.prod.yml` can load that file via `env_file` and the backend image will construct the `firebase_sa.json` automatically from env vars.
-   - Option B: export `GOOGLE_APPLICATION_CREDENTIALS_JSON` env var with the JSON (less recommended).
-
-3. Edit `docker-compose.prod.yml`:
-   - Set your email in the README or when you run certbot (used by Let's Encrypt notifications).
-   - Optionally change `restart` or resource limits.
-
-4. Prepare runtime config (optional):
-   - If you want to change API base URL without rebuilding the frontend, create `runtime/config.js` with content like:
-
-```js
-window.__RUNTIME__ = {
-  VITE_API_BASE: 'https://api-dnd.lumotarina.ru'
-};
-```
-
-   - The compose file mounts `./runtime/config.js` to the frontend site root so the app can read it at runtime.
+--- 
 
 5. Build & run (example):
    - On the server, install Docker and Docker Compose.
@@ -59,22 +26,10 @@ docker compose -f docker-compose.prod.yml run --rm certbot \
 # After successful issuance, restart nginx to pick up certs
 docker compose -f docker-compose.prod.yml restart nginx-proxy
 ```
-
-Notes about environment and secrets
-----------------------------------
-- Backend needs Firebase admin credentials. Two common approaches:
-   1) Mount the service-account JSON as a file into the container and set `GOOGLE_APPLICATION_CREDENTIALS` to its path.
-     Example (compose secrets or bind mount):
-       volumes:
-         - /srv/lumotarina_v3/secrets/firebase_sa.json:/run/secrets/firebase_sa.json:ro
-       environment:
-         - GOOGLE_APPLICATION_CREDENTIALS=/run/secrets/firebase_sa.json
-
-   2) Or place your secrets in a host `.env` file (recommended path: `/secrets/lumotarina/.env`) with variables such as `FIREBASE_PROJECT_ID`, `FIREBASE_PRIVATE_KEY`, `FIREBASE_PRIVATE_KEY_ID`, `FIREBASE_CLIENT_EMAIL`, `FIREBASE_CLIENT_ID`, `FIREBASE_CLIENT_X509_URL`. `docker-compose.prod.yml` loads this file into the backend container and the image entrypoint creates `firebase_sa.json` automatically.
-
-  2) Pass JSON as an env var (not ideal for long secrets). If you use this, update the backend to read `process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON`.
-
-- Frontend: `VITE_API_BASE` is baked at build time (see `docker-compose.prod.yml` build-arg). If you need to change it, rebuild the frontend.
+///
+docker compose -f docker-compose.prod.yml run --rm certbot \
+  certonly --webroot --webroot-path=/var/www/certbot \
+  -d quist.lumotarina.ru -d api-quist.lumotarina.ru --email ligez47@gmail.com --agree-tos --no-eff-email
 
 Traefik notes
 -------------
