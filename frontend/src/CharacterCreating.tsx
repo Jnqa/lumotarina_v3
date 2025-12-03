@@ -218,18 +218,11 @@ export default function CharacterCreating() {
 	}
 
 
-	
-
 	function prev() {
 		// simple fallback: go back to profile
 		nav('/profile');
 	}
 
-    
-
-    
-
-    
 
 	return (
 		<div className="char-root">

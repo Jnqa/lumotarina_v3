@@ -433,6 +433,22 @@ export default function CharacterCreatingClass() {
           <div className="modal">
             <h3>Назови своего героя:</h3>
             <input className="modal-input" placeholder="Примероний Фамилионов" value={charName} onChange={(e) => setCharName(e.target.value)} />
+
+            {/* Selected class label + inventory preview inside modal */}
+            <hr></hr>
+            <div className="modal-selected-class">Выбранный класс: {pendingClass ? (pendingClass.name || pendingClass.id || '') : '—'}</div>
+            <div className="modal-inventory">
+              <div className="inventory-list">
+                {(() => {
+                  if (!pendingClass) return <div className="no-inv">Нет выбранного класса</div>;
+                  const idKey = pendingClass.id || pendingClass.class || pendingClass.name || String(Math.random());
+                  const modalSelected = selectedInventory[idKey] || [];
+                  if (!modalSelected || modalSelected.length === 0) return <div className="no-inv">Твой инвентарь пуст — ты можешь что-то добавить</div>;
+                  return modalSelected.map((it: string) => (<div key={it} className="inv-btn" style={{pointerEvents:'none'}}>{it}</div>));
+                })()}
+              </div>
+            </div>
+
             <div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:8}}>
               <button className="choose-btn" onClick={() => { setNamingModalOpen(false); setPendingClass(null); }}>Отмена</button>
               <button className="choose-btn" onClick={() => createCharacterFromPending()}>Создать</button>

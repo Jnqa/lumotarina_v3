@@ -880,7 +880,16 @@ export default function CharacterEdit(){
                     if (!showAllSkills && learnedCount===0) return null;
                     return (
                       <div key={secKey} className="skill-group">
-                        <div className="skill-group-header">{(typeMeta.icon||'')} {typeMeta.name || secKey} {learnedCount>0? `— ${learnedCount}`: ''}</div>
+                        <div
+                          className="skill-group-header"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const desc = (typeMeta && (typeMeta.description || typeMeta.desc || typeMeta.info)) || 'Нет описания';
+                            showToast(desc, { type: 'info' });
+                          }}
+                        >
+                          {(typeMeta.icon||'')} {typeMeta.name || secKey} {learnedCount>0? `— ${learnedCount}`: ''}
+                        </div>
                         <div className="skill-group-items">
                           {arr.map((it:any, idx:number)=>{
                             const learnedFlag = learned.has(it.name);

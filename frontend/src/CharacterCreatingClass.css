@@ -27,7 +27,9 @@
 }
 
 /* New grid + detail panel styles */
-.class-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap:8px; margin-top:8px }
+.class-grid{ display:grid; /* ensure at least 3 columns even on small screens */
+  grid-template-columns: repeat(3, minmax(60px, 3fr));
+  gap:8px; margin-top:8px }
 .class-tile{ background:linear-gradient(180deg,#0e0e0e,#070707); border:1px solid #222; padding:8px; border-radius:6px; display:flex; align-items:center; justify-content:center; min-height:48px; cursor:pointer }
 .class-tile .tile-title{ color:#ddd; font-weight:700; text-align:center; font-size:12px; line-height:1 }
 .class-tile.selected{ box-shadow:0 0 0 3px rgba(43,102,255,0.12); border-color:#2b66ff }
@@ -40,15 +42,15 @@
 
 /* mobile tweaks for narrow screens (390px) */
 @media (max-width:420px){
-  .class-grid{ grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap:6px }
+  .class-grid{ grid-template-columns: repeat(auto-fit, minmax(110px, 3fr)); gap:6px }
   .class-tile{ padding:6px; min-height:44px }
   .class-tile .tile-title{ font-size:11px }
   .ability-cell{ min-height:36px; padding:2px }
   .ability-name{ font-size:11px }
   .ability-val{ font-size:12px }
 }
-@media (max-width:390px){
-  .class-grid{ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+@media (max-width:190px){
+  .class-grid{ grid-template-columns: repeat(auto-fit, minmax(280px, 2fr)); }
   .class-tile{ padding:6px; min-height:44px }
   .ability-cell{ min-height:34px; padding:2px }
   .ability-name{ font-size:11px }
@@ -67,8 +69,11 @@
 .detail-inventory .inv-btn{ padding:6px 10px }
 
 .detail-abilities{ margin-top:8px }
-.abilities-grid.grid-4x4{ display:grid; grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap:8px }
-.abilities-grid.responsive{ display:grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap:8px }
+.abilities-grid.grid-4x4{ display:grid; grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); gap:8px }
+.abilities-grid.responsive{ display:grid; /* minimum 3 columns */ grid-template-columns: repeat(3, 1fr); gap:8px }
+@media (min-width:300px){
+  .abilities-grid.responsive{ grid-template-columns: repeat(4, 1fr); }
+}
 .ability-cell{ background:linear-gradient(180deg,#111,#070707); border:1px solid #1a1a1a; border-radius:10px; padding:6px 10px; min-height:36px; min-width:0; display:flex; align-items:center; justify-content:space-between; box-sizing:border-box; overflow:hidden }
 .ability-inner{ display:flex; flex-direction:row; align-items:center; gap:8px; min-width:0 }
 .ability-name{ font-size:clamp(11px,1.6vw,13px); color:#cfcfcf; text-align:left; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:100% }
@@ -91,7 +96,7 @@
   .ability-val{ font-size:12px }
 }
 
-@media (max-width:390px){
+@media (max-width:300px){
   /* switch to horizontal pill-scroller to avoid a single tall column */
   .abilities-grid.responsive{ display:flex; gap:6px; overflow-x:auto; padding-bottom:6px }
   .ability-cell{ flex:0 0 auto; min-width:120px; border-radius:999px; padding:6px 10px; display:flex; align-items:center; justify-content:flex-start; overflow:visible }
@@ -116,3 +121,12 @@
 .skills-panel .skill-row div{ color:#ccc }
 
 .detail-actions{ margin-top:12px; display:flex; justify-content:flex-end }
+
+/* Modal styles for naming modal inside class creation */
+.modal-backdrop{ position:fixed; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:80 }
+.modal-backdrop .modal, .modal-backdrop .modal-content{ background:#0d0d0d; color:#fff; border-radius:12px; padding:16px; width:420px; max-width:94%; box-shadow:0 10px 30px rgba(0,0,0,0.6) }
+.modal-backdrop .modal .modal-input{ width:100%; padding:8px; border-radius:8px; background:#111; border:1px solid #222; color:#fff }
+.modal-backdrop .modal .modal-inventory{ margin-top:12px }
+.modal-backdrop .modal .modal-inventory .inventory-list{ display:flex; gap:8px; flex-wrap:wrap }
+.modal-backdrop .modal .modal-inventory .no-inv{ color:#bbb; padding:8px; border:1px dashed #444; border-radius:8px }
+.modal-backdrop .modal .modal-selected-class{ font-weight:700; margin-bottom:8px; color:#a8afbb }
