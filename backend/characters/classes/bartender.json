@@ -20,7 +20,10 @@
         {"Stealth":10},
         {"Nature":0},
         {"Survival":0},
-        {"Crafting":0}
+        {"Crafting":0},
+        {"Athletics":-14},
+        {"Acrobatics":9},
+        {"History":10}
     ],
   "icon": "icons/bartender.png",
   "inventory": [["Бутылка рома"]],

@@ -7,7 +7,7 @@
 "icon": "icons/biotech_specialist.png",
 "inventory": [["Медсканер"], ["Защитные очки", "Лечебные препараты"]],
 "abilities": [
-    {"Strength":2}, 
+    {"Strength":-22}, 
     {"Dexterity":3}, 
     {"Constitution":10},
     {"Intelligence":2},
@@ -22,7 +22,10 @@
     {"Stealth":-5},
     {"Nature":5},
     {"Survival":0},
-    {"Crafting":5}
+    {"Crafting":5},
+    {"Athletics":-10},
+    {"Acrobatics":-10},
+    {"History":-5}
 ],
 "skills": [
     {

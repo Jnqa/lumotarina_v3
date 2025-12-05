@@ -20,7 +20,10 @@
         {"Stealth":-30},
         {"Nature":0},
         {"Survival":0},
-        {"Crafting":0}
+        {"Crafting":0},
+        {"Athletics":7},
+        {"Acrobatics":17},
+        {"History":4}
     ],
   "icon": "icons/volkov_thug.png",
   "inventory": [["Метательный нож"], ["Кастет", "Нож-бабочка"]],

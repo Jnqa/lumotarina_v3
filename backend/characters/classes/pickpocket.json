@@ -15,13 +15,16 @@
         {"Perception":10},
         {"Willpower":5},
         {"Engineering":-10},
-        {"Lumion":0},
+        {"Lumion":-10},
         {"Medicine":0},
         {"Lockpicking":20},
         {"Stealth":20},
         {"Nature":0},
         {"Survival":0},
-        {"Crafting":0}
+        {"Crafting":0},
+        {"Athletics":-10},
+        {"Acrobatics":10},
+        {"History":-10}
     ],
   "inventory": [["Нож"], ["Отмычка", "Перчатки"]],
   "skills": [

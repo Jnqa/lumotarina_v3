@@ -21,7 +21,10 @@
         {"Stealth":0},
         {"Nature":0},
         {"Survival":0},
-        {"Crafting":0}
+        {"Crafting":0},
+        {"Athletics":0},
+        {"Acrobatics":0},
+        {"History":0}
     ],
   "icon": "icons/paranormal.png",
   "inventory": [["Талисман с Люмионом"], ["Фонарик"] ],

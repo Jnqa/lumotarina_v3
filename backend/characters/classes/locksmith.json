@@ -20,7 +20,10 @@
         {"Stealth":20},
         {"Nature":0},
         {"Survival":0},
-        {"Crafting":0}
+        {"Crafting":0},
+        {"Athletics":5},
+        {"Acrobatics":5},
+        {"History":0}
     ],
   "icon": "icons/locksmith.png",
   "inventory": [["Отмычки"], ["Фонарик"]],

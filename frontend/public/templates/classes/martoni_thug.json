@@ -20,7 +20,10 @@
         {"Stealth":-30},
         {"Nature":0},
         {"Survival":0},
-        {"Crafting":0}
+        {"Crafting":0},
+        {"Athletics":20},
+        {"Acrobatics":-42},
+        {"History":-5}
     ],
   "icon": "icons/martoni_thug.png",
   "inventory": [["Пистолет (d20 патронов)"], ["Телескопическая электро-дубинка"]],

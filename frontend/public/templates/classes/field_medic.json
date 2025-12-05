@@ -20,7 +20,10 @@
     {"Stealth":-5},
     {"Nature":0},
     {"Survival":5},
-    {"Crafting":0}
+    {"Crafting":0},
+    {"Athletics":-10},
+    {"Acrobatics":-10},
+    {"History":0}
 ],
 "icon": "icons/field_medic.png",
 "inventory": [["Аптечка", "Антидот"], ["Антисептик", "Бинты", "Адреналин"]],

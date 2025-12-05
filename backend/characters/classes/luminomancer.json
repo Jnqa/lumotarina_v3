@@ -21,7 +21,10 @@
         {"Stealth":0},
         {"Nature":0},
         {"Survival":0},
-        {"Crafting":0}
+        {"Crafting":0},
+        {"Athletics":-20},
+        {"Acrobatics":0},
+        {"History":-7}
     ],
   "icon": "icons/luminomancer.png",
   "inventory": [["Странный амулет"], ["Страница из книги заклинаний"]],

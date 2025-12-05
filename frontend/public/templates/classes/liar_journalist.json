@@ -20,7 +20,10 @@
         {"Stealth":10},
         {"Nature":0},
         {"Survival":0},
-        {"Crafting":0}
+        {"Crafting":0},
+        {"Athletics":-10},
+        {"Acrobatics":4},
+        {"History":-5}
     ],
   "icon": "icons/liar_journalist.png",
   "inventory": [["Блокнот", "Пистолет-муляж"]],

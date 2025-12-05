@@ -22,7 +22,10 @@
         {"Stealth":-10},
         {"Nature":-5},
         {"Survival":-5},
-        {"Crafting":5}
+        {"Crafting":5},
+        {"Athletics":-10},
+        {"Acrobatics":-9},
+        {"History":5}
     ],
   "skills": [
     {

@@ -21,7 +21,10 @@
         {"Stealth":10},
         {"Nature":0},
         {"Survival":0},
-        {"Crafting":0}
+        {"Crafting":0},
+        {"Athletics":-15},
+        {"Acrobatics":4},
+        {"History":20}
     ],
   "inventory": [["Блокнот", "Фотоаппарат"]],
   "skills": [
