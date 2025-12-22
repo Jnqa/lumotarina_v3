@@ -180,6 +180,11 @@ export default function CharacterEdit(){
   const [pictures, setPictures] = useState<any[]>([]);
   const [pictureModalOpen, setPictureModalOpen] = useState<boolean>(false);
   const [pictureFilter, setPictureFilter] = useState<string>('all');
+  // genhistory: load/save generated history for this character
+  const [genHistory, setGenHistory] = useState<string | null>(null);
+  const [historyModalOpen, setHistoryModalOpen] = useState<boolean>(false);
+  const [historyText, setHistoryText] = useState<string>('');
+  const [historyGenerating, setHistoryGenerating] = useState<boolean>(false);
   // helper to force reload of metadata
   async function refreshMetadata(){
     try{
@@ -232,6 +237,87 @@ export default function CharacterEdit(){
       if (data && Array.isArray(data.pictures)) setPictures(data.pictures);
     }).catch(()=>{});
   }, []);
+
+  // Load generated history for this character (try server then localStorage)
+  async function loadGenHistory() {
+    try {
+      const { ownerId, charId } = getOwnerAndChar();
+      if (ownerId && charId) {
+        try {
+          const resp = await fetch(`${API_BASE}/genhistory?ownerId=${encodeURIComponent(ownerId)}&charId=${encodeURIComponent(charId)}`);
+          if (resp.ok) {
+            const data = await resp.json();
+            if (data && typeof data.history === 'string') { setGenHistory(data.history); return; }
+          }
+        } catch (e) {
+          // ignore server errors and fallback to localStorage
+        }
+        // fallback to localStorage
+        try {
+          const key = `genhistory_${ownerId}_${charId}`;
+          const v = localStorage.getItem(key);
+          if (v) setGenHistory(v);
+        } catch (e) {}
+      }
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  // Save generated history: try server endpoint then fallback to localStorage
+  async function saveGenHistoryToStore(text: string) {
+    try {
+      const { ownerId, charId } = getOwnerAndChar();
+      if (ownerId && charId) {
+        try {
+          const resp = await fetch(`${API_BASE}/genhistory`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ownerId, charId, history: text }) });
+          if (resp.ok) {
+            const j = await resp.json();
+            if (j && j.success) {
+              setGenHistory(text);
+              showToast('История сохранена на сервере', { type: 'success' });
+              return true;
+            }
+          }
+        } catch (e) {
+          // ignore server save error and fallback to localStorage
+        }
+        try {
+          const key = `genhistory_${ownerId}_${charId}`;
+          localStorage.setItem(key, text);
+          setGenHistory(text);
+          showToast('История сохранена локально', { type: 'success' });
+          return true;
+        } catch (e) {}
+      }
+    } catch (e) {}
+    showToast('Не удалось сохранить историю', { type: 'error' });
+    return false;
+  }
+
+  // Generate history via chatapi
+  async function generateHistory() {
+    if (!character) return;
+    try {
+      setHistoryGenerating(true);
+      const base = genHistory || '';
+      const prompt = `name:${character.name || ''} + class:${character.class || ''}, + ${base}`;
+      const resp = await fetch(`${API_BASE}/chatapi`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt, history: true }) });
+      if (!resp.ok) { const txt = await resp.text(); showToast('Ошибка: ' + (txt || resp.status), { type: 'error' }); return; }
+      const data = await resp.json();
+      if (data && data.success) {
+        setHistoryText(data.reply || '');
+        showToast('Сгенерировано', { type: 'success' });
+      } else {
+        showToast('Сервер не вернул результат', { type: 'error' });
+      }
+    } catch (e) {
+      showToast('Ошибка соединения', { type: 'error' });
+    } finally { setHistoryGenerating(false); }
+  }
+
+  // load genhistory when character changes
+  useEffect(() => { loadGenHistory().catch(()=>{}); }, [character?.id, character?.charId, character?._id, character?._remoteId, character?.remoteId]);
 
   useEffect(() => {
     // try to fetch class metadata to get icon and base hp
@@ -917,6 +1003,22 @@ export default function CharacterEdit(){
 
         </div>
       </div>
+      {/* Generated history section */}
+      <div style={{marginTop:12}} className="card-wrap">
+        <div className="char-card-details">
+          <div className="section history-section">
+            <div className="section-header">
+              История ⚡
+              <div>
+                <button className="section-add" onClick={()=>{ setHistoryText(genHistory || ''); setHistoryModalOpen(true); }}>{'⚡'}</button>
+              </div>
+            </div>
+            <div style={{padding:8,whiteSpace:'pre-wrap'}}>
+              {genHistory ? genHistory : (<span style={{opacity:0.7}}>Нет сгенерированной истории</span>)}
+            </div>
+          </div>
+        </div>
+      </div>
       {abilityModal && (
         <div className="ability-modal" onClick={() => setAbilityModal(null)}>
           <div className="ability-modal-content" onClick={(e)=>e.stopPropagation()}>
@@ -972,6 +1074,25 @@ export default function CharacterEdit(){
                 }
                 return null;
               })()}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {historyModalOpen && (
+        <div className="ability-modal" onClick={() => setHistoryModalOpen(false)}>
+          <div className="ability-modal-content" onClick={(e)=>e.stopPropagation()} style={{width:520,maxWidth:'95%'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+              <strong>Генерация истории</strong>
+              <button className="ability-modal-close" onClick={() => setHistoryModalOpen(false)}>×</button>
+            </div>
+            <div style={{display:'flex',flexDirection:'column',gap:8}}>
+              <textarea className="note-input" value={historyText||''} onChange={(e)=>setHistoryText(e.target.value)} />
+              <div style={{display:'flex',gap:8,justifyContent:'flex-end'}}>
+                <button className="blue-btn" disabled={historyGenerating} onClick={generateHistory}>{historyGenerating? '...' : '⚡ Сгенерировать'}</button>
+                <button className="save-btn" onClick={async ()=>{ await saveGenHistoryToStore(historyText || ''); setHistoryModalOpen(false); }}>Сохранить</button>
+                <button className="delete-btn" onClick={()=>setHistoryModalOpen(false)}>Отмена</button>
+              </div>
             </div>
           </div>
         </div>

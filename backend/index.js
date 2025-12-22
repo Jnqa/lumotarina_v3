@@ -13,6 +13,9 @@ app.use(express.json());
 // firebase helpers
 const fb = require('./firebase');
 
+// ChatAPI helper (router + helper)
+const chatapi = require('./chatapi');
+
 // Подключение profile.js и characters.js
 const profileRouter = require('./profile');
 const charactersRouter = require('./characters');
@@ -245,6 +248,9 @@ admin.initializeApp({
 app.get('/', (req, res) => {
   res.send('Backend is running and connected to Firebase!');
 });
+
+// Mount chatapi router (handles POST /chatapi)
+app.use('/chatapi', express.json(), chatapi.router);
 
 app.listen(PORT, IP, () => {
   console.log(`Server listening on http://${IP}:${PORT}`);
