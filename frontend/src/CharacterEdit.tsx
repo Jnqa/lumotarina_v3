@@ -875,7 +875,7 @@ export default function CharacterEdit(){
             <div style={{padding:8}}>
               {noteEditMode ? (
                 <div style={{display:'flex',flexDirection:'column',gap:8}}>
-                  <textarea className="note-input" value={noteText||''} onChange={(e)=>setNoteText(e.target.value)} />
+                  <textarea className="note-input-notes" value={noteText||''} onChange={(e)=>setNoteText(e.target.value)} />
                   <div style={{display:'flex',gap:8,justifyContent:'flex-end'}}>
                     <button className="save-btn" onClick={saveNote}>Сохранить</button>
                     <button className="delete-btn" onClick={()=>{ setNoteEditMode(false); setNoteText(character.note || ''); }}>Отмена</button>
@@ -1087,7 +1087,7 @@ export default function CharacterEdit(){
               <button className="ability-modal-close" onClick={() => setHistoryModalOpen(false)}>×</button>
             </div>
             <div style={{display:'flex',flexDirection:'column',gap:8}}>
-              <textarea className="note-input" value={historyText||''} onChange={(e)=>setHistoryText(e.target.value)} />
+              <textarea className="note-input-history" value={historyText||''} onChange={(e)=>setHistoryText(e.target.value)} />
               <div style={{display:'flex',gap:8,justifyContent:'flex-end'}}>
                 <button className="blue-btn" disabled={historyGenerating} onClick={generateHistory}>{historyGenerating? '...' : '⚡ Сгенерировать'}</button>
                 <button className="save-btn" onClick={async ()=>{ await saveGenHistoryToStore(historyText || ''); setHistoryModalOpen(false); }}>Сохранить</button>

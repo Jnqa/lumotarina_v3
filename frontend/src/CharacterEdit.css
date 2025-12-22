@@ -56,6 +56,8 @@ y.hp-info{ display:flex; gap:6px; align-items:center; margin-left:8px }
 .char-card-notes details{ background: #0e0e0e; border:1px solid #222; border-radius:12px; padding:0; }
 .char-card-notes summary{ list-style:none; cursor:pointer; padding:8px 12px; display:flex; justify-content:space-between; align-items:center }
 .note-input{ background:#1a1a1a; border:1px solid #333; border-radius:8px; color:#fff; padding:8px; font-size:14px; font-family:inherit; resize:vertical; min-height:150px !important; width:'100%'}
+.note-input-history{ background:#1a1a1a; border:1px solid #333; border-radius:8px; color:#fff; padding:8px; font-size:14px; font-family:inherit; resize:vertical; min-height:150px !important; width:'100%'}
+.note-input-notes{ background:#1a1a1a; border:1px solid #333; border-radius:8px; color:#fff; padding:8px; font-size:14px; font-family:inherit; resize:vertical; min-height:100px !important; width:'100%'}
 .section{ background:#0e0e0e; border:1px solid #222; border-radius:16px; padding:10px; margin-bottom:10px }
 .section-header{ font-weight:700; display:flex; justify-content:space-between; align-items:center }
 .abilities-grid{ display:flex; flex-direction:column; gap:8px; margin-top:8px }
