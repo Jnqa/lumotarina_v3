@@ -202,6 +202,10 @@ export default function CharacterEdit(){
               setCharacter(data);
               setNoteText(data.note ?? '');
               setNotesFetchedFor(charId);
+              // Update genHistory from server and localStorage
+              const story = data.story || '';
+              setGenHistory(story);
+              localStorage.setItem(`genhistory_${ownerId}_${charId}`, story);
             }
           }
         } catch (e) {
@@ -237,50 +241,46 @@ export default function CharacterEdit(){
     }).catch(()=>{});
   }, []);
 
-  // Load generated history for this character (try server then localStorage)
+  // Load generated history for this character from localStorage (updated via refresh)
   async function loadGenHistory() {
     try {
       const { ownerId, charId } = getOwnerAndChar();
       if (ownerId && charId) {
-        try {
-          const resp = await fetch(`${API_BASE}/genhistory?ownerId=${encodeURIComponent(ownerId)}&charId=${encodeURIComponent(charId)}`);
-          if (resp.ok) {
-            const data = await resp.json();
-            if (data && typeof data.history === 'string') { setGenHistory(data.history); return; }
-          }
-        } catch (e) {
-          // ignore server errors and fallback to localStorage
-        }
-        // fallback to localStorage
-        try {
-          const key = `genhistory_${ownerId}_${charId}`;
-          const v = localStorage.getItem(key);
-          if (v) setGenHistory(v);
-        } catch (e) {}
+        const key = `genhistory_${ownerId}_${charId}`;
+        const v = localStorage.getItem(key) || '';
+        setGenHistory(v);
       }
     } catch (e) {
       // ignore
     }
   }
 
-  // Save generated history: try server endpoint then fallback to localStorage
+  // Save generated history: update character in DB and localStorage
   async function saveGenHistoryToStore(text: string) {
     try {
       const { ownerId, charId } = getOwnerAndChar();
       if (ownerId && charId) {
         try {
-          const resp = await fetch(`${API_BASE}/genhistory`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ownerId, charId, history: text }) });
+          const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(ownerId)}/${encodeURIComponent(charId)}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ story: text })
+          });
           if (resp.ok) {
             const j = await resp.json();
             if (j && j.success) {
+              setCharacter(prev => ({ ...prev, story: text }));
+              const key = `genhistory_${ownerId}_${charId}`;
+              localStorage.setItem(key, text);
               setGenHistory(text);
-              showToast('История сохранена на сервере', { type: 'success' });
+              showToast('История сохранена', { type: 'success' });
               return true;
             }
           }
         } catch (e) {
           // ignore server save error and fallback to localStorage
         }
+        // fallback to localStorage
         try {
           const key = `genhistory_${ownerId}_${charId}`;
           localStorage.setItem(key, text);
@@ -305,7 +305,15 @@ export default function CharacterEdit(){
       if (!resp.ok) { const txt = await resp.text(); showToast('Ошибка: ' + (txt || resp.status), { type: 'error' }); return; }
       const data = await resp.json();
       if (data && data.success) {
-        setHistoryText(data.reply || '');
+        const generated = data.reply || '';
+        setHistoryText(generated);
+        // Update genHistory and localStorage immediately
+        setGenHistory(generated);
+        const { ownerId, charId } = getOwnerAndChar();
+        if (ownerId && charId) {
+          const key = `genhistory_${ownerId}_${charId}`;
+          localStorage.setItem(key, generated);
+        }
         showToast('Сгенерировано', { type: 'success' });
       } else {
         showToast('Сервер не вернул результат', { type: 'error' });
