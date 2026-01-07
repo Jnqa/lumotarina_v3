@@ -3,14 +3,13 @@ import { showToast } from './utils/toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './CharacterEdit.css';
 
-const ABILITY_ORDER = ['Strength','Dexterity','Constitution','Intelligence','Wisdom','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
+const ABILITY_ORDER = ['Strength','Dexterity','Constitution','Intelligence','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
 
 const ABILITY_EMOJI: Record<string,string> = {
   Strength: '💪',
   Dexterity: '🤸',
   Constitution: '🛡️',
   Intelligence: '🧠',
-  Wisdom: '🔮',
   Charisma: '🗣️',
   Perception: '👀',
   Willpower: '🫡',

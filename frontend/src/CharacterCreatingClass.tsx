@@ -22,7 +22,6 @@ const ABILITY_LABELS: Record<string, string> = {
   Dexterity: 'Ловкость',
   Constitution: 'Телосложение',
   Intelligence: 'Интеллект',
-  Wisdom: 'Мудрость',
   Charisma: 'Харизма',
   Perception: 'Восприятие',
   Willpower: 'Сила воли',

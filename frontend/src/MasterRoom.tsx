@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 // Small subset of ability order + emoji used by CharacterEdit to render highlights
 // Added Athletics/Acrobatics/History so they are editable in master-room
-const ABILITY_ORDER = ['Strength','Dexterity','Constitution','Intelligence','Wisdom','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
+const ABILITY_ORDER = ['Strength','Dexterity','Constitution','Intelligence','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
 const ABILITY_EMOJI: Record<string,string> = {
-  Strength: '💪', Dexterity: '🤸', Constitution: '🛡️', Intelligence: '🧠', Wisdom: '🔮', Charisma: '🗣️',
+  Strength: '💪', Dexterity: '🤸', Constitution: '🛡️', Intelligence: '🧠', Charisma: '🗣️',
   Perception: '👀', Willpower: '🫡', Engineering: '⚙️', Medicine: '🩺', Lockpicking: '🪝', Stealth: '🕶️',
   Lumion: '✨', Nature: '🌿', Survival: '🏕️', Crafting: '🔨',
 };

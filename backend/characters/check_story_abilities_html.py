@@ -65,7 +65,6 @@ color_map = {
     "Survival": "#3f7565",
     "Crafting": "#462E10",
     "Lumion": "#00b7ff",
-    "Wisdom": "#5d0281"
 }
 
 # --- HTML заголовок ---
