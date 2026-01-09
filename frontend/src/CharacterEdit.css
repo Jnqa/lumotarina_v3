@@ -1,6 +1,6 @@
 .char-edit-root{ padding:16px }
 .card-wrap{ display:flex; gap:12px; flex-wrap:wrap }
-.char-card-visual{ width:320px; min-height: 400px; background:linear-gradient(180deg,#111,#070707); border:1px solid #222; border-radius:12px; padding:8px; color:#ddd; display:flex; flex-direction:column; border: #00000010 4px solid;}
+.char-card-visual{ width:320px; min-height: 500px; background:linear-gradient(180deg,#111,#070707); border:1px solid #222; border-radius:12px; padding:8px; color:#ddd; display:flex; flex-direction:column; border: #00000010 4px solid;}
 .char-card-visual{ position:relative; overflow:hidden }
 .top-bars{ display:flex; flex-direction:row; gap:8px; align-items:center; }
 .armor-bar{ height:6px; background:linear-gradient(90deg,#f2d879,#c48d09); border-radius:6px }
@@ -13,7 +13,7 @@ y.hp-info{ display:flex; gap:6px; align-items:center; margin-left:8px }
 .hp-btn{ background:transparent; border:1px solid rgba(255,255,255,0.08); color:#fff; padding:2px 6px; border-radius:6px; cursor:pointer }
 .main-row{ display:flex; align-items:center; gap:12px; margin-top:8px; justify-content:space-between }
 .level{ font-weight:700 }
-.avatar{ position:absolute; inset:0; z-index:0; display:block; border-radius:12px; overflow:hidden; pointer-events:none }
+.avatar{ position:absolute; inset:0; display:block; border-radius:12px; overflow:hidden; pointer-events:none }
 .avatar img{ width:100%; height:100%; object-fit:cover; object-position:center; border-radius: 12px; }
 
 /* overlays: give UI elements semi-transparent panels so avatar remains readable */
@@ -26,8 +26,9 @@ y.hp-info{ display:flex; gap:6px; align-items:center; margin-left:8px }
 .main-row, .top-bars, .name-row, .highlights{ position:relative; z-index:2 }
 .name-row{ margin-top:auto }
 .class-icon{ color:#bbb }
-.name-row h2{ margin:8px 0 0 0; display:inline-block; background: rgba(0,0,0,0.55); padding:6px 10px; border-radius:8px }
-.name-row input{ width:100%; padding:6px; border-radius:6px; background:rgba(0,0,0,0.55); border:1px solid #333; color:#fff }
+.name-row h2{ margin:8px 0 0 0; display:inline-block; background: rgba(0,0,0,0.65); padding:0px 10px; border-radius:8px 8px 0px 0px; }
+.name-row input{ width:100%; padding:6px; border-radius:6px; background:rgba(0,0,0,0.65); border:1px solid #333; color:#fff }
+.abilities-map{ position: relative; z-index: 4; background: rgba(0,0,0,0.75); border-radius: 16px; padding: '8px'; margin-top: '8px' }
 .highlights{ display:flex; flex-wrap:wrap; gap:4px; margin-top:2px }
 .highlight-block{ width:60px; height:60px; border-radius:8px; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2px; box-sizing:border-box; cursor:pointer; opacity:0.8 }
 .highlight-block.pos{ background:linear-gradient(90deg,#2bff9a,#19d170); color:#06321a }

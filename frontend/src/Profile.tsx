@@ -118,8 +118,8 @@ export default function Profile() {
 
       <main className="profile-main">
         <section className="profile-actions-grid">
-          <button className="simple-btn" onClick={() => nav('/intro')}>Введение</button>
-          <button className="simple-btn" onClick={() => setShowRoomConfirm(true)}>Комната Ведущего</button>
+          <button className="liquid-btn" onClick={() => nav('/intro')}>Введение</button>
+          <button className="liquid-btn" onClick={() => setShowRoomConfirm(true)}>Комната Ведущего</button>
           <button className="square-btn lore-btn" onClick={() => nav('/lore')}><span>Лор</span></button>
           <button className="square-btn map-btn" onClick={() => nav('/lore/map')}><span>Карта</span></button>
         </section>

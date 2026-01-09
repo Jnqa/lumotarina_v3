@@ -6,13 +6,25 @@ import CharacterCreatingClass from './CharacterCreatingClass';
 import CharacterEdit from './CharacterEdit';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
 import App from './App.tsx';
 import Profile from './Profile';
 import Intro from './Intro';
 import MasterRoom from './MasterRoom';
 import './index.css';
 import './utils/toast.css';
+import ClassPreview from './modules/ClassPreview';
+import CharacterPreview from './modules/CharacterPreview';
+
+const ClassPreviewPage = () => {
+  const { classId } = useParams<{ classId: string }>();
+  return <ClassPreview classId={classId || ''} />;
+};
+
+const CharacterPreviewPage = () => {
+  const { userId, charId } = useParams<{ userId: string; charId: string }>();
+  return <CharacterPreview userId={userId || ''} charId={charId || ''} />;
+};
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -28,6 +40,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/character/create" element={<CharacterCreating />} />
         <Route path="/character/class" element={<CharacterCreatingClass />} />
         <Route path="/character/edit" element={<CharacterEdit />} />
+        <Route path="/character/module/AbilityMap/:userId/:charId" element={<CharacterPreviewPage />} />
+        <Route path="/class/preview/:classId" element={<ClassPreviewPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

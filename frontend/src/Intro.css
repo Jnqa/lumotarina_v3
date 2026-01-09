@@ -1,3 +1,77 @@
-.intro-page{ padding:20px }
-.intro-content{ max-width:900px; margin:0 auto; background:#0f0f0f; border:1px solid #222; padding:18px; border-radius:8px; color:#eee }
-.intro-content h1{ margin-top:0 }
+.intro {
+  padding-bottom: env(safe-area-inset-bottom);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.intro-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+  padding: 12px;
+  background: #fff;
+  border-bottom: 1px solid #eee;
+  overflow-x: auto;
+}
+
+.intro-tabs button {
+  padding: 10px 16px;
+  border-radius: 999px;
+  border: none;
+  background: #f2f2f2;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.intro-tabs button.active {
+  background: #000;
+  color: #fff;
+}
+
+.intro-content {
+  padding: 16px;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-size: 20px;
+  margin-top: 24px;
+  margin-bottom: 8px;
+}
+
+p {
+  margin-bottom: 12px;
+}
+
+ul {
+  padding-left: 20px;
+  margin-bottom: 12px;
+}
+
+li {
+  margin-bottom: 6px;
+}
+
+.list-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+}
+
+.example,
+.formula {
+  padding: 12px;
+  background: #f6f6f6;
+  border-radius: 12px;
+  font-weight: 500;
+}

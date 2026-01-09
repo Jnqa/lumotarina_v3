@@ -71,18 +71,18 @@ router.post('/', async (req, res) => {
     if (body.history) {
         newContent="Сформируй художественную предысторию персонажа до 300 символов. Используй все данные ниже, ничего не добавляй от себя. Данные:" + body.prompt,
         requestBody = {
-			model: body.model || 'gpt-4.1-mini',
+			model: body.model || 'gpt-4',
 			messages: [ { role: 'user', content: newContent } ]
 		};
     } else if (body.calc) {
         newContent="Сформируй художественное описание решения примера до 300 символов. Используй все данные ниже, ничего не добавляй от себя. Данные:" + body.prompt,
         requestBody = {
-			model: body.model || 'gpt-4.1-mini',
+			model: body.model || 'gpt-4',
 			messages: [ { role: 'user', content: newContent } ]
 		};
     } else if (typeof body.prompt === 'string' && (!body.messages && !body.model)) {
 		requestBody = {
-			model: body.model || 'gpt-4.1-mini',
+			model: body.model || 'gpt-4',
 			messages: [ { role: 'user', content: body.prompt } ]
 		};
 	}

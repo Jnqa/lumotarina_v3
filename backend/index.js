@@ -16,9 +16,10 @@ const fb = require('./firebase');
 // ChatAPI helper (router + helper)
 const chatapi = require('./chatapi');
 
-// Подключение profile.js и characters.js
+// Подключение profile.js, characters.js и classes.js
 const profileRouter = require('./profile');
 const charactersRouter = require('./characters');
+const classesRouter = require('./classes');
 
 // CORS setup (must be before routes)
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()) : ['https://dnd.lumotarina.ru', 'http://localhost:5173'];
@@ -39,6 +40,7 @@ app.options('*', cors());
 
 app.use('/profile', profileRouter);
 app.use('/characters', charactersRouter);
+app.use('/classes', classesRouter);
 
 // Endpoint: получить публичные данные пользователя по tg_id
 app.get('/auth/user/:id', async (req, res) => {

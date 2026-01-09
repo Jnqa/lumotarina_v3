@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { showToast } from './utils/toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './CharacterEdit.css';
+import CharacterPreview from './modules/CharacterPreview';
 
-const ABILITY_ORDER = ['Strength','Dexterity','Constitution','Intelligence','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
+const ABILITY_ORDER = ['Strength','Dexterity','Intelligence','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
 
 const ABILITY_EMOJI: Record<string,string> = {
   Strength: '💪',
   Dexterity: '🤸',
-  Constitution: '🛡️',
   Intelligence: '🧠',
   Charisma: '🗣️',
   Perception: '👀',
@@ -33,6 +33,8 @@ export default function CharacterEdit(){
   const nav = useNavigate();
   const state: any = (loc.state as any) || {};
   const charFromState = state.character || null;
+  const session = JSON.parse(localStorage.getItem('session') || '{}');
+  const userId = session?.tgId || session?.uid || session?.userId || null;
 
   // Do not rely on localStorage for character state anymore; prefer navigation state and server
   const initial = charFromState || null;
@@ -805,7 +807,13 @@ export default function CharacterEdit(){
           <div className="top-bars">
             <div className="defense" title={"Defense: " + (_baseDef || 0) + " + Dex/10"}>🛡{_defenseComputed}</div>
             <div className="hp-bar">
-              <div className="hp-label"> ❤</div>
+              <div className="hp-label" onClick={() => {
+                const classHp = (classMeta && (classMeta.hp || classMeta.baseHp)) || 0;
+                const conValue = (character.abilities && character.abilities['Constitution']) || 0;
+                const totalHp = classHp + conValue;
+                const desc = (abilitiesMeta?.Constitution?.description || "Constitution ability affects health and resilience.") + `\n\nHP Calculation: ${classHp} (base from class) + ${conValue} (Constitution) = ${totalHp}`;
+                setAbilityModal({ title: "Constitution", desc });
+              }}> ❤</div>
                 {editMode && (
                   <>
                     <button className="hp-btn" onClick={() => setCharacter((c:any)=> ({...c, hp: Math.max(0, (c.hp||0)-1)}))}>−</button>
@@ -842,36 +850,8 @@ export default function CharacterEdit(){
           <div className="name-row">
             {editMode ? <input value={character.name||''} onChange={e=>changeName(e.target.value)} /> : <h2>{character.name}</h2>}
           </div>
-          <div className="highlights">
-            {ABILITY_ORDER.map(k => {
-              const v = (character.abilities || {})[k] || 0;
-              const abs = Math.abs(v);
-              if (abs >= 10) {
-                const meta = abilitiesMeta && abilitiesMeta[k];
-                const icon = (meta && (meta.icon || meta.emoji || meta.iconEmoji)) || ABILITY_EMOJI[k] || '';
-                const abbr = meta?.abbreviation || (k.length > 4 ? k.slice(0, 3).toUpperCase() : k.toUpperCase());
-                const mod = v >= 0 ? `+${Math.floor(Math.abs(v)/10)}` : `-${Math.floor(Math.abs(v)/10)}`;
-                return (
-                  <div key={k} className={`highlight-block ${v>=0? 'pos':'neg'}`} onClick={() => setAbilityModal({ title: k, desc: meta?.description || k })}>
-                    <div className="hb-top">
-                      <span className="hb-icon">{icon}</span>
-                      <span className="hb-mod">{mod}</span>
-                    </div>
-                    <div className="hb-bottom">
-                      <span className="hb-abbr">{abbr}</span>
-                    </div>
-                  </div>
-                );
-              }
-              return null;
-            })}
-            <div className="highlight-block items-card" onClick={() => { const el = document.querySelector('.inv-section'); if (el) (el as HTMLElement).scrollIntoView({ behavior: 'smooth' }); }}>
-              <div className="hb-top">
-                <span className="hb-icon">🎒</span>
-                <span className="hb-mod">{(character.inventory||[]).length}</span>
-              </div>
-              <div className="hb-bottom"><span className="hb-abbr">items</span></div>
-            </div>
+          <div className="abilities-map">
+            <CharacterPreview userId={userId} charId={character.id} />
           </div>
         </div>
         <div className="char-card-notes">
@@ -897,6 +877,28 @@ export default function CharacterEdit(){
           </details>
         </div>
         <div className="char-card-details">
+          <div className="section inv-section">
+            <div className="section-header">
+              Инвентарь
+              <div>
+                <button className="section-add" onClick={()=>{ setShowNewInv(s=>!s); }}>{showNewInv? '✖':'➕'}</button>
+              </div>
+            </div>
+            <div className="inv-list">
+                {(character.inventory||[]).map((it:any, idx:number)=> (
+                  <div key={idx} className="inv-item-row">
+                    <button className="inv-item-btn" onClick={()=> setAbilityModal({ title: String(it), desc: '', extra:{ type:'inv', index: idx, name: it } })}>
+                      <div className="inv-name">{it}</div>
+                    </button>
+                  </div>
+                ))}
+                {showNewInv && (
+                <div style={{marginTop:8}}>
+                  <input placeholder="Новый предмет" id="new-inv" /> <button onClick={async ()=>{ const el:any=document.getElementById('new-inv'); if(!el) return; const val=el.value; if(!val) return; await addInventoryItem(val); el.value=''; setShowNewInv(false); }}>Добавить</button>
+                </div>
+              )}
+            </div>
+          </div>
           <div className="section abilities-section">
             <details className="abilities-details" >
               <summary className="section-header">Способности <span className="small">AbilityPoints: {character.abilityPoints||0}</span></summary>
@@ -921,28 +923,6 @@ export default function CharacterEdit(){
             </details>
           </div>
 
-          <div className="section inv-section">
-            <div className="section-header">
-              Инвентарь
-              <div>
-                <button className="section-add" onClick={()=>{ setShowNewInv(s=>!s); }}>{showNewInv? '✖':'➕'}</button>
-              </div>
-            </div>
-            <div className="inv-list">
-                {(character.inventory||[]).map((it:any, idx:number)=> (
-                  <div key={idx} className="inv-item-row">
-                    <button className="inv-item-btn" onClick={()=> setAbilityModal({ title: String(it), desc: '', extra:{ type:'inv', index: idx, name: it } })}>
-                      <div className="inv-name">{it}</div>
-                    </button>
-                  </div>
-                ))}
-                {showNewInv && (
-                <div style={{marginTop:8}}>
-                  <input placeholder="Новый предмет" id="new-inv" /> <button onClick={async ()=>{ const el:any=document.getElementById('new-inv'); if(!el) return; const val=el.value; if(!val) return; await addInventoryItem(val); el.value=''; setShowNewInv(false); }}>Добавить</button>
-                </div>
-              )}
-            </div>
-          </div>
 
           <div className="section skills-section">
             <div className="section-header">
