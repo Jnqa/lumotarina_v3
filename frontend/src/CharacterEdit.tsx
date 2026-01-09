@@ -271,7 +271,7 @@ export default function CharacterEdit(){
           if (resp.ok) {
             const j = await resp.json();
             if (j && j.success) {
-              setCharacter(prev => ({ ...prev, story: text }));
+              setCharacter((prev: any) => ({ ...prev, story: text }));
               const key = `genhistory_${ownerId}_${charId}`;
               localStorage.setItem(key, text);
               setGenHistory(text);

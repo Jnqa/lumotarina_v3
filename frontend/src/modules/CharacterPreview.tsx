@@ -73,7 +73,7 @@ export default function CharacterPreview({ userId, charId }: { userId: string; c
     return (clamped - MIN_VALUE) / (MAX_VALUE - MIN_VALUE);
   };
 
-  const pointsZero = radarStats.map((stat, i) => {
+  const pointsZero = radarStats.map((_stat, i) => {
     const r = normalize(0) * radius;
     const angle = i * angleStep - Math.PI / 2;
 
