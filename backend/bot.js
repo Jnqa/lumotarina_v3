@@ -18,7 +18,7 @@ function generateCode() {
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
   const loginUrl = `${FRONTEND_URL}/?tg_id=${msg.from.id}`;
-  bot.sendMessage(chatId, `Вход в сервис: ${loginUrl}`);
+  bot.sendMessage(chatId, `Вход в сервис: ${loginUrl}. \n Рекомендую открывать во внешнем браузере. \n(Зажать на ссылке -> Открыть в..)` );
 });
 
 // Экспортируем функцию для отправки кода
@@ -26,7 +26,7 @@ function sendLoginCode(tg_id) {
   const code = generateCode();
   const expires = Date.now() + 5 * 60 * 1000; // 5 минут
   codes[tg_id] = { code, expires };
-  bot.sendMessage(tg_id, `Ваш код для входа: ${code}`);
+  bot.sendMessage(tg_id, `Код для входа: ${code}`);
 }
 
 function checkLoginCode(tg_id, code) {

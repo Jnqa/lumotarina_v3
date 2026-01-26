@@ -20,6 +20,7 @@ const chatapi = require('./chatapi');
 const profileRouter = require('./profile');
 const charactersRouter = require('./characters');
 const classesRouter = require('./classes');
+const storyRouter = require('./routes/characterStory');
 
 // CORS setup (must be before routes)
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()) : ['https://dnd.lumotarina.ru', 'http://localhost:5173'];
@@ -41,6 +42,7 @@ app.options('*', cors());
 app.use('/profile', profileRouter);
 app.use('/characters', charactersRouter);
 app.use('/classes', classesRouter);
+app.use('/story', storyRouter);
 
 // Endpoint: получить публичные данные пользователя по tg_id
 app.get('/auth/user/:id', async (req, res) => {
@@ -190,6 +192,29 @@ app.get('/users/:id/displayName', async (req, res) => {
   } catch (err) {
     console.error('GET /users/:id/displayName error', err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+// Endpoint: проверить, является ли пользователь мастером (MASTERS env)
+app.get('/auth/is_master/:id', (req, res) => {
+  const id = String(req.params.id || '');
+  try {
+    const raw = process.env.MASTERS || process.env.MASTERS_LIST || '';
+    let masters = [];
+    if (!raw) {
+      masters = [];
+    } else {
+      try {
+        masters = JSON.parse(raw);
+      } catch (e) {
+        masters = String(raw).split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+    const isMaster = masters.map(String).includes(id);
+    res.json({ isMaster: !!isMaster });
+  } catch (e) {
+    console.error('GET /auth/is_master error', e);
+    res.status(500).json({ error: e.message });
   }
 });
 

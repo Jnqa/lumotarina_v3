@@ -1,0 +1,136 @@
+
+
+.bg-intro {
+  background-image: url("/pics/backgrounds/Background_basics.png");
+  background-size: cover;
+  /* background-position: center; */
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+
+.intro-header {
+  margin-bottom: 0px;
+  font-size: xx-small;
+  color: transparent;
+}
+
+.intro-description {
+    padding: 2px;
+    max-width: 390px;
+    margin: 00px 10px 0 10px;
+    background: rgba(5, 65, 65, 0.38);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid rgba(205, 205, 205, 0.35);
+    border-radius: 18px;
+    color: #ffffff; /* Чистый белый для контраста */
+    font-size: 14px; /* Четкий размер вместо 'small' */
+    font-weight: 400; /* Более читабельно на темном */
+    line-height: 1.2; /* Комфорт для глаз */
+    font-weight: 200;
+    letter-spacing: 0.01em; 
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.card-caption {
+    padding: 4px 2px 2px 10px;
+    max-width: 390px;
+    margin: 10px 10px 0 10px;
+    background: rgba(5, 55, 65, 0.753);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid rgba(5, 25, 25, 0.38);
+    border-bottom: 0px;
+    font-size: large;
+    font-weight: 700;
+    border-radius: 18px 18px 0 0;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    color: #eee;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.43);
+}
+
+.card-content {
+    padding: 12px;
+    max-width: 390px;
+    margin: 0px 10px;
+    background: rgba(25, 35, 35, 0.78);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid rgba(5, 25, 25, 0.38);
+    border-top: 0px;
+    border-radius: 0 0 18px 18px;
+    color: #ffffff; /* Чистый белый для контраста */
+    font-size: 14px; /* Четкий размер вместо 'small' */
+    font-weight: 400; /* Более читабельно на темном */
+    line-height: 1.2; /* Комфорт для глаз */
+    letter-spacing: 0.01em; 
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.left-align {
+    text-align: left;
+    padding: 0 16px 0 16px;
+}
+
+.left-align-list {
+    text-align: left;
+    padding: 8px 32px 4px 32px;
+    background: rgba(65, 65, 65, 0.47);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    text-shadow: 0 2px 4px rgba(0,0,0,0.43);
+    border: 1px solid rgba(205, 205, 205, 0.35);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.example {
+  padding: 16px;
+  max-width: 680px;
+  margin: 0 auto;
+  background: rgba(65, 65, 65, 0.38);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(205, 205, 205, 0.35);
+  color: #fff;
+  font-weight: 200;
+  font-size: small;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.43);
+  cursor: help;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border-radius: 8px;
+}
+
+@keyframes appearAtBottom {
+  from { 
+    transform: translateY(50px) scale(0.5); 
+    opacity: 0; 
+  }
+  to { 
+    transform: translateY(0) scale(1); 
+    opacity: 1; 
+  }
+}
+
+
+.back-to-top {
+    animation: appearAtBottom linear both;
+    animation-timeline: scroll(root);
+    animation-range: 95% 99%;
+    position: sticky;
+    z-index: 2;
+    bottom: 20px;
+    background-color: rgba(5, 35, 35, 0.68);
+    border: 1px solid rgba(105, 205, 205, 0.65);
+    color: #fff;
+    padding: 10px 20px;
+    margin-top: 24px;
+    border-radius: 8px;
+    width: 90vw;
+    cursor: pointer;
+    max-width: 390px;
+}

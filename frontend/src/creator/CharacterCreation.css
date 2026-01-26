@@ -1,0 +1,267 @@
+.character-page {
+  max-width: 700px;
+  font-family: 'Georgia', 'Times New Roman', serif; 
+  /* margin: 40px auto; */
+  padding: 0 12px;
+  display: flex;
+  background: linear-gradient(180deg, #d1ad6b31 , #d1ad6b00 );
+  flex-direction: column;
+  gap: 20px;
+}
+
+.progress {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.question-text {
+  font-size: 22px;
+  font-family: 'Georgia', 'Times New Roman', serif; /* Книжные шрифты с засечками */
+  margin-top: 0px;
+  /* Основной фон */
+  background: linear-gradient(
+    110deg, 
+    #d1ad6b25   0%, 
+    #d1ad6b87 40%, 
+    #d1ad6b77 60%, 
+    #d1ad6b25  100%
+  );
+  /* border: 1px solid #333; */
+  background-size: 200% 100%; /* Увеличиваем фон для анимации */
+  
+  /* Эффекты стекла */
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(229, 228, 173, 0.3);
+  
+  /* Анимация */
+  animation: shine 12s linear infinite;
+  transition: transform 0.2s, border 0.2s, box-shadow 0.2s;
+  
+  /* Чтобы свечение не вылезало за края */
+  position: relative;
+  overflow: hidden;
+  border-radius: 16px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 50px;
+}
+
+.question-text  span {
+  /* 3. Магия подстройки текста */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Добавляем три точки, если текст совсем не влез */
+  
+  /* Используем динамический размер шрифта */
+  font-size: clamp(18px, 2.5vw, 22px); 
+  /* clamp: минимум 10px, адаптивно 2.5% от ширины экрана, максимум 13px */
+}
+
+/* Логика движения градиента */
+@keyframes shine {
+  to {
+    background-position: 200% 0%;
+  }
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.option {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+}
+
+.option:hover {
+  border-color: #666;
+}
+
+.option.selected {
+  border-color: #d1ad6b77 ;
+}
+
+.option img {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+}
+
+.option-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.option-desc {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.buttons-line{
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.next-button {
+  align-self: flex-end;
+  padding: 10px 20px;
+  background: #d1ad6b77 ;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(205, 235, 205, 0.35);
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.next-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.prev-button {
+  align-self: flex-start;
+  padding: 10px 20px;
+  font-size: 16px;
+}
+
+.prev-button:disabled {
+  opacity: 0;
+  cursor: not-allowed;
+}
+
+.loader {
+  text-align: center;
+  margin-top: 100px;
+}
+
+.character-result {
+  max-width: 700px;
+  margin: 40px auto;
+}
+
+.progress-bar-top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;           /* тонкая полоска */
+  background: rgba(17, 202, 48, 0.432);
+  backdrop-filter: blur(2px) saturate(160%);
+  -webkit-backdrop-filter: blur(2px) saturate(160%);
+  transition: width 0.3s ease;
+  z-index: 9999;         /* поверх всего */
+}
+
+/* Читалка */
+/* Затемнение фона */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9); /* Глубокое затемнение */
+  display: flex;
+  justify-content: center;
+  align-items: flex-end; /* На мобильных удобнее, когда окно прижато к низу или центру */
+  z-index: 1000;
+  backdrop-filter: blur(4px); /* Эффект матового стекла на фоне */
+}
+
+/* Контейнер модалки */
+.modal-content {
+  background: #1c1c1e; /* Темный графит (меньше режет глаза, чем чисто черный) */
+  color: #e5e5e7;
+  width: 100%;
+  max-width: 550px;
+  height: 86vh; /* Занимает большую часть экрана по высоте */
+  border-radius: 24px 24px 0 0; /* Закругленные верхние углы как в современных мобильных ОС */
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.5);
+  animation: slideUp 0.3s ease-out; /* Плавное появление снизу */
+}
+
+/* Стилизация заголовка внутри модалки */
+.modal-content h2 {
+  font-family: 'Georgia', serif;
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+  margin-top: 8px;
+  text-align: center;
+  color: #d1ad6b; /* Золотистый оттенок для фэнтези-атмосферы */
+}
+
+/* Текстовый блок (Книжный стиль) */
+.story-text {
+  flex-grow: 1; /* Занимает всё свободное пространство */
+  overflow-y: auto; /* Включает прокрутку */
+  font-family: 'Georgia', 'Times New Roman', serif; /* Книжные шрифты с засечками */
+  line-height: 1.7; /* Простор между строками для легкого чтения */
+  font-size: 1.15rem;
+  color: #d1d1d1;
+  padding-right: 10px;
+  margin-bottom: 20px;
+  
+  /* Плавный скролл для iOS */
+  -webkit-overflow-scrolling: touch;
+  white-space: pre-line;
+}
+
+/* Кастомный скроллбар для эстетики */
+.story-text::-webkit-scrollbar {
+  width: 4px;
+}
+.story-text::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 10px;
+}
+
+/* Кнопка продолжения */
+.modal-content .next-button {
+  width: 100%;
+  padding: 16px;
+  background: #d1ad6b;
+  color: #1c1c1e;
+  border: none;
+  border-radius: 14px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.modal-content .next-button:active {
+  transform: scale(0.98); /* Эффект нажатия */
+}
+
+/* Анимация появления */
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Адаптация для десктопа (чтобы модалка не была на весь экран) */
+@media (min-width: 768px) {
+  .modal-overlay {
+    align-items: center;
+  }
+  .modal-content {
+    height: auto;
+    max-height: 80vh;
+    border-radius: 20px;
+  }
+}

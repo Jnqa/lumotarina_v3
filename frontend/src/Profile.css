@@ -3,18 +3,49 @@ body {
   padding: 0;
 }
 
-.profile-page {
-  padding: 20px;
-  font-family: Inter, Arial, sans-serif;
-  color: #eee;
+/* profile route background (applied via body.profile-bg class) */
+body.profile-bg {
   background-image: url("/pics/backgrounds/Background_01.png");
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
-  background-color: #0a0a0a;
+  background-repeat: no-repeat;
+}
+
+.backdrop {
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.profile-page {
+  font-family: Inter, Arial, sans-serif;
+  color: #eee;
+  /* background handled on <body> when on /profile route */
+  border-radius: 18px;
+  /* border: 1px solid rgba(255, 255, 255, 0.07); */
+  padding: 8px;
+  overflow: hidden;
   min-height: 94vh;
-  min-width: 80vw;
+  width: clamp(360px, 80vw, 400px); 
+}
+
+
+.profile-page-old {
+  font-family: Inter, Arial, sans-serif;
+  color: #eee;
+  /* background handled on <body> when on /profile route */
+  border-radius: 18px;
+  background: rgba(5, 5, 5, 0.18);
+  padding: 8px 8px 8px 8px;
+  border: 1px solid rgba(205, 205, 205, 0.35);
+  overflow: hidden;
+  min-height: 94vh;
+  width: clamp(360px, 80vw, 400px);
   border-radius: 25px;
+  
 }
 
 .profile-header {
@@ -35,6 +66,12 @@ body {
   background: transparent;
   border: none;
   cursor: pointer;
+  border-radius: 18px;
+  background: rgba(5, 5, 5, 0.18);
+  padding: 2px 8px 2px 0px;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  overflow: hidden;
 }
 
 .profile-avatar {
@@ -58,7 +95,7 @@ body {
   border: 1px solid #333;
   border-radius: 8px;
   padding: 6px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.6);
+  box-shadow: 0 6px 8px rgba(0,0,0,0.6);
   z-index: 20;
   
 }
@@ -88,6 +125,24 @@ body {
   gap: 12px;
 }
 
+/* Glassy liquid background that can be applied to any element via className="bg-liquid-glass" */
+.bg-liquid-glass {
+  background: rgba(10, 10, 12, 0.28);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 12px;
+}
+
+/* For browsers that support filter() references instead of the normal backdrop-filter,
+   fall back to using the SVG displacement filter + a smaller blur. */
+@supports not (hanging-punctuation: first) {
+  .bg-liquid-glass {
+    backdrop-filter: url(#displacementFilter) blur(2px);
+    -webkit-backdrop-filter: url(#displacementFilter) blur(2px);
+  }
+}
+
+
 .liquid-btn {
   position: relative;
   /* padding: 14px 28px; */
@@ -103,6 +158,16 @@ body {
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
+/* For browsers that support filter() references instead of the normal backdrop-filter,
+   fall back to using the SVG displacement filter + a smaller blur. */
+@supports not (hanging-punctuation: first) {
+  .liquid-btn {
+    backdrop-filter: url(#displacementFilter) blur(2px);
+    -webkit-backdrop-filter: url(#displacementFilter) blur(2px);
+  }
+}
+
 
 .liquid-btn::before {
   content: "";
@@ -120,7 +185,7 @@ body {
 
 .liquid-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  box-shadow: 0 4px 4px rgba(0,0,0,0.25);
 }
 
 .liquid-btn:active {
@@ -152,16 +217,26 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* For browsers that support filter() references instead of the normal backdrop-filter,
+   fall back to using the SVG displacement filter + a smaller blur. */
+@supports not (hanging-punctuation: first) {
+  .square-btn {
+    backdrop-filter: url(#displacementFilter) blur(2px);
+    -webkit-backdrop-filter: url(#displacementFilter) blur(2px);
+  }
+}
+
 .map-btn {
   position: relative;
   overflow: hidden;
   /* use the public map image served from backend/static */
-  background-image: url('/lore/WorldMap.png');
+  background-image: url('/pics/minimap.jpg');
   opacity: 0.9;
   background-size: cover;
   background-position: center;
   color: #fff;
 }
+
 
 .map-btn::before {
   /* dark overlay so the text remains readable */
@@ -183,7 +258,7 @@ body {
 .lore-btn {
   position: relative;
   overflow: hidden;
-  background-image: url('/pics/Lore.png');
+  background-image: url('/pics/lore.webp');
   background-size: cover;
   background-position: center;
   color: #fff;
@@ -250,6 +325,15 @@ body {
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* For browsers that support filter() references instead of the normal backdrop-filter,
+   fall back to using the SVG displacement filter + a smaller blur. */
+@supports not (hanging-punctuation: first) {
+  .primary-btn {
+    backdrop-filter: url(#displacementFilter) blur(2px);
+    -webkit-backdrop-filter: url(#displacementFilter) blur(2px);
+  }
+}
+
 /* New styles for character list grid and tiles */
 .character-grid{ display:grid; gap:12px; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 .character-tile{ 
@@ -269,7 +353,16 @@ body {
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.character-tile:hover{ transform:translateY(-4px); box-shadow:0 10px 30px rgba(0,0,0,0.6) }
+/* For browsers that support filter() references instead of the normal backdrop-filter,
+   fall back to using the SVG displacement filter + a smaller blur. */
+@supports not (hanging-punctuation: first) {
+  .character-tile {
+    backdrop-filter: url(#displacementFilter) blur(2px);
+    -webkit-backdrop-filter: url(#displacementFilter) blur(2px);
+  }
+}
+
+.character-tile:hover{ transform:translateY(-4px); box-shadow:0 8px 8px rgba(0,0,0,0.3) }
 .character-tile .tile-left{ flex:0 0 64px; display:flex; align-items:center; justify-content:center }
 .character-tile .tile-left img{ width:56px; height:56px; border-radius:18px; object-fit:cover; }
 .character-tile .tile-right{ display:flex; flex-direction:column; gap:4px; min-width:0 }

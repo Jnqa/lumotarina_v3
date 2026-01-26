@@ -6,7 +6,7 @@
 .char-back{ background:transparent; border:1px solid #333; color:#fff; padding:6px 10px; border-radius:6px; cursor:pointer }
 .char-progress{ margin:8px 0 12px 0; color:#bbb }
 .char-stage h3{ margin:6px 0 }
-.char-options{ display:flex; gap:8px; flex-wrap:wrap }
+.char-options{ display:flex; gap:8px; flex-wrap:wrap; justify-content:space-around }
 .char-opt{ background:transparent; border:1px solid #333; color:#ddd; padding:8px 10px; border-radius:8px; cursor:pointer }
 .char-opt.selected{ background:linear-gradient(180deg,#3a2d7a,#2a1f58); color:#fff; border-color:transparent }
 .char-controls{ margin-top:12px; display:flex; gap:8px }

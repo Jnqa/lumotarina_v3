@@ -23,7 +23,7 @@
         {"Crafting":0}
     ],
   "icon": "icons/custom1.png",
-  "inventory": [["??"], ["??"]],
+  "inventory": ["??", "??"],
   "skills": [
         {
         "actions": [

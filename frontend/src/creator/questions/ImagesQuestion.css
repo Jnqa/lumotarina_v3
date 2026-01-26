@@ -1,0 +1,235 @@
+.options {
+    display: grid;
+    gap: 12px;
+}
+
+/* .option {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background: #1e1e1e;
+
+    cursor: pointer;
+    overflow: hidden;
+
+    transition:
+        background 260ms ease,
+        border 260ms ease,
+        max-height 320ms cubic-bezier(0.22, 0.61, 0.36, 1);
+    
+    max-height: 180px;
+} */
+
+.option {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 10px;
+
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #333;
+  background: #1e1e1e;
+
+  cursor: pointer;
+  overflow: hidden;
+
+  max-height: 120px;
+  transition:
+    max-height 320ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    background 260ms ease,
+    border 260ms ease;
+}
+
+.option-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.option-row {
+  display: flex;
+  gap: 12px;
+  align-items: start;
+}
+
+.option.selected {
+    max-height: 420px;
+}
+
+.option-image {
+  flex: 0 0 96px;
+  height: 96px;
+  overflow: hidden;
+  border-radius: 10px;
+  max-width: 60px;
+  align-items: start;
+}
+
+.option-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  
+}
+
+.option-gallery {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  overflow-y: hidden;
+   /* Плавный скролл на iOS (momentum scrolling) */
+  -webkit-overflow-scrolling: touch;
+ 
+}
+
+/* Стили для десктопа (показываем тонкую полоску) */
+@media (min-width: 391px) {
+  .option-gallery {  padding-bottom: 4px; }
+  .option-gallery::-webkit-scrollbar {
+    height: 8px; /* Высота горизонтального скроллбара */
+  }
+  .option-gallery::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+  }
+  .option-gallery::-webkit-scrollbar-thumb {
+    background: #5ea9e671; 
+    border-radius: 10px;
+  }
+}
+
+/* Скрываем на мобильных */
+@media (max-width: 390px) {
+  .option-gallery::-webkit-scrollbar { display: none; }
+  .option-gallery { scrollbar-width: none; }
+}
+
+.option-gallery img {
+  border-radius: 18px;
+  width: 56px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+  transition: transform 200ms ease;
+}
+
+.option-gallery img:hover {
+  transform: scale(1.1);
+}
+
+.option-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.option-desc {
+    font-size: 13px;
+    opacity: 0.8;
+}
+
+.option-desc.unselected {
+    font-size: 13px;
+    opacity: 0.8;
+    max-height: 80px; /* Ограничьте высоту, если нужно, чтобы текст не шел дальше */
+    overflow: hidden;    
+    /* Эффект прозрачности внизу */
+    -webkit-mask-image: linear-gradient(to bottom, black 40px, transparent 75px);
+    mask-image: linear-gradient(to bottom, black 40px, transparent 75px);
+}
+
+/* выбранное состояние */
+.option.selected {
+  border-color: #6da8d8c0;
+  background: linear-gradient(210deg, #14344eb0, #477fadc2);
+}
+
+/* Lightbox для просмотра картинок */
+.image-lightbox {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 200ms ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.image-lightbox-content {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: zoomIn 250ms ease;
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.image-lightbox-content img {
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.image-lightbox-close {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 32px;
+  cursor: pointer;
+  padding: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 200ms ease;
+}
+
+.image-lightbox-close:hover {
+  transform: scale(1.2);
+}
+
+@media (max-width: 768px) {
+  .image-lightbox-close {
+    top: 10px;
+    right: 10px;
+  }
+  
+  .image-lightbox-content {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+}

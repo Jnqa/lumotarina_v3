@@ -1,0 +1,9 @@
+
+.bg-extra {
+  background-image: url("/pics/backgrounds/Background_basics.png");
+  background-size: cover;
+  /* background-position: center; */
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  max-width: 390px;
+}

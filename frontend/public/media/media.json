@@ -1,0 +1,57 @@
+{
+  "videos": [
+    {
+      "src": "videos/class_bartender.mp4",
+      "poster": "posters/class_bartender.webp",
+      "title": "Бармен"
+    },
+    {
+      "src": "videos/class_bartender2.mp4",
+      "poster": "posters/class_bartender2.webp",
+      "title": "Бармен 2"
+    },
+    {
+      "src": "videos/class_guardian.mp4",
+      "title": "Бывший страж"
+    },
+    {
+      "src": "videos/class_Lockpicker.mp4",
+      "title": "Взломщик"
+    },
+    {
+      "src": "videos/class_MAG.mp4",
+      "poster": "posters/class_MAG.webp",
+      "title": "Ученик АМ"
+    },
+    {
+      "src": "videos/class_MAG2.mp4",
+      "title": "Ученик АМ2"
+    },
+    {
+      "src": "videos/class_martoni.mp4",
+      "title": "Громила Мартони"
+    },
+    {
+      "src": "videos/class_volkov.mp4",
+      "title": "Громила Волкова"
+    },
+    {
+      "src": "videos/class_mechanic.mp4",
+      "title": "Механик"
+    },
+    {
+      "src": "videos/class_medics.mp4",
+      "title": "Медики"
+    },
+    {
+      "src": "videos/class_theft.mp4",
+      "title": "Вор"
+    }
+  ],
+  "images": [
+    {
+      "src": "images/demo.png",
+      "title": "Demo Picture"
+    }
+  ]
+}

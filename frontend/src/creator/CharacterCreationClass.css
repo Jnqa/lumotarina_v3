@@ -1,0 +1,276 @@
+
+.class-list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(90px, 3fr));
+  gap: 8px;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.recomend-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, auto));
+  gap: 8px;
+  justify-content: center;
+}
+
+.recomend-card {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  font-size: smaller;
+  border-radius: 10px;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 8px;
+  cursor: pointer;
+  
+  /* Основной фон */
+  background: linear-gradient(
+    110deg, 
+    rgba(143, 134, 6, 0.4) 0%, 
+    rgba(218, 205, 12, 0.6) 50%, 
+    rgba(143, 134, 6, 0.4) 100%
+  );
+  background-size: 200% 100%; /* Увеличиваем фон для анимации */
+  
+  /* Эффекты стекла */
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(255, 251, 150, 0.3);
+  
+  /* Анимация */
+  animation: shine 6s linear infinite;
+  transition: transform 0.2s, border 0.2s, box-shadow 0.2s;
+  
+  /* Чтобы свечение не вылезало за края */
+  position: relative;
+  overflow: hidden;
+}
+/* Эффект при наведении */
+.recomend-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 251, 150, 0.6);
+  box-shadow: 0 4px 15px rgba(143, 134, 6, 0.4);
+  background-position: 0% 0%; /* Ускоряем или меняем фазу при наведении */
+}
+
+/* Логика движения градиента */
+@keyframes shine {
+  to {
+    background-position: 200% 0%;
+  }
+}
+
+/* Дополнительный "стеклянный" блик (опционально) */
+.recomend-card::after {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0) 20%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0) 75%
+  );
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+
+.annotation {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+
+  font-size: clamp(12px, 2.5vw, 13px); 
+
+  align-content: center;
+  justify-content: space-evenly;
+  background: rgba(218, 205, 12, 0.1);;
+  padding: 4px;
+  gap: 8px;
+  border-left: 2px solid rgba(218, 205, 12, 0.6);
+  color:rgba(218, 205, 12, 1);
+
+}
+
+.class-tabs {
+  display: flex;
+  flex-wrap: wrap;
+
+  border-top: 4px solid rgba(13, 117, 117, 0.2);
+  align-content: center;
+  justify-content: space-evenly;
+  background: rgba(51, 51, 51, 0.514);
+  padding: 4px;
+  gap: 4px 0px;
+}
+
+.tab {
+    background: rgba(64, 67, 73, 0.514);
+    border-radius: 20px;
+    padding: 6px 18px;
+    color: rgb(227, 231, 235);
+}
+
+.tab span {
+  /* 3. Магия подстройки текста */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Добавляем три точки, если текст совсем не влез */
+  
+  /* Используем динамический размер шрифта */
+  font-size: clamp(13px, 2.5vw, 15px); 
+  /* clamp: минимум 10px, адаптивно 2.5% от ширины экрана, максимум 13px */
+}
+
+.tab.active {
+/* Основной фон */
+  background: linear-gradient(
+    110deg, 
+    rgba(13, 117, 117, 0.3) 0%, 
+    rgba(13, 117, 117, 0.6) 50%, 
+    rgba(13, 117, 117, 0.3) 100%
+  );
+  background-size: 200% 100%; /* Увеличиваем фон для анимации */
+  
+  /* Эффекты стекла */
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(13, 117, 117, 0.2);
+  
+  /* Анимация */
+  animation: shine 5s linear infinite;
+  transition: transform 0.2s, border 0.2s, box-shadow 0.2s;
+  
+  /* Чтобы свечение не вылезало за края */
+  position: relative;
+  overflow: hidden;
+  color: white;
+}
+
+.class-card {
+  display: flex;
+  /* 1. Фиксируем размеры */
+  width: 100%;           /* Или конкретное значение, например 160px */
+  height: 52px;          /* Одинаковая высота для всех кнопок */
+
+  gap: 4px;
+  padding: 8px;
+  border-radius: 10px;
+  background: rgba(13, 117, 117, 0.226);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(44, 44, 44, 0.35);
+  cursor: pointer;
+  transition: all 200ms;
+  align-items: center;
+  margin-bottom: 8px;
+  justify-content: center;
+
+  /* 2. Работа с переполнением текста */
+  overflow: hidden;
+  text-align: center;
+}
+
+.class-card span {
+  /* 3. Магия подстройки текста */
+  overflow: hidden;
+  text-overflow: ellipsis; /* Добавляем три точки, если текст совсем не влез */
+  
+  /* Используем динамический размер шрифта */
+  font-size: clamp(12px, 2.5vw, 13px); 
+  /* clamp: минимум 10px, адаптивно 2.5% от ширины экрана, максимум 13px */
+}
+
+.class-card:hover {
+  border-color: rgba(13, 117, 117, 0.514);
+  background: rgba(6, 161, 161, 0.541);
+  /* Основной фон */
+  background: linear-gradient(
+    110deg, 
+    rgba(13, 117, 117, 0.3) 0%, 
+    rgba(13, 117, 117, 0.6) 50%, 
+    rgba(13, 117, 117, 0.3) 100%
+  );
+  background-size: 200% 100%; /* Увеличиваем фон для анимации */
+  
+  /* Эффекты стекла */
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(13, 117, 117, 0.2);
+  
+  /* Анимация */
+  animation: shine 5s linear infinite;
+  transition: transform 0.2s, border 0.2s, box-shadow 0.2s;
+  
+  /* Чтобы свечение не вылезало за края */
+  position: relative;
+  overflow: hidden;
+
+}
+
+.class-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.class-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.class-desc {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.class-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0px 0 8px 0;
+  padding: 4px;
+  background: linear-gradient(
+    110deg, 
+    rgba(13, 117, 117, 0) 0%, 
+    rgba(13, 117, 117, 0.6) 50%, 
+    rgba(13, 117, 117, 0) 100%
+  );
+  border-radius: 20px;
+}
+
+.skeleton {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton::after {
+  content: "";
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+/* Специфичные размеры для ваших блоков */
+.skeleton-tab { width: 80px; height: 32px; border-radius: 20px; }
+.skeleton-card { width: 120px; height: 40px; }
+.skeleton-rec { width: 100%; height: 60px; }

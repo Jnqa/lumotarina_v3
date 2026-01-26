@@ -3,10 +3,12 @@ import { showToast } from './utils/toast';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './CharacterEdit.css';
 import CharacterPreview from './modules/CharacterPreview';
+import ClassSkills from './modules/ClassSkills';
 
-const ABILITY_ORDER = ['Strength','Dexterity','Intelligence','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
+const ABILITY_ORDER = ['Constitution','Strength','Dexterity','Intelligence','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
 
 const ABILITY_EMOJI: Record<string,string> = {
+  Constitution: '💚',
   Strength: '💪',
   Dexterity: '🤸',
   Intelligence: '🧠',
@@ -46,6 +48,12 @@ export default function CharacterEdit(){
      // quiet: do not log character load without ID in production
   }
 
+  useEffect(() => {
+    if (!character) return;
+    console.log('HP changed:', character.hp);
+    console.trace();
+  }, [character?.hp]);
+
   // If there is no initial character (no state and nothing persisted), but the URL
   // contains a character id (e.g. ?charId=2 or ?id=2), try to fetch it from server.
   // This helps when the user opened /character/edit directly or reloaded the page.
@@ -64,16 +72,14 @@ export default function CharacterEdit(){
       (async () => {
         try {
           const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(urlCharId)}`);
-          console.log('[CharacterEdit.initFetch] resp:', resp);
-          if (!resp.ok) return;
-          const data = await resp.json();
-            if (data) {
-            setCharacter(data);
-            try { localStorage.setItem('last_opened_character', JSON.stringify({ ownerId: userId, charId: urlCharId })); } catch(e) {}
+            if (!resp.ok) return;
+            const data = await resp.json();
+              if (data) {
+              try { localStorage.setItem('last_opened_character', JSON.stringify({ ownerId: userId, charId: urlCharId })); } catch(e) {}
+            }
+          } catch (e) {
+            // ignore network errors
           }
-        } catch (e) {
-          // ignore network errors
-        }
       })();
     } catch (e) { /* ignore */ }
   }, []);
@@ -101,10 +107,8 @@ export default function CharacterEdit(){
 
       // 1) If URL contains charId, try to fetch it
       if (urlCharId) {
-        console.log('🧨[CharacterEdit.ensureCharacterId] urlCharId:', urlCharId);
         try {
           const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(urlCharId)}`);
-          console.log('[CharacterEdit.ensureCharacterId] resp for urlCharId:', resp);
           if (resp.ok) {
             const data = await resp.json();
               if (data) {
@@ -123,12 +127,10 @@ export default function CharacterEdit(){
       // 2) Try to find by listing user's characters and matching name+picture
       try {
         const listResp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}`);
-        console.log('💛[CharacterEdit.ensureCharacterId] listResp:', listResp);
         if (listResp.ok) {
           const chars = await listResp.json();
           const entries = Array.isArray(chars) ? chars : Object.keys(chars||{}).map(k => ({ id: k, ...chars[k] }));
           const match = entries.find((ch:any) => (ch.name === (c.name || '')) && ((ch.picture || '') === (c.picture || '')) );
-          console.log('🧨match:', match);
             if (match && match.id) {
             // fetch full data for this id to get all fields
             try {
@@ -170,10 +172,7 @@ export default function CharacterEdit(){
   const [abilityModal, setAbilityModal] = useState<any>(null);
   const [classIconUrl, setClassIconUrl] = useState<string | null>(null);
   const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
-  const [classMeta, setClassMeta] = useState<any>(null);
-  const [actionTypesMap, setActionTypesMap] = useState<any>({});
-  const [showAllSkills, setShowAllSkills] = useState<boolean>(false);
-  
+  const [classMeta, setClassMeta] = useState<any>(null);  
   const [showNewInv, setShowNewInv] = useState<boolean>(false);
   const [noteEditMode, setNoteEditMode] = useState<boolean>(false);
   const [noteText, setNoteText] = useState<string | null>(null);
@@ -187,56 +186,65 @@ export default function CharacterEdit(){
   const [historyText, setHistoryText] = useState<string>('');
   const [historyGenerating, setHistoryGenerating] = useState<boolean>(false);
   // helper to force reload of metadata
-  async function refreshMetadata(){
-    try{
-      const ab = await fetch('/templates/abilities.json'); if (ab.ok){ setAbilitiesMeta(await ab.json()); }
-    }catch(e){}
-
-    // If we have a synced character and a logged-in session, attempt to refresh the character from server
+  async function refreshMetadata() {
+    // --- 1. Загружаем abilities ---
     try {
-      const { ownerId, charId } = getOwnerAndChar();
-      if (ownerId && charId) {
-        try {
-          const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(ownerId)}/${encodeURIComponent(charId)}`);
-          if (resp.ok) {
-            const data = await resp.json();
-            if (data) {
-              setCharacter(data);
-              setNoteText(data.note ?? '');
-              setNotesFetchedFor(charId);
-              // Update genHistory from server and localStorage
-              const story = data.story || '';
-              setGenHistory(story);
-              localStorage.setItem(`genhistory_${ownerId}_${charId}`, story);
-            }
-          }
-        } catch (e) {
-          console.error('Error fetching character from server:', e);
-        }
+      const ab = await fetch('/templates/abilities.json');
+      if (ab.ok) {
+        const abilities = await ab.json();
+        setAbilitiesMeta(abilities);
+      } else {
+        console.error('Failed to load abilities.json:', ab.status);
       }
     } catch (e) {
-      // ignore session parsing errors
+      console.error('Error loading abilities.json:', e);
     }
 
-    // re-run class meta load by toggling class (triggered by effect)
-    setClassMeta(null);
-    setTimeout(()=> setClassMeta(classMeta), 50);
+    // --- 2. Загружаем персонажа с сервера ---
+    const { ownerId, charId } = getOwnerAndChar(); // функция, которая возвращает userId и characterId
+    if (ownerId && charId) {
+      try {
+        const resp = await fetch(
+          `${API_BASE}/characters/user/${encodeURIComponent(ownerId)}/${encodeURIComponent(charId)}`
+        );
+        if (resp.ok) {
+          const data = await resp.json();
+          if (data) {
+            console.log('[💟refresh]Character loaded from server:', data);
+            setCharacter(data);
+            setNoteText(data.note ?? '');
+            setNotesFetchedFor(charId);
+
+            // --- 3. Загружаем classMeta через API по имени класса ---
+            if (data.class) {
+              try {
+                const resp = await fetch(`${API_BASE}/classes/${encodeURIComponent(data.class)}`);
+                if (resp.ok) {
+                  const classData = await resp.json();
+                  setClassMeta(classData);
+                } else {
+                  console.error('Failed to load class metadata:', resp.status);
+                  setClassMeta(null);
+                }
+              } catch (e) {
+                console.error('Error fetching class metadata:', e);
+                setClassMeta(null);
+              }
+            } else {
+              setClassMeta(null); // если класса нет
+            }
+          }
+        } else {
+          console.error('Failed to fetch character:', resp.status);
+        }
+      } catch (e) {
+        console.error('Error fetching character from server:', e);
+      }
+    }
+    console.log('refreshMetadata done. ClassMeta:', classMeta);
   }
 
   useEffect(() => {
-    // load ability localization metadata from public templates
-    fetch('/templates/abilities.json').then(r => r.ok ? r.json() : null).then(data => {
-      if (data) setAbilitiesMeta(data);
-    }).catch(() => {});
-    // also load classes action types (icons & names)
-    fetch('/templates/classes.json').then(r => r.ok ? r.json() : null).then(data => {
-      if (!data) return;
-      const map: any = {};
-      const arr = data.action_types || data.actionTypes || [];
-      for (const it of arr) if (it && it.type) map[it.type] = it;
-      setActionTypesMap(map);
-    }).catch(()=>{});
-
     // load character pictures manifest
     fetch('/templates/character_pictures.json').then(r => r.ok ? r.json() : null).then(data => {
       if (data && Array.isArray(data.pictures)) setPictures(data.pictures);
@@ -436,107 +444,27 @@ export default function CharacterEdit(){
   }
 
   // ensure character has hp and armor defaults when classMeta or abilities are loaded
-  useEffect(() => {
-    if (!character) return;
-    setCharacter((c:any) => {
-      let changed = false;
-      const out = {...c};
-      if (out.armor === undefined || out.armor === null) { out.armor = 1; changed = true; }
-      if ((out.hpMax === undefined || out.hpMax === null) && classMeta) {
-        const classHp = (classMeta && (classMeta.hp || classMeta.baseHp)) || 0;
-        const con = (out.abilities && out.abilities['Constitution']) || 0;
-        out.hpMax = classHp + con;
-        // initialize current hp to max if not present
-        if (out.hp === undefined || out.hp === null) out.hp = out.hpMax;
-        changed = true;
-      }
-      // ensure hp does not exceed hpMax
-      if (out.hpMax !== undefined && out.hp !== undefined && out.hp > out.hpMax) { out.hp = out.hpMax; changed = true; }
-      return changed ? out : c;
-    });
-  }, [classMeta]);
-
-  // Helpers for skills handling
-  function getClassSkills() {
-    // classMeta.skills often is an array with one object that groups actions
-    const skillsObj = (classMeta && classMeta.skills && Array.isArray(classMeta.skills) && classMeta.skills[0]) || (classMeta && classMeta.skills) || {};
-    // normalize keys to expected names
-    return {
-      actions: skillsObj.actions || [],
-      ShortRest: skillsObj.ShortRest || skillsObj.short_rest || skillsObj.Short_Rest || [],
-      LongRest: skillsObj.LongRest || skillsObj.long_rest || skillsObj.Long_Rest || [],
-      Passive: skillsObj.Passive || skillsObj.passive || [],
-    };
-  }
-
-  function learnedSet() {
-    const out = new Set<string>();
-    const s = character?.skills;
-    if (!s) return out;
-    if (Array.isArray(s)) {
-      for (const it of s) { if (it && it.name) out.add(it.name); }
-    } else if (typeof s === 'object') {
-      for (const key of Object.keys(s)) {
-        const arr = s[key] || [];
-        if (Array.isArray(arr)) for (const it of arr) if (it && it.name) out.add(it.name);
-      }
-    }
-    return out;
-  }
-
-  function isSkillLearned(skill:any) {
-    const set = learnedSet();
-    return set.has(skill.name || '');
-  }
-
-  function onSkillClick(skill:any, sectionKey:string) {
-    setAbilityModal({ title: skill.name, desc: skill.effect || skill.description || '', extra:{ skill, sectionKey } });
-  }
-
-  function learnSkill(skill:any, sectionKey:string) {
-    (async ()=>{
-      const sp = character.skillpoints || 0;
-      if (sp <= 0) { showToast('Нет skillpoints', { type: 'error' }); return; }
-      const requiredLevel = skill.level || 1;
-      if ((character.level || 1) < requiredLevel) { showToast(`Требуется уровень ${requiredLevel}`, { type: 'error' }); return; }
-
-      // build optimistic next state
-      const next = {...character};
-      if (!next.skills || typeof next.skills !== 'object') next.skills = {};
-      if (!Array.isArray(next.skills[sectionKey])) next.skills[sectionKey] = [];
-      // avoid duplicates
-      if ((next.skills[sectionKey]||[]).some((x:any)=>x.name===skill.name)) { setAbilityModal(null); return; }
-      next.skills[sectionKey] = [...(next.skills[sectionKey]||[]), skill];
-      next.skillpoints = Math.max(0, (next.skillpoints||0)-1);
-
-      // optimistic update locally
-      setCharacter(next);
-      setAbilityModal(null);
-      showToast(`Изучено: ${skill.name}`, { type: 'success' });
-
-      // attempt to persist to server when possible
-      const session = JSON.parse(localStorage.getItem('session') || '{}');
-      const userId = session?.tgId || session?.uid || session?.userId || null;
-      const remoteId = getRemoteId();
-      if (userId && remoteId) {
-        try {
-          const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}`, {
-            method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(next)
-          });
-          if (resp.ok) {
-            showToast('Навык сохранён на сервере', { type: 'success' });
-          } else {
-            const txt = await resp.text();
-            showToast('Ошибка при сохранении навыка: ' + (txt || resp.status), { type: 'error' });
-          }
-        } catch (e) {
-          showToast('Ошибка соединения при сохранении навыка', { type: 'error' });
-        }
-      } else {
-        showToast('Навык добавлен локально (неавторизовано)', { type: 'info' });
-      }
-    })();
-  }
+  // useEffect(() => {
+  //   if (!character) return;
+  //   setCharacter((c:any) => {
+  //     let changed = false;
+  //     const out = {...c};
+  //     console.log('[💙Out:', out);
+  //     if (out.armor === undefined || out.armor === null) { out.armor = 1; changed = true; }
+  //     if ((out.hpMax === undefined || out.hpMax === null) && classMeta) {
+  //       const classHp = (classMeta && (classMeta.hp || classMeta.baseHp)) || 0;
+  //       const con = (out.abilities && out.abilities['Constitution']) || 0;
+  //       out.hpMax = classHp + con;
+  //       // initialize current hp to max if not present
+  //       // if (out.hp === undefined || out.hp === null) out.hp = out.hpMax;
+  //       changed = true;
+  //     }
+  //     // ensure hp does not exceed hpMax
+  //     if (out.hpMax !== undefined && out.hp !== undefined && out.hp > out.hpMax) { out.hp = out.hpMax; changed = true; }
+  //     return changed ? out : c;
+  //   });
+  //   console.log('[🟡CharacterEdit] character updated:', character);
+  // }, [classMeta]);
 
   async function saveToServer(){
     const session = JSON.parse(localStorage.getItem('session') || '{}');
@@ -678,9 +606,6 @@ export default function CharacterEdit(){
     const ownerId = (navState && (navState.ownerId || navState.owner)) || character?.ownerId || (stored && stored.ownerId) || sessionUserId;
     const charId = urlCharId || (navChar && (navChar.charId || navChar.id || navChar._remoteId || navChar._id || navChar.remoteId)) || (character ? (character.charId || character.id || character._remoteId || character._id || character.remoteId) : null) || (stored && stored.charId) || null;
 
-    // debug: show where charId came from when missing earlier
-    console.log('[CharacterEdit.getOwnerAndChar] navState:', navState, 'urlCharId:', urlCharId, 'characterIdFields:', character && (character.charId || character.id || character._remoteId || character._id || character.remoteId), 'stored:', stored, 'resolved ownerId:', ownerId, 'charId:', charId);
-
     return { ownerId, charId };
   }
 
@@ -713,7 +638,6 @@ export default function CharacterEdit(){
   // Fetch full character from server on initial load (so picture and other fields come from DB)
   useEffect(() => {
     const { ownerId, charId } = getOwnerAndChar();
-    console.log('[CharacterEdit.fetchCharacterEffect] ownerId:', ownerId, 'charId:', charId, 'fetchedCharacterFor:', fetchedCharacterFor);
     if (!ownerId || !charId) return;
     if (fetchedCharacterFor === charId) return; // already fetched
 
@@ -788,10 +712,20 @@ export default function CharacterEdit(){
     }
   }
 
+  function getMaxHP(c: any) {
+    const base = c?.hpMax || 0;
+    const con = c?.abilities?.Constitution || 0;
+    return base + con;
+  }
+
   // (removed unused displayMod helper)
   // compute defense display: base defense from class + floor(Dexterity / 10)
   const _dex = (character.abilities && character.abilities['Dexterity']) || 0;
-  const _baseDef = (classMeta && (classMeta.defense || classMeta.defence)) || 0;
+  const _baseDef = (character && (character.defense || character.armor)) || 0;
+  const _baseMaxHP = (character.hpMax && (character.hpMax) || 0);
+  const _MaxHPComputed = (character.abilities && (_baseMaxHP + character.abilities['Constitution'])) || 0;
+  const curHP = (character.hp && (character.hp) || 0);
+  console.log("baseHP", curHP);
   const _defenseComputed = _baseDef + Math.floor(_dex / 10);
 
   return (
@@ -808,25 +742,37 @@ export default function CharacterEdit(){
             <div className="defense" title={"Defense: " + (_baseDef || 0) + " + Dex/10"}>🛡{_defenseComputed}</div>
             <div className="hp-bar">
               <div className="hp-label" onClick={() => {
-                const classHp = (classMeta && (classMeta.hp || classMeta.baseHp)) || 0;
                 const conValue = (character.abilities && character.abilities['Constitution']) || 0;
-                const totalHp = classHp + conValue;
-                const desc = (abilitiesMeta?.Constitution?.description || "Constitution ability affects health and resilience.") + `\n\nHP Calculation: ${classHp} (base from class) + ${conValue} (Constitution) = ${totalHp}`;
+                const desc = (abilitiesMeta?.Constitution?.description || "Constitution ability affects health and resilience.") + `\n\nHP Calculation: ${_baseMaxHP} (base from class) + ${conValue} (Constitution) = ${_MaxHPComputed}`;
                 setAbilityModal({ title: "Constitution", desc });
               }}> ❤</div>
                 {editMode && (
                   <>
-                    <button className="hp-btn" onClick={() => setCharacter((c:any)=> ({...c, hp: Math.max(0, (c.hp||0)-1)}))}>−</button>
+                    <button className="hp-btn" onClick={() => setCharacter((c:any)=> ({...c, hp: Math.max(0, (c.hp||0)-1)}))}>−</button>   
                   </>
                 )}
               <div className="hp-meter">
-                <div className="hp-fill" style={{width: `${Math.max(0, Math.min(100, ((character.hp||0) / Math.max(1, (character.hpMax||1))) * 100))}%`}} />
+                <div className="hp-fill" style={{width: `${Math.max(0, Math.min(100, ((character.hp||0) / Math.max(1, (_MaxHPComputed))) * 100))}%`}} />
               </div>
               <div className="hp-info">
-                <span className="hp-val">{character.hp ?? 0}/{character.hpMax ?? 0}</span>
+                <span className="hp-val">{character.hp ?? 0}/{_MaxHPComputed}</span>
                 {editMode && (
                   <>
-                    <button className="hp-btn" onClick={() => setCharacter((c:any)=> ({...c, hp: Math.min((c.hpMax||0), (c.hp||0)+1)}))}>+</button>
+                    {/* <button className="hp-btn" onClick={() => setCharacter((c:any)=> ({...c, hp: Math.min((c.hpMax||0), (c.hp||0)+1)}))}>+</button> */}
+                    <button
+                      className="hp-btn"
+                      onClick={() =>
+                        setCharacter((c:any) => {
+                          const maxHP = getMaxHP(c);
+                          return {
+                            ...c,
+                            hp: Math.min(maxHP, (c.hp || 0) + 1),
+                          };
+                        })
+                      }
+                    >
+                      +
+                    </button>
                   </>
                 )}
               </div>
@@ -922,69 +868,12 @@ export default function CharacterEdit(){
               </div>
             </details>
           </div>
-
-
           <div className="section skills-section">
-            <div className="section-header">
-              Навыки
-              <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                <button className="skill-learn-count" onClick={()=>setShowAllSkills(s=>!s)}>[{character.skillpoints||0}]</button>
-                <button className="skill-toggle" onClick={()=>setShowAllSkills(s=>!s)}>{showAllSkills? 'Показать изученные':'Показать все'}</button>
-              </div>
+            <div className="skills-map">
+              <ClassSkills CharacterID={{userId: userId, characterId: character.id}} />
             </div>
 
             {/* Render grouped skills from classMeta (only learned by default) */}
-            {classMeta ? (()=>{
-              const groups = getClassSkills();
-              // mapping from our keys to classes.json type keys
-              const mapKey: any = { actions: 'active', ShortRest: 'short_rest', LongRest: 'long_rest', Passive: 'passive' };
-              const order = ['actions','ShortRest','LongRest','Passive'];
-              const learned = learnedSet();
-              return (
-                <div className="skills-list">
-                  {order.map((secKey)=>{
-                    const arr = (groups as any)[secKey] || [];
-                    if (!arr || arr.length===0) return null;
-                    const typeKey = mapKey[secKey];
-                    const typeMeta = actionTypesMap[typeKey] || {};
-                    // count of learned in this group
-                    const learnedCount = arr.filter((it:any)=> learned.has(it.name)).length;
-                    // if not showing all and none learned, skip
-                    if (!showAllSkills && learnedCount===0) return null;
-                    return (
-                      <div key={secKey} className="skill-group">
-                        <div
-                          className="skill-group-header"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const desc = (typeMeta && (typeMeta.description || typeMeta.desc || typeMeta.info)) || 'Нет описания';
-                            showToast(desc, { type: 'info' });
-                          }}
-                        >
-                          {(typeMeta.icon||'')} {typeMeta.name || secKey} {learnedCount>0? `— ${learnedCount}`: ''}
-                        </div>
-                        <div className="skill-group-items">
-                          {arr.map((it:any, idx:number)=>{
-                            const learnedFlag = learned.has(it.name);
-                            if (!showAllSkills && !learnedFlag) return null;
-                            const canAccess = (character.level || 1) >= (it.level || 1);
-                            return (
-                              <div key={idx} className={`skill-row ${learnedFlag? 'learned':''} ${!canAccess? 'disabled':''}`} onClick={()=> { if (canAccess) onSkillClick(it, secKey); }}>
-                                <div className="skill-dot">▪</div>
-                                <div className="skill-level">lvl{it.level || 1}</div>
-                                <div className="skill-name">{it.name}</div>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })() : (
-              <div className="small">Нет данных класса</div>
-            )}
           </div>
 
 
@@ -1017,44 +906,12 @@ export default function CharacterEdit(){
               <div style={{marginBottom:8}}>{abilityModal.desc}</div>
               {abilityModal.extra && (()=>{
                 const extra = abilityModal.extra as any;
-                if (extra.type === 'class') {
-                  const meta = classMeta || {};
-                  return (
-                    <div style={{display:'flex',flexDirection:'column',gap:8}}>
-                      <div><strong>HP base:</strong> {meta.hp ?? meta.baseHp ?? '—'}</div>
-                      <div><strong>Описание:</strong> {meta.description || ''}</div>
-                      {meta.inventory && <div><strong>Старт. инвентарь:</strong> {JSON.stringify(meta.inventory)}</div>}
-                    </div>
-                  );
-                }
                 if (extra.type === 'inv') {
                   return (
                     <div style={{display:'flex',gap:8,alignItems:'center'}}>
                       <div style={{flex:1}}><strong>Предмет:</strong> {extra.name}</div>
                       <div style={{display:'flex',flexDirection:'column',gap:8}}>
                         <button className="delete-btn" onClick={async ()=>{ await deleteInventoryItem(extra.index); setAbilityModal(null); }}>Удалить</button>
-                      </div>
-                    </div>
-                  );
-                }
-                // skill object handling (legacy shape)
-                if (extra.skill) {
-                  const sk = extra.skill;
-                  const sec = extra.sectionKey || 'actions';
-                  const learnedFlag = isSkillLearned(sk);
-                  return (
-                    <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                      <div style={{flex:1}}>
-                        <div><strong>Уровень:</strong> {sk.level || 1}</div>
-                        <div><strong>Раздел:</strong> {sec}</div>
-                      </div>
-                      <div style={{display:'flex',flexDirection:'column',gap:8}}>
-                        {learnedFlag ? <div style={{padding:6,borderRadius:6,background:'#223322',color:'#bfffbf'}}>Изучено</div> : null}
-                        {showAllSkills && !learnedFlag ? (
-                          ((character.level || 1) >= (sk.level || 1))
-                            ? <button className="learn-btn" onClick={()=>learnSkill(sk, sec)}>Изучить (−1)</button>
-                            : <button className="learn-btn" disabled title={`Требуется уровень ${sk.level || 1}`}>Недоступно</button>
-                        ) : null}
                       </div>
                     </div>
                   );

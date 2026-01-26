@@ -2,12 +2,8 @@ import { useState, useEffect } from 'react';
 // Small subset of ability order + emoji used by CharacterEdit to render highlights
 // Added Athletics/Acrobatics/History so they are editable in master-room
 const ABILITY_ORDER = ['Strength','Dexterity','Constitution','Intelligence','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
-const ABILITY_EMOJI: Record<string,string> = {
-  Strength: '💪', Dexterity: '🤸', Constitution: '🛡️', Intelligence: '🧠', Charisma: '🗣️',
-  Perception: '👀', Willpower: '🫡', Engineering: '⚙️', Medicine: '🩺', Lockpicking: '🪝', Stealth: '🕶️',
-  Lumion: '✨', Nature: '🌿', Survival: '🏕️', Crafting: '🔨',
-};
 import './MasterRoom.css';
+import CharacterPreview from './modules/CharacterPreview';
 
 // Ensure character objects always have ability keys present (fallback to 0)
 function normalizeAbilities<T extends Record<string, any>>(obj: T | null): T | null {
@@ -380,6 +376,25 @@ export default function MasterRoom(){
   // load characters when the component mounts so selector is fast
   useEffect(()=>{ loadAllCharacters(); }, []);
 
+  // guard: only allow access if current user is listed in backend MASTERS env
+  useEffect(() => {
+    (async () => {
+      try {
+        const userId = getCurrentUserId();
+        if (!userId) { window.location.href = '/profile'; return; }
+        const r = await fetch(`${API_BASE}/auth/is_master/${encodeURIComponent(userId)}`);
+        if (!r.ok) { window.location.href = '/profile'; return; }
+        const j = await r.json();
+        if (!j || !j.isMaster) { window.location.href = '/profile'; return; }
+      } catch (e) {
+        console.warn('master check failed', e);
+        window.location.href = '/profile';
+      }
+    })();
+    // run once when API_BASE is resolved
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [API_BASE]);
+
   // load ability metadata (icons/colors) to show proper emoji/icons in highlights
   useEffect(() => {
     (async () => {
@@ -415,7 +430,7 @@ export default function MasterRoom(){
   // Edit modal state
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [editingChar, setEditingChar] = useState<any | null>(null);
-  const [editTab, setEditTab] = useState<'notes'|'abilities'|'skills'>('notes');
+  const [editTab, setEditTab] = useState<'notes'|'abilities'|'skills'|'story'>('notes');
   // class metadata for the currently editing character (to render skills groups)
   const [editingClassMeta, setEditingClassMeta] = useState<any | null>(null);
 
@@ -564,7 +579,7 @@ export default function MasterRoom(){
             </div>
           </div>
           <div className="card-body">
-            <div className="players-grid three-cols">
+            <div className="players-grid">
               {lobby.length===0 ? <div className="small">Нет выбранных игроков</div> : lobby.map((p:any, i:number) => {
                 const character = p || {};
                 const hp = character.hp ?? 0;
@@ -575,8 +590,6 @@ export default function MasterRoom(){
                 return (
                 <div key={i} className={`mr-char-card-visual ${character.status === 'dead' ? 'dead' : ''}`} onClick={() => openEditModal(character)}>
                   <div className="mr-top-bars">
-                    
-                    {/* compute a simple defense: use explicit armor or character.defense or derive from Dexterity */}
                     {(() => {
                       const dex = (character.abilities && character.abilities['Dexterity']) || 0;
                       const baseDef = (character.armor !== undefined && character.armor !== null) ? character.armor : ((character.defense !== undefined && character.defense !== null) ? character.defense : 0);
@@ -594,41 +607,11 @@ export default function MasterRoom(){
                     </div>
                   </div>
                   <div className="mr-avatar"><img src={`/profile_pictures/${pic}`} alt="avatar"/></div>
-                  <div className="mr-main-row">
-                    <div className="mr-level">{level}</div>
-                  </div>
-                    <div className="mr-highlights">
-                      {/* ability highlights */}
-                      {ABILITY_ORDER.map(k => {
-                        const meta = abilitiesMeta && abilitiesMeta[k];
-                        const icon = (meta && (meta.icon || meta.emoji || (meta.iconEmoji as any))) || ABILITY_EMOJI[k] || '';
-                        const v = (character.abilities || {})[k] || 0;
-                        const abs = Math.abs(v);
-                        if (abs >= 10) {
-                          const bg = (meta && meta.color) ? meta.color : 'var(--accent)';
-                          const label = (meta && meta.name) || k;
-                          const mod = v >= 0 ? `+${Math.floor(abs/10)}` : `-${Math.floor(abs/10)}`;
-                          return (
-                            <div key={k} className={`mr-highlight-block ${v>=0? 'pos':'neg'}`} title={label} style={{background: bg, color:'#fff'}}>
-                              <div className="mr-hb-top">
-                                <span className="mr-hb-icon">{icon}{k.length > 4 ? k.slice(0,3).toUpperCase() : k.toUpperCase()}</span>
-                                <span className="mr-hb-mod">{mod}</span>
-                              </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      })}
-
-                      <div className="mr-highlight-block mr-items-card">
-                        <div className="mr-hb-top">
-                          <span className="mr-hb-icon">🎒</span>
-                          <span className="mr-hb-mod">{(character.inventory||[]).length}</span>
-                        </div>
-                        
-                      </div>
-                    </div>
+                    <div className="abilities-map">
+                      <CharacterPreview userId={character.ownerId} charId={character.id} />
+                    </div> 
                   <div className="mr-name-row">
+                    <div className="mr-level">{level}</div>
                     <h2>{character.name}</h2>
                   </div>
                 </div>
@@ -812,32 +795,40 @@ export default function MasterRoom(){
 
       {editModalOpen && editingChar && (
         <div className="modal-overlay" onClick={() => closeEditModal()}>
-          <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+          <div className="modal locked" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <h4>Редактировать: {editingChar.name || `${editingChar.charId}`}</h4>
-            <div style={{display:'flex',gap:8,marginBottom:8}}>
-              <button className={editTab==='notes'? 'blue-btn':''} onClick={() => setEditTab('notes')}>Заметки / Инвентарь</button>
-              <button className={editTab==='abilities'? 'blue-btn':''} onClick={() => setEditTab('abilities')}>Способности</button>
-              <button className={editTab==='skills'? 'blue-btn':''} onClick={() => setEditTab('skills')}>Навыки</button>
+            <div style={{display:'flex',gap:8,marginBottom:8, justifyContent:'space-between'}}>
+              <button className={editTab==='notes'? 'blue-btn active':'blue-btn'} onClick={() => setEditTab('notes')}>Заметки / Инвентарь</button>
+              <button className={editTab==='abilities'? 'blue-btn active':'blue-btn'} onClick={() => setEditTab('abilities')}>Abilities</button>
+              <button className={editTab==='skills'? 'blue-btn active':'blue-btn'} onClick={() => setEditTab('skills')}>Умения</button>
+              <button className={editTab==='story'? 'blue-btn active':'blue-btn'} onClick={() => setEditTab('story')}>📜</button>
             </div>
-            <div style={{display:'flex',gap:12,marginBottom:8,alignItems:'center'}}>
-              <div>
-                <div style={{fontSize:13,color:'var(--muted)'}}>Уровень</div>
-                <input type="number" value={Number(editingChar.level || 1)} onChange={e => setEditingChar((c:any)=> ({...c, level: Number(e.target.value)}))} style={{width:80,padding:6,borderRadius:6}} />
-              </div>
-              <div>
-                <div style={{fontSize:13,color:'var(--muted)'}}>Статус</div>
-                <select value={editingChar.status === 'dead' ? 'dead' : 'alive'} onChange={e => { const v = e.target.value; setEditingChar((c:any)=> ({...c, status: v === 'dead' ? 'dead' : 'alive'})); }} style={{padding:6,borderRadius:6}}>
-                  <option value="alive">Жив</option>
-                  <option value="dead">Мёртв</option>
-                </select>
-              </div>
-            </div>
+            
             <div style={{maxHeight:'50vh',overflow:'auto',padding:6}}>
               {editTab==='notes' && (
                 <div>
+                  <div style={{display:'flex',gap:12,marginBottom:8,alignItems:'center'}}>
+                  <div>
+                    <div style={{fontSize:13,color:'var(--muted)'}}>level</div>
+                    <input id="levelinput" className="inputStylized short" type="number" value={Number(editingChar.level || 1)} onChange={e => setEditingChar((c:any)=> ({...c, level: Number(e.target.value)}))} style={{width:80,padding:6,borderRadius:6}} />
+                  </div>
+                <div>
+                  <div style={{fontSize:13,color:'var(--muted)'}}>status</div>
+                    <select id="statusinput" className="selectStylized" value={editingChar.status === 'dead' ? 'dead' : 'alive'} onChange={e => { const v = e.target.value; setEditingChar((c:any)=> ({...c, status: v === 'dead' ? 'dead' : 'alive'})); }} style={{padding:6,borderRadius:6}}>
+                      <option value="alive">жив</option>
+                      <option value="dead">мертв</option>
+                    </select>
+                  </div>
+                  <div>
+                    <div style={{fontSize:13,color:'var(--muted)'}}>hp</div>
+                    <input id="hpinput" className="inputStylized short" type="number" value={Number(editingChar.hp || 0)} onChange={e => setEditingChar((c:any)=> ({...c, hp: Number(e.target.value)}))} style={{width:80,padding:6,borderRadius:6}} />
+                  </div>
+                  <div style={{fontSize:11,color:'var(--muted)'}}>💬<div></div>{editingChar.class||''}</div>
+                  <div style={{fontSize:11,color:'var(--muted)'}}>👤🆔{editingChar.id||''} <div></div>{editingChar.ownerId||''}</div>
+                </div>
                   <div style={{marginBottom:8}}>
                     <div style={{fontSize:13,color:'var(--muted)',marginBottom:6}}>Заметка персонажа</div>
-                    <textarea style={{width:'100%',minHeight:120}} value={editingChar.note||''} onChange={e => setEditingChar((c:any)=> ({...c, note: e.target.value}))} />
+                    <textarea style={{width:'100%',minHeight:120, borderRadius:2}} value={editingChar.note||''} onChange={e => setEditingChar((c:any)=> ({...c, note: e.target.value}))} />
                   </div>
                   <div style={{marginTop:10}}>
                     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:6}}>
@@ -845,7 +836,7 @@ export default function MasterRoom(){
                       <div style={{fontSize:12,color:'var(--muted)'}}>{(editingChar.inventory||[]).length} предмет(а/ов)</div>
                     </div>
                     <div style={{display:'flex',gap:8}}>
-                      <input id="newItemInput" placeholder="Новый предмет" style={{flex:1}} />
+                      <input id="newItemInput" className="inputStylized" placeholder="Новый предмет" style={{flex:1}} />
                       <button className="simple-btn" onClick={() => {
                         const el = document.getElementById('newItemInput') as HTMLInputElement | null; if (!el) return; const v = el.value.trim(); if (!v) return; setEditingChar((c:any)=> ({...c, inventory:[...(c.inventory||[]), v]})); el.value='';
                       }}>Добавить</button>
@@ -864,20 +855,20 @@ export default function MasterRoom(){
               {editTab==='abilities' && (
                 <div>
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-                    <div style={{fontWeight:700}}>Ability Points</div>
+                    <div style={{fontWeight:600}}>Ability Points</div>
                     <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                      <input type="number" value={Number(editingChar.abilityPoints || 0)} onChange={e => setEditingChar((c:any)=> ({...c, abilityPoints: Number(e.target.value)}))} style={{width:80,padding:6,borderRadius:6}} />
+                      <input className="inputStylized" type="number" value={Number(editingChar.abilityPoints || 0)} onChange={e => setEditingChar((c:any)=> ({...c, abilityPoints: Number(e.target.value)}))} style={{width:80,padding:6,borderRadius:6}} />
                     </div>
                   </div>
-                  <div style={{display:'grid',gridTemplateColumns:'1fr 80px',gap:8}}>
+                  <div style={{display:'grid',gridTemplateColumns:'1fr 180px',gap:2}}>
                     {ABILITY_ORDER.map((k:string) => (
                       <div key={k} style={{display:'contents'}}>
-                        <div style={{padding:6,alignSelf:'center',display:'flex',alignItems:'center',gap:8}}>
+                        <div style={{padding:4,alignSelf:'center',display:'flex', justifyContent:'space-between', maxWidth:'360px', alignItems:'center',gap:8}}>
                           <span style={{fontWeight:600}}>{k}</span>
                           <span style={{fontSize:12,color:'var(--muted)'}}>{(abilitiesMeta && abilitiesMeta[k] && abilitiesMeta[k].abbreviation) || ''}</span>
                         </div>
-                        <div style={{padding:6}}>
-                          <input type="number" value={Number((editingChar.abilities || {})[k] || 0)} onChange={e => setEditingChar((c:any)=> ({...c, abilities:{...(c.abilities||{}), [k]: Number(e.target.value)}}))} />
+                        <div style={{padding:6, justifyContent:'end', display:'flex', alignItems:'center',gap:8}}>
+                          <input type="number" className="inputStylized small" value={Number((editingChar.abilities || {})[k] || 0)} onChange={e => setEditingChar((c:any)=> ({...c, abilities:{...(c.abilities||{}), [k]: Number(e.target.value)}}))} />
                         </div>
                       </div>
                     ))}
@@ -889,7 +880,7 @@ export default function MasterRoom(){
                   <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
                     <div style={{fontWeight:700}}>Skill Points</div>
                     <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                      <input type="number" value={Number(editingChar.skillpoints || editingChar.skillPoints || 0)} onChange={e => setEditingChar((c:any)=> ({...c, skillpoints: Number(e.target.value)}))} style={{width:80,padding:6,borderRadius:6}} />
+                      <input type="number" className="inputStylized" value={Number(editingChar.skillpoints || editingChar.skillPoints || 0)} onChange={e => setEditingChar((c:any)=> ({...c, skillpoints: Number(e.target.value)}))} style={{width:80,padding:6,borderRadius:6}} />
                     </div>
                   </div>
 
@@ -941,7 +932,7 @@ export default function MasterRoom(){
                                     </div>
                                     <div style={{padding:6}}>
                                       {isSkillLearned(skill) ? (
-                                        <button className="small-btn" onClick={() => alert('Уже изучено')}>Изучено</button>
+                                        <button className="small-btn learned" onClick={() => alert('Уже изучено')}>Изучено</button>
                                       ) : (
                                         <button className="small-btn" onClick={() => learnSkill(skill, grpKey)}>Изучить</button>
                                       )}
@@ -957,6 +948,17 @@ export default function MasterRoom(){
                   })() : (
                     <div className="small">Нет данных класса для отображения навыков</div>
                   )}
+                </div>
+              )}
+              {editTab==='story' && (
+                <div>
+                  <div>🀄{editingChar.class||''}</div>
+                <br />
+                  <div style={{fontSize:13,color:'var(--muted)'}}>⚡ История</div>
+                  <textarea value={editingChar.story||''} onChange={e=> setEditingChar((c:any)=> ({...c, story: e.target.value}))} style={{width:'100%',minHeight:120}} />
+                <br />
+                  <div style={{fontSize:13,color:'var(--muted)'}}>🚂 Выбранная история</div>
+                  <textarea value={editingChar.history||''} onChange={e=> setEditingChar((c:any)=> ({...c, history: e.target.value}))} style={{width:'100%',minHeight:120}} />
                 </div>
               )}
             </div>

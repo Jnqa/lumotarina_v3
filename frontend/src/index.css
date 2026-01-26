@@ -25,7 +25,7 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  place-items: start;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -47,22 +47,40 @@ button {
   transition: border-color 0.25s;
 }
 button:hover {
-  border-color: #646cff;
+  border-color: #9dc6fc1e;
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 0px #ffffff22;
+  overflow: hidden;
 }
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: #eef5fc;
+    background-color: #35333322;
   }
   a:hover {
-    color: #747bff;
+    color: #e3e5ffd8;
   }
   button {
-    background-color: #f9f9f9;
+    background: rgba(5, 5, 5, 0.10);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color: #eef5fc;
+    background-color: #18171a22;
+  }
+  a:hover {
+    color: #eeeef1d8;
+  }
+  button {
+    background: rgba(5, 5, 5, 0.10);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
   }
 }

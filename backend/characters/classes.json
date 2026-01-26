@@ -4,7 +4,6 @@
     "bartender.json",
     "biotech_specialist.json",
     "custom1.json",
-    "custom2.json",
     "field_medic.json",
     "guardian.json",
     "liar_journalist.json",
@@ -15,6 +14,7 @@
     "mirain_graduate.json",
     "paranormal.json",
     "pickpocket.json",
+    "regalif.json",
     "truth_journalist.json",
     "volkov_thug.json"
   ],
