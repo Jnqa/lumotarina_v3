@@ -71,8 +71,9 @@ y.hp-info{ display:flex; gap:6px; align-items:center; margin-left:8px }
 .ability-val{ width:36px; text-align:right }
 .ability-controls button{ margin-left:6px }
 
-.ability-modal{ position:fixed; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:60 }
-.ability-modal-content{ background:#0d0d0d; color:#fff; border-radius:8px; padding:12px; width:320px; max-width:90% }
+.ability-modal{ position:fixed; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:flex-start; justify-content:center; padding:24px 0; overflow:auto; -webkit-overflow-scrolling:touch; z-index:60 }
+.ability-modal-content{ background:#0d0d0d; color:#fff; border-radius:8px; padding:12px; width:320px; max-width:90%; max-height:calc(100vh - 48px); overflow-y:auto; -webkit-overflow-scrolling:touch }
+.gallery-modal-content{ background:#0d0d0d; color:#fff; border-radius:8px; padding:12px; width:320px; max-width:95%; max-height:calc(100vh - 48px); overflow-y:auto; margin:12px auto; -webkit-overflow-scrolling:touch; }
 .ability-modal-header{ display:flex; justify-content:space-between; align-items:center; margin-bottom:8px }
 .ability-modal-close{ background:transparent; border:none; color:#fff; font-size:20px; cursor:pointer }
 .ability-modal-body{ color:#ddd; white-space:pre-wrap }

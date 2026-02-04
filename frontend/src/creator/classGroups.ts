@@ -16,8 +16,7 @@ export const CLASS_GROUPS: Record<string, string[]> = {
   ],
 
   journalists: [
-    'liar_journalist',
-    'truth_journalist',
+    'journalist',
   ],
 
   craftsmen: [

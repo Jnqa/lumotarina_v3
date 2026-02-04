@@ -8,10 +8,27 @@
 }
 
 .recomend-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, auto));
+  display: flex;
   gap: 8px;
-  justify-content: center;
+  margin: 0;
+  padding: 0;
+
+  /* Ограничиваем контейнер шириной родителя/экрана */
+  max-width: 100%; 
+  box-sizing: border-box; /* Чтобы padding не добавлял ширину */
+
+  /* Включаем прокрутку */
+  overflow-x: auto; 
+  flex-wrap: nowrap; /* Важно: элементы в одну строку */
+  
+  /* Убираем лишнее, что может мешать */
+  justify-content: flex-start;
+  white-space: nowrap; 
+}
+
+/* ВАЖНО: примените это к элементам внутри списка */
+.recomend-list > * {
+  flex-shrink: 0; /* Запрещает карточкам сжиматься, заставляя их уходить в скролл */
 }
 
 .recomend-card {
@@ -23,6 +40,7 @@
   align-items: center;
   justify-content: center;
   margin-bottom: 8px;
+  max-height: 52px;
   cursor: pointer;
   
   /* Основной фон */

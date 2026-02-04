@@ -6,7 +6,7 @@
     "custom1.json",
     "field_medic.json",
     "guardian.json",
-    "liar_journalist.json",
+    "journalist.json",
     "locksmith.json",
     "luminomancer.json",
     "martoni_thug.json",
@@ -15,8 +15,10 @@
     "paranormal.json",
     "pickpocket.json",
     "regalif.json",
-    "truth_journalist.json",
-    "volkov_thug.json"
+    "volkov_thug.json",
+    "illusionist.json",
+    "shadow_thrall.json",
+    "zenary.json"
   ],
   "action_types":
   [

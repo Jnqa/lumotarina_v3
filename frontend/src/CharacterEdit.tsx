@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import './CharacterEdit.css';
 import CharacterPreview from './modules/CharacterPreview';
 import ClassSkills from './modules/ClassSkills';
+import { Gallery } from './modules/Gallery';
 
 const ABILITY_ORDER = ['Constitution','Strength','Dexterity','Intelligence','Charisma','Perception','Willpower','Engineering','Medicine','Lockpicking','Stealth','Lumion','Nature','Survival','Crafting','Athletics','Acrobatics','History'];
 
@@ -177,9 +178,8 @@ export default function CharacterEdit(){
   const [noteEditMode, setNoteEditMode] = useState<boolean>(false);
   const [noteText, setNoteText] = useState<string | null>(null);
   const [notesOpen, setNotesOpen] = useState<boolean>(false);
-  const [pictures, setPictures] = useState<any[]>([]);
-  const [pictureModalOpen, setPictureModalOpen] = useState<boolean>(false);
-  const [pictureFilter, setPictureFilter] = useState<string>('all');
+  const [galleryOpen, setGalleryOpen] = useState<boolean>(false);
+  const GALLERY_BASE = 'https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/images/';
   // genhistory: load/save generated history for this character
   const [genHistory, setGenHistory] = useState<string | null>(null);
   const [historyModalOpen, setHistoryModalOpen] = useState<boolean>(false);
@@ -244,12 +244,7 @@ export default function CharacterEdit(){
     console.log('refreshMetadata done. ClassMeta:', classMeta);
   }
 
-  useEffect(() => {
-    // load character pictures manifest
-    fetch('/templates/character_pictures.json').then(r => r.ok ? r.json() : null).then(data => {
-      if (data && Array.isArray(data.pictures)) setPictures(data.pictures);
-    }).catch(()=>{});
-  }, []);
+  // Gallery will load remote images; local manifest is not used for gallery flow.
 
   // Load generated history for this character from localStorage (updated via refresh)
   async function loadGenHistory() {
@@ -728,6 +723,16 @@ export default function CharacterEdit(){
   console.log("baseHP", curHP);
   const _defenseComputed = _baseDef + Math.floor(_dex / 10);
 
+  async function handleGallerySelect(item: any) {
+    if (!item) return;
+    const pictureUrl = (typeof item.path === 'string' && item.path.startsWith('http')) ? item.path : (GALLERY_BASE + (item.path || item.file || ''));
+    const next = { ...character, picture: pictureUrl };
+    // Gallery already attempts to persist selection to the server before calling onSelect.
+    setCharacter(next);
+    showToast('Изображение выбрано', { type: 'success' });
+    setGalleryOpen(false);
+  }
+
   return (
     <div className="char-edit-root">
       <div style={{display:'flex',gap:8,alignItems:'center',justifyContent: 'space-between'}}>
@@ -778,7 +783,7 @@ export default function CharacterEdit(){
               </div>
             </div>
           </div>
-          <div className="avatar"><img src={`/profile_pictures/${character.picture || 'profile_picture_00.jpg'}`} alt="avatar"/></div>
+          <div className="avatar"><img src={`${character.picture || '/profile_pictures/profile_picture_00.jpg'}`} alt="avatar"/></div>
           <div className="main-row">
             <div className="level">{character.level || 1}</div>
             <div className="class-icon" onClick={() => {
@@ -790,7 +795,7 @@ export default function CharacterEdit(){
           </div>
           {editMode && (
             <div className="name-row">
-              <button className="simple-btn" onClick={() => setPictureModalOpen(true)}>Изменить изображение</button>
+              <button className="simple-btn" onClick={() => setGalleryOpen(true)}>Изменить изображение</button>
             </div>
           )}
           <div className="name-row">
@@ -942,47 +947,16 @@ export default function CharacterEdit(){
         </div>
       )}
 
-      {pictureModalOpen && (
-        <div className="ability-modal" onClick={() => setPictureModalOpen(false)}>
-          <div className="ability-modal-content" onClick={(e)=>e.stopPropagation()} style={{width:520,maxWidth:'95%'}}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+      
+
+      {galleryOpen && (
+        <div className="ability-modal" onClick={() => setGalleryOpen(false)}>
+          <div className="gallery-modal-content" onClick={(e) => e.stopPropagation()} style={{ width: 720, maxWidth: '95%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
               <strong>Выберите изображение</strong>
-              <button className="ability-modal-close" onClick={() => setPictureModalOpen(false)}>×</button>
+              <button className="ability-modal-close" onClick={() => setGalleryOpen(false)}>×</button>
             </div>
-            <div style={{display:'flex',gap:8,marginBottom:8}}>
-              <button className={`simple-btn`} onClick={()=>setPictureFilter('all')}>Все</button>
-              <button className={`simple-btn`} onClick={()=>setPictureFilter('default')}>Default</button>
-              <button className={`simple-btn`} onClick={()=>setPictureFilter('male')}>Male</button>
-              <button className={`simple-btn`} onClick={()=>setPictureFilter('female')}>Female</button>
-            </div>
-            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(90px,1fr))',gap:8,maxHeight:360,overflow:'auto'}}>
-              {pictures.filter(p => pictureFilter==='all' ? true : p.tag === pictureFilter).map((p:any)=> (
-                <div key={p.file} style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6}}>
-                  <img src={`/profile_pictures/${p.file}`} alt={p.file} style={{width:80,height:80,objectFit:'cover',borderRadius:8,border: (character.picture===p.file? '2px solid #6b5cff' : '1px solid #222') ,cursor:'pointer'}} onClick={async()=>{
-                    // optimistic update
-                    const next = {...character, picture: p.file};
-                    setCharacter(next);
-                    // persist to server when possible
-                    const session = JSON.parse(localStorage.getItem('session') || '{}');
-                    const userId = session?.tgId || session?.uid || session?.userId || null;
-                    const remoteId = getRemoteId();
-                    if (userId && remoteId) {
-                      try {
-                        const resp = await fetch(`${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}/picture`, {
-                          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ picture: p.file })
-                        });
-                        if (resp.ok) showToast('Изображение сохранено', { type: 'success' });
-                        else { const txt = await resp.text(); showToast('Ошибка: '+(txt||resp.status), { type: 'error' }); }
-                      } catch (e) { showToast('Ошибка соединения при сохранении изображения', { type: 'error' }); }
-                    } else {
-                      showToast('Изображение изменено локально (неавторизовано)', { type: 'info' });
-                    }
-                    setPictureModalOpen(false);
-                  }} />
-                  <div style={{fontSize:12}}>{p.file.replace('.jpg','')}</div>
-                </div>
-              ))}
-            </div>
+            <Gallery onSelect={handleGallerySelect} charId={getRemoteId() || undefined} />
           </div>
         </div>
       )}

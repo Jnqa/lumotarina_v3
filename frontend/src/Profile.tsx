@@ -181,7 +181,7 @@ export default function Profile() {
                 {characters.map((c: any, idx: number) => (
                   <div key={c.id || idx} className="character-tile" onClick={() => { nav('/character/edit', { state: { character: c } }); }}>
                     <div className="tile-left">
-                      <img src={`/profile_pictures/${c.picture || 'profile_picture_00.jpg'}`} alt={c.name || 'avatar'} />
+                      <img src={`${c.picture || '/profile_pictures/profile_picture_00.jpg'}`} alt={c.name || 'avatar'} />
                     </div>
                     <div className="tile-right">
                       <div className="tile-name">{c.name || 'Без имени'}</div>

@@ -23,7 +23,9 @@ type ClassData = {
 const categories: Category[] = [
   {
     name: 'Шоумены',
-    classes: [{ name: 'Бармен', id: 'bartender' }]
+    classes: [
+      { name: 'Бармен', id: 'bartender' },
+      { name: 'Иллюзионист', id: 'illusionist' }]
   },
   {
     name: 'Медики',
@@ -43,14 +45,13 @@ const categories: Category[] = [
   {
     name: 'Журналисты',
     classes: [
-      { name: 'Лживый', id: 'liar_journalist' },
-      { name: 'Честный', id: 'truth_journalist' }
+      { name: 'Журналист', id: 'journalist' }
     ]
   },
   {
-    name: 'Криминалы',
+    name: 'Умельцы',
     classes: [
-      { name: 'Взломщик', id: 'locksmith' },
+      { name: 'Инженер-взломщик', id: 'locksmith' },
       { name: 'Вор', id: 'pickpocket' }
     ]
   },

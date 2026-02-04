@@ -586,7 +586,7 @@ export default function MasterRoom(){
                 const hpMax = character.hpMax ?? 0;
                 const hpPercent = Math.max(0, Math.min(100, (hpMax > 0 ? (hp / hpMax) * 100 : 0)));
                 const level = character.level || 1;
-                const pic = character.picture || 'profile_picture_00.jpg';
+                const pic = character.picture || '/profile_pictures/profile_picture_00.jpg';
                 return (
                 <div key={i} className={`mr-char-card-visual ${character.status === 'dead' ? 'dead' : ''}`} onClick={() => openEditModal(character)}>
                   <div className="mr-top-bars">
@@ -606,7 +606,7 @@ export default function MasterRoom(){
                       </div>
                     </div>
                   </div>
-                  <div className="mr-avatar"><img src={`/profile_pictures/${pic}`} alt="avatar"/></div>
+                  <div className="mr-avatar"><img src={`${pic}`} alt="avatar"/></div>
                     <div className="abilities-map">
                       <CharacterPreview userId={character.ownerId} charId={character.id} />
                     </div> 
@@ -649,8 +649,8 @@ export default function MasterRoom(){
       </main>
 
       {showCommands && (
-        <div className="modal-overlay" onClick={() => setShowCommands(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+        <div className="modal-overlay-x" onClick={() => setShowCommands(false)}>
+          <div className="modal-choose" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <h4>Быстрые команды</h4>
                   <div style={{display:'flex',flexDirection:'column',gap:8}}>
                     <button className="cmd-btn" onClick={async () => { await healEveryone(10); setShowCommands(false); }}>Вылечить всем +10 HP</button>
@@ -669,8 +669,8 @@ export default function MasterRoom(){
         </div>
       )}
         {showSelectModal && (
-          <div className="modal-overlay" onClick={() => setShowSelectModal(false)}>
-            <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+          <div className="modal-overlay-x" onClick={() => setShowSelectModal(false)}>
+            <div className="modal-choose" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
               <h4>Выбрать игроков</h4>
               <div style={{maxHeight: '50vh', overflow:'auto'}}>
                 <table style={{width:'100%',borderCollapse:'collapse'}}>
@@ -680,7 +680,7 @@ export default function MasterRoom(){
                       return (
                         <tr key={idx} style={{borderBottom:'1px solid var(--border)'}}>
                           <td style={{padding:8,verticalAlign:'middle',width:56}}>
-                            <img src={`/profile_pictures/${c.picture}`} alt="p" style={{width:44,height:44,borderRadius:8}}/>
+                            <img src={`${c.picture}`} alt="p" style={{width:44,height:44,borderRadius:8}}/>
                           </td>
                           <td style={{padding:8}}>
                             <div style={{fontWeight:600}}>{c.name}</div>
@@ -703,8 +703,8 @@ export default function MasterRoom(){
           </div>
         )}
       {notesModalOpen && (
-        <div className="modal-overlay" onClick={() => setNotesModalOpen(false)}>
-          <div className="modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+        <div className="modal-overlay-x" onClick={() => setNotesModalOpen(false)}>
+          <div className="modal-choose" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <h4>{noteForm.id ? 'Редактировать заметку' : 'Новая заметка'}</h4>
             <div style={{display:'flex',gap:8,marginBottom:8}}>
               <select value={noteForm.type} onChange={e => setNoteForm((f:any)=> ({...f, type: e.target.value}))}>
@@ -794,8 +794,8 @@ export default function MasterRoom(){
       )}
 
       {editModalOpen && editingChar && (
-        <div className="modal-overlay" onClick={() => closeEditModal()}>
-          <div className="modal locked" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
+        <div className="modal-overlay-x" onClick={() => closeEditModal()}>
+          <div className="modal-choose locked" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
             <h4>Редактировать: {editingChar.name || `${editingChar.charId}`}</h4>
             <div style={{display:'flex',gap:8,marginBottom:8, justifyContent:'space-between'}}>
               <button className={editTab==='notes'? 'blue-btn active':'blue-btn'} onClick={() => setEditTab('notes')}>Заметки / Инвентарь</button>

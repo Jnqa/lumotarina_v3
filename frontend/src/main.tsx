@@ -18,6 +18,7 @@ import CharacterPreview from './modules/CharacterPreview';
 import ClassPreviewSkills from './modules/ClassPreviewSkills';
 import CharacterCreation from './creator/CharacterCreation';
 import CharacterCreationClass from './creator/CharacterCreationClass';
+import { Gallery } from './modules/Gallery';
 
 const ClassPreviewPage = () => {
   const { classId } = useParams<{ classId: string }>();
@@ -61,6 +62,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/character/module/AbilityMap/:userId/:charId" element={<CharacterPreviewPage />} />
         <Route path="/class/preview/:classId" element={<ClassPreviewPage />} />
         <Route path="/class/preview-skills/:className" element={<ClassPreviewSkillsPage />} />
+        <Route path="/gallery" element={<Gallery />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -182,11 +182,14 @@
 
 /* Контейнер модалки */
 .modal-content {
-  background: #1c1c1e; /* Темный графит (меньше режет глаза, чем чисто черный) */
+  background: rgba(5, 5, 5, 0.18);
+  padding: 2px 8px 2px 0px;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
   color: #e5e5e7;
   width: 100%;
   max-width: 550px;
-  height: 86vh; /* Занимает большую часть экрана по высоте */
+  /* height: 86vh;  */
   border-radius: 24px 24px 0 0; /* Закругленные верхние углы как в современных мобильных ОС */
   padding: 24px;
   display: flex;
