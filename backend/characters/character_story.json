@@ -67,7 +67,7 @@
         },
         {
           "id": "shadowblood",
-          "text": "Тенекровые",
+          "text": "Луноликие",
           "effects": {
             "tags": ["no_city", "dark_origin"],
             "classes": ["pickpocket","shadow_thrall"]
