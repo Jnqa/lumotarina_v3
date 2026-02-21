@@ -4,6 +4,8 @@ import Lore from './Lore';
 import CharacterCreating from './CharacterCreating';
 import CharacterCreatingClass from './CharacterCreatingClass';
 import CharacterEdit from './CharacterEdit';
+import AdminPanel from './AdminPanel';
+import Auth from './auth';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
@@ -48,6 +50,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<App />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/auth/magic-link" element={<Auth />} />
+        <Route path="/admin-panel" element={<AdminPanel />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/intro" element={<Intro />} />
         <Route path="/master-room" element={<MasterRoom />} />

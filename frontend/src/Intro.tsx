@@ -92,15 +92,7 @@ export default function Intro() {
 
   return (
     <div className="intro">
-      <div
-        className="intro-back"
-        role="button"
-        tabIndex={0}
-        onClick={() => nav('/')}
-        onKeyDown={(e) => e.key === 'Enter' && nav('/')}
-      >
-        ←
-      </div>
+      <button className="lore-back-top" onClick={() => nav('/')}>← Home</button>
 
       <div className="intro-tabs">
         <div
@@ -158,6 +150,7 @@ function Classes() {
 
   return (
     <>
+    
       <div className="intro-subtabs">
         {categories.map(cat => (
           <button

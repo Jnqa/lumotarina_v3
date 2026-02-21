@@ -1,0 +1,52 @@
+.auth-container {
+  max-width: 520px;
+  margin: 40px auto;
+  padding: 16px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  background: #333131;
+  text-align: center;
+}
+
+.auth-container input[type="text"] {
+  padding: 8px 10px;
+  margin: 8px 0;
+  width: 80%;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.auth-container button {
+  margin-top: 8px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  background: #616161;
+  color: #fff;
+  cursor: pointer;
+}
+
+.auth-container .error {
+  margin-top: 12px;
+  color: #a00;
+}
+
+.telegram-down {
+  background: #fff4e5;
+  color: #663c00;
+  padding: 8px 12px;
+  border: 1px solid #ffdca8;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+/* Highlight inputs/buttons when Telegram is unavailable */
+.tg-unavailable {
+  border: 2px solid #ffb2a822 !important;
+  box-shadow: 0 0 0 3px rgba(198,40,40,0.08);
+  background: #5e3802;
+}
+
+.tg-unavailable[type="button"], .tg-unavailable[type="submit"], .tg-unavailable.button {
+  background: #7f1d1d33 !important;
+}

@@ -126,6 +126,37 @@ body.profile-bg {
   to { transform: translateY(-100px) scale(0.1); opacity: 0; }
 }
 
+.lore-back-top {
+  animation: shrink linear both;
+  animation-timeline: scroll(root block);
+  animation-range: 0px 100px;
+  position: sticky;
+  top: 12px;
+  z-index: 10;
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  margin: 8px 0 0 8px;
+  border-radius: 18px;
+  background: rgba(5, 5, 5, 0.18);
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  border: 1px solid rgba(205, 205, 205, 0.35);
+  color: #fff;
+  font-weight: 500;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.43);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  font-size: 14px;
+  width: fit-content;
+}
+
+.lore-back-top:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
 .intro-back {
   /* Привязываем анимацию к прокрутке всей страницы */
   animation: shrink linear both;

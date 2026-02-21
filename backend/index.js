@@ -78,20 +78,24 @@ app.post('/auth/token', express.json(), (req, res) => {
 });
 // Запуск Telegram-бота вместе с backend и экспорт функций для кода
 let sendLoginCode, checkLoginCode;
-try {
-  const botModule = require('./bot');
-  sendLoginCode = botModule.sendLoginCode;
-  checkLoginCode = botModule.checkLoginCode;
+const botModule = require('./bot');
+sendLoginCode = botModule.sendLoginCode;
+checkLoginCode = botModule.checkLoginCode;
+if (botModule.isTelegramAvailable && botModule.isTelegramAvailable()) {
   console.log('Telegram bot started with backend');
-} catch (e) {
-  console.error('Telegram bot failed to start:', e);
+} else {
+  console.log('Telegram bot unavailable; proceeding without Telegram');
 }
 // Endpoint: отправить код в Telegram
 app.post('/auth/send-code', express.json(), (req, res) => {
   const { tg_id } = req.body;
   if (!tg_id) return res.status(400).json({ success: false, error: 'tg_id required' });
-  sendLoginCode(tg_id);
-  res.json({ success: true });
+  try {
+    sendLoginCode(tg_id);
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Telegram unavailable' });
+  }
 });
 
 // Endpoint: проверить код
@@ -109,6 +113,121 @@ app.post('/auth/telegram', express.json(), (req, res) => {
     res.json({ success: true });
   } else {
     res.status(401).json({ success: false, error: 'Invalid Telegram auth' });
+  }
+});
+
+// Endpoint: проверить доступность Telegram (для фронтенда)
+app.get('/auth/telegram-status', (req, res) => {
+  try {
+    if (botModule && botModule.getTelegramStatus) {
+      const st = botModule.getTelegramStatus();
+      return res.json(st);
+    }
+    const available = !!(botModule && botModule.isTelegramAvailable && botModule.isTelegramAvailable());
+    res.json({ available, lastErrorMessage: null, isConflict: false });
+  } catch (e) {
+    res.json({ available: false, lastErrorMessage: null, isConflict: false });
+  }
+});
+
+// Endpoint: проверить пароль админ-панели
+app.post('/admin/verify-password', express.json(), (req, res) => {
+  const { password } = req.body;
+  const adminPassword = process.env.ADMIN_PANEL_PASSWORD || '';
+  if (!adminPassword) {
+    return res.status(500).json({ success: false, error: 'Admin password not configured' });
+  }
+  if (password === adminPassword) {
+    res.json({ success: true });
+  } else {
+    res.status(401).json({ success: false, error: 'Invalid password' });
+  }
+});
+
+// Endpoint: создать magic link JWT для конкретного пользователя (tg_id)
+app.post('/admin/generate-magic-link', express.json(), (req, res) => {
+  const { tg_id, password } = req.body;
+  if (!password || !tg_id) {
+    return res.status(400).json({ success: false, error: 'password and tg_id required' });
+  }
+  const adminPassword = process.env.ADMIN_PANEL_PASSWORD || '';
+  if (password !== adminPassword) {
+    return res.status(401).json({ success: false, error: 'Invalid admin password' });
+  }
+  try {
+    // Generate JWT with 1-hour expiration
+    const token = jwt.sign({ tg_id, type: 'magic_link' }, JWT_SECRET, { expiresIn: '1h' });
+    res.json({ success: true, token });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Token generation failed' });
+  }
+});
+
+// Endpoint: fetch all users from Firebase
+app.get('/admin/users', express.json(), async (req, res) => {
+  const { password } = req.query;
+  if (!password) {
+    return res.status(401).json({ success: false, error: 'Admin password required' });
+  }
+  const adminPassword = process.env.ADMIN_PANEL_PASSWORD || '';
+  if (password !== adminPassword) {
+    return res.status(401).json({ success: false, error: 'Invalid admin password' });
+  }
+  try {
+    const usersRef = admin.database().ref('users');
+    const snapshot = await usersRef.once('value');
+    const usersData = snapshot.val() || {};
+    // Format as array of { tg_id, displayName, ... }
+    const usersList = Object.entries(usersData).map(([tg_id, userData]) => ({
+      tg_id,
+      ...userData
+    }));
+    res.json({ success: true, users: usersList });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+// Endpoint: create new user
+app.post('/admin/create-user', express.json(), async (req, res) => {
+  const { password, user } = req.body;
+  if (!password || !user) {
+    return res.status(400).json({ success: false, error: 'Password and user data required' });
+  }
+  const adminPassword = process.env.ADMIN_PANEL_PASSWORD || '';
+  if (password !== adminPassword) {
+    return res.status(401).json({ success: false, error: 'Invalid admin password' });
+  }
+  try {
+    const tg_id = user.tg_id || user.telegramId;
+    if (!tg_id || !user.displayName) {
+      return res.status(400).json({ success: false, error: 'Missing required fields (tg_id, displayName)' });
+    }
+    
+    // Check if user already exists
+    const existingUser = await admin.database().ref(`users/${tg_id}`).once('value');
+    if (existingUser.exists()) {
+      return res.status(409).json({ success: false, error: 'User with this ID already exists' });
+    }
+
+    // Create new user object
+    const newUserData = {
+      tg_id: tg_id,
+      telegramId: tg_id,
+      displayName: user.displayName,
+      firstName: user.firstName || user.displayName,
+      lastName: user.lastName || '',
+      color: user.color || '#0f9a8f',
+      sex: user.sex || 'Female',
+      profilePicture: user.profilePicture || '/profile_pictures/profile_picture_00.jpg',
+      username: user.username || tg_id,
+      createdAt: new Date().toISOString(),
+    };
+
+    await admin.database().ref(`users/${tg_id}`).set(newUserData);
+    res.json({ success: true, user: newUserData });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
   }
 });
 
