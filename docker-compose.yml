@@ -7,7 +7,7 @@ services:
     env_file:
       - ./backend/.env
     ports:
-      - "3001:3001"
+      - "3111:3111"
     volumes:
       - ./backend:/app
     command: npm start

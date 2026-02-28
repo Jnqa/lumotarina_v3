@@ -148,7 +148,7 @@ function SkillRow({
 export default function ClassPreviewSkills({ className }: { className: string }) {
   const [data, setData] = useState<ClassData | null>(null);
   const API_BASE =
-    (import.meta as any).env?.VITE_API_BASE || "http://localhost:3001";
+    (import.meta as any).env?.VITE_API_BASE || "http://localhost:3111";
 
   useEffect(() => {
     if (!className) return;

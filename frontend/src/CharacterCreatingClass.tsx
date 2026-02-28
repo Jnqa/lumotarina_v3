@@ -38,7 +38,7 @@ const ABILITY_LABELS: Record<string, string> = {
 };
 
 export default function CharacterCreatingClass() {
-  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
+  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
   const loc = useLocation();
   const nav = useNavigate();
   const state: any = (loc.state as any) || null;

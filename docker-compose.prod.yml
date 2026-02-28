@@ -38,7 +38,7 @@ services:
     volumes:
       - /srv/lumotarina_v3/secrets/firebase_sa.json:/run/secrets/firebase_sa.json:ro
     expose:
-      - "3001"
+      - "3111"
     networks:
       - web
     restart: always

@@ -267,7 +267,7 @@ export default function ClassPreviewSkills({
   }
 
   const API_BASE =
-    (import.meta as any).env?.VITE_API_BASE || "http://localhost:3001";
+    (import.meta as any).env?.VITE_API_BASE || "http://localhost:3111";
   
   useEffect(() => {
   const { userId, characterId } = CharacterID;
@@ -302,7 +302,7 @@ export default function ClassPreviewSkills({
       <div className="skills-filter-header">
         <span>Навыки:</span>
         <button onClick={toggleFilter} className="button-skill-toggle">
-          {showLearnedOnly ? "Только изученные" : "Все навыки"}
+          {showLearnedOnly ? "Изученные" : "Все навыки"}
         </button>
         <span>SP:{character.skillpoints}</span>
       </div>

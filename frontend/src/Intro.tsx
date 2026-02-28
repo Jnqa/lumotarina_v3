@@ -138,7 +138,7 @@ function Classes() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const [classData, setClassData] = useState<ClassData | null>(null);
-  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
+  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
 
   useEffect(() => {
     if (selectedClass) {

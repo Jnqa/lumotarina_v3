@@ -4,6 +4,8 @@ const path = require('path');
 const admin = require('firebase-admin');
 const router = express.Router();
 
+const teaData = require('./characters/tea_master.json');
+
 // ensure JSON bodies are parsed for these routes
 router.use(express.json());
 
@@ -56,6 +58,43 @@ router.get('/abilities', (req, res) => {
     } catch (e) {
       res.status(500).json({ error: 'Invalid JSON' });
     }
+  });
+});
+
+// Получить список tea из JSON
+router.get('/tea', (req, res) => {
+  res.json(teaData);
+});
+
+router.get('/tea/:type/:id', (req, res) => {
+  const { type, id } = req.params;
+
+  const table = teaData.tables.find(t => t.id === type);
+  if (!table) {
+    return res.status(404).json({ error: 'Table not found /characters/tea/tea_effects/ or  /characters/tea/mind_cleanse/' });
+  }
+
+let roll;
+
+  // random или 0 → случайный бросок
+  if (id === 'random' || Number(id) === 0) {
+    roll = Math.floor(Math.random() * table.effects.length) + 1;
+  } else {
+    roll = Number(id);
+  }
+
+  if (isNaN(roll)) {
+    return res.status(400).json({ error: 'Invalid id. Use number 1-20 or 0 / "random"' });
+  }
+
+  const effect = table.effects.find(e => e.roll === roll);
+  if (!effect) {
+    return res.status(404).json({ error: 'Effect not found (1-20) ?' });
+  }
+
+  res.json({
+    roll,
+    ...effect
   });
 });
 

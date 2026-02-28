@@ -1,27 +1,135 @@
 .auth-container {
-  max-width: 520px;
-  margin: 40px auto;
+  max-width: 350px;
+
+  /* margin: auto; */
   padding: 16px;
-  border-radius: 8px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-  background: #333131;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
   text-align: center;
+  position: relative;
+  justify-content: start;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.auth-container input[type="text"] {
-  padding: 8px 10px;
-  margin: 8px 0;
-  width: 80%;
-  border: 1px solid #ddd;
+@media (max-width: 768px) {
+  .auth-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.auth-panel {
+  background: rgba(255, 255, 255, 0.01);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 24px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.auth-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.01);
+  border-radius: 12px;
+  z-index: 1;
+}
+
+.auth-panel h3,
+.auth-panel h4,
+.auth-panel > div {
+  position: relative;
+  z-index: 2;
+}
+
+.auth-panel h3 {
+  color: #fff;
+  font-size: 16px;
+  position: relative;
+  z-index: 2;
+  align-items: left;
+  text-align: left;
+  font-weight: 600;
+  background: #00020521;
+  backdrop-filter: blur(4px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  margin: 0 auto 12px 0;
+  padding: 8px;
+  border-radius: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.telegram-section,
+.link-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  position: relative;
+  z-index: 2;
+}
+
+.link-line {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  align-items: center;
+}
+
+.auth-link-input {
+  padding: 12px 14px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 6px;
+  color: #fff;
+  font-size: 13px;
+  word-break: break-all;
+  flex: 1;
+  max-width: 160px;
+  /* height: 44px; */
+}
+
+.auth-link-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.paste-btn {
+  border-radius: 6px;
+  border: none;
+  background: #0088CC87 !important;
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  padding: 4px;
+  border-radius: 10px;
+  margin: 0 auto;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  transition: background 0.2s;
+  aspect-ratio: 1/1;
+  height: 40px;
+}
+
+.paste-btn:hover {
+  background: #0077b3;
 }
 
 .auth-container button {
-  margin-top: 8px;
   padding: 8px 14px;
   border-radius: 6px;
   border: none;
-  background: #616161;
+  background: #61616188;
   color: #fff;
   cursor: pointer;
 }
@@ -32,21 +140,87 @@
 }
 
 .telegram-down {
-  background: #fff4e5;
-  color: #663c00;
+  background: #fff4e597;
+  color: #4d1605;
   padding: 8px 12px;
-  border: 1px solid #ffdca8;
+  border: 1px solid #ffdca844;
+  font-weight: 500;
   border-radius: 6px;
   margin-bottom: 12px;
 }
+
+.tg-available {
+  background: #0088CC24;
+  color: #ffffff ;
+  padding: 8px 12px;
+  border: 1px solid #0088CC17;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  backdrop-filter: blur(4px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+}
+
+::placeholder {
+  color: rgb(255, 255, 255) !important;
+  font-family: 'Tahoma', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-weight: 800;
+}
+
 
 /* Highlight inputs/buttons when Telegram is unavailable */
 .tg-unavailable {
   border: 2px solid #ffb2a822 !important;
   box-shadow: 0 0 0 3px rgba(198,40,40,0.08);
-  background: #5e3802;
+  background: #5e380299;
 }
 
 .tg-unavailable[type="button"], .tg-unavailable[type="submit"], .tg-unavailable.button {
   background: #7f1d1d33 !important;
+}
+
+.in-btn {
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  background: #0088CC87 !important;
+  color: #fff;
+  cursor: pointer;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  padding: 8px;
+  border-radius: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.previewName {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  margin-bottom: 8px;
+  margin-left: auto;
+  margin-right: auto;
+  color: #fff;
+  font-weight: 600;
+  background: #00020521;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  padding: 4px 8px;
+  border-radius: 26px;
+}
+
+.pwa-install {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  color: #c0c0c0;
+  font-size: small;
+  font-weight: 500;
+  background: #1e1e1f80;
+  backdrop-filter: blur(14px) saturate(160%);
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  padding: 12px 16px;
 }

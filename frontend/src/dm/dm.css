@@ -1,0 +1,74 @@
+.dm-root{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:var(--bg);
+    color:var(--text)
+}
+.dm-header{
+    height:60px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 4px;
+    padding:0 16px;
+    border-bottom:1px solid var(--border);background:var(--panel-bg)}
+.dm-container{
+    display:flex;
+    gap:12px;
+    padding:1px;
+    flex:1;
+    flex-direction:column;
+    max-width:980px;
+    margin:0 auto;
+    width:100%
+}
+.dm-panel{
+    background:var(--card-bg);
+    border-radius:10px;
+    padding:1px;border:
+    1px solid var(--border)}
+.dm-list{display:flex;flex-direction:column;gap:8px;max-height:320px;overflow:auto}
+.dm-list-item{display:flex;align-items:center;justify-content:space-between;padding:8px;border-radius:8px;background:transparent}
+.dm-list-row{display:flex;align-items:center;justify-content:space-between;width:100%}
+.dm-list-name{font-weight:700}
+.dm-list-actions{display:flex;gap:8px}
+.dm-btn{
+    padding:6px 10px;
+    border-radius:8px;
+    border:1px solid var(--border);
+    background: #77777773;
+    color:var(--text);
+    cursor:pointer;
+}
+.dm-btn.active{background:var(--accent);color:#fff}
+.dm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px;margin-top:8px}
+.dm-empty{color:var(--muted)}
+
+/* small card styles used by CharacterCard */
+.dm-card{background:linear-gradient(180deg,#0f0f0f,#080808);padding:10px;border-radius:10px;color:#fff;position:relative;overflow:hidden}
+.dm-card h4{margin:0 0 6px 0}
+.dm-card .dm-row{display:flex;justify-content:space-between;align-items:center}
+.dm-card .dm-hp{font-weight:800}
+
+/* lightweight modal styles (used by DM available list) */
+.modal-overlay-x{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;z-index:40}
+.modal{width:92%;max-width:720px;color:var(--text,#fff);padding:12px;border-radius:10px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.06);background: rgba(25, 25, 25, 0.95);}
+.modal-available{flex-direction: column;width:92%;max-width:720px;color:var(--text,#fff);padding:12px;border-radius:10px;box-shadow:var(--shadow);border:1px solid rgba(255,255,255,0.06);background: rgba(25, 25, 25, 0.95);}
+.modal h3{margin-top:0}
+.save-btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+
+.summary-btn {
+    cursor:'pointer';
+    padding:2;
+    background-color: rgba(59, 59, 59, 0.589);
+}
+
+/* Стиль кнопки, когда details открыт */
+details[open] .summary-btn {
+    background-color: rgba(59, 59, 59, 0.1); /* меняем цвет */
+    color: white;
+    font-weight: bold;
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+}

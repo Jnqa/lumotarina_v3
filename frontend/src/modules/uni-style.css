@@ -1,0 +1,22 @@
+.btn-ok {
+    color: white;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 4px 18px;
+    background: linear-gradient(180deg,#1eff0031,#00ff4c28);
+    border: 1px solid rgba(205, 205, 205, 0.35);
+    /* backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%); */
+}
+
+.info-modal {
+    background: rgba(25, 25, 25, 0.55);
+    color: var(--text, #fff);
+    padding: 10px;
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    max-width: 290px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+}

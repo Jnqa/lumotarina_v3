@@ -10,7 +10,7 @@ const getApiBase = () => {
         }
     } catch (e) {}
     // @ts-ignore
-    return import.meta.env?.VITE_API_BASE || 'http://localhost:3001';
+    return import.meta.env?.VITE_API_BASE || 'http://localhost:3111';
 };
 
 // 2. Чистая функция билда (БЕЗ хуков внутри)

@@ -69,7 +69,8 @@ y.hp-info{ display:flex; gap:6px; align-items:center; margin-left:8px }
 .ability-bar{ flex:1; height:10px; color:#000000; background:#1a1a1a; font-size:50%; border-radius:6px; overflow:hidden }
 .ability-fill{ height:100%; background:linear-gradient(90deg,#6bffb8,#07d18e) }
 .ability-val{ width:36px; text-align:right }
-.ability-controls button{ margin-left:6px }
+.ability-controls{ margin-left:6px; }
+.ability-controls button{ margin-left:6px; background: #22993367 }
 
 .ability-modal{ position:fixed; inset:0; background:rgba(0,0,0,0.5); display:flex; align-items:flex-start; justify-content:center; padding:24px 0; overflow:auto; -webkit-overflow-scrolling:touch; z-index:60 }
 .ability-modal-content{ background:#0d0d0d; color:#fff; border-radius:8px; padding:12px; width:320px; max-width:90%; max-height:calc(100vh - 48px); overflow-y:auto; -webkit-overflow-scrolling:touch }

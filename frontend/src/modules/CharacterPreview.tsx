@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import "./uni-style.css";
 
 type AbilityMap = Record<string, number>;
 
@@ -42,7 +43,7 @@ export default function CharacterPreview({ userId, charId }: { userId: string; c
   const [data, setData] = useState<CharacterData | null>(null);
   const [abilitiesData, setAbilitiesData] = useState<AbilitiesData>({});
   const [selectedStat, setSelectedStat] = useState<string | null>(null);
-  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
+  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
 
   useEffect(() => {
     fetch(`${API_BASE}/characters/abilities`)
@@ -195,10 +196,10 @@ export default function CharacterPreview({ userId, charId }: { userId: string; c
 
       {selectedStat && (
         <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setSelectedStat(null)}>
-          <div style={{ background: 'white', padding: 20, borderRadius: 8, maxWidth: 200, color: 'black' }} onClick={e => e.stopPropagation()}>
+          <div className="info-modal" onClick={e => e.stopPropagation()}>
             <h3>{abilitiesData[selectedStat]?.icon} {abilitiesData[selectedStat]?.name}</h3>
             <p>{abilitiesData[selectedStat]?.description}</p>
-            <button onClick={() => setSelectedStat(null)}>ОК</button>
+            <button onClick={() => setSelectedStat(null)} className="btn-ok">ОК</button>
           </div>
         </div>
       )}

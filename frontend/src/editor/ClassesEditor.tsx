@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import './ClassesEditor.css';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
 
 export default function ClassesEditor() {
   const [classes, setClasses] = useState<any[]>([]);

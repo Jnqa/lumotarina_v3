@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 import { showToast } from './utils/toast';
 
-const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
+const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
 
 function getSession() {
   try {
@@ -205,7 +205,8 @@ export default function Profile() {
             <p>Ты действительно хочешь продолжить?</p>
             <div style={{display:'inline',gap:8,justifyContent:'flex-between',marginTop:12}}>
               <button className="delete-btn" onClick={()=>setShowRoomConfirm(false)}>Нет, вернуться</button>
-              <button className="save-btn" onClick={()=>{ setShowRoomConfirm(false); nav('/master-room'); }}>Да, продолжить</button>
+              <button className="go-btn" onClick={()=>{ setShowRoomConfirm(false); nav('/master-room'); }}>V1</button>
+              <button className="go-btn" onClick={()=>{ setShowRoomConfirm(false); nav('/dm'); }}>V2</button>
             </div>
           </div>
         </div>

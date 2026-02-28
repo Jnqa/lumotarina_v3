@@ -172,7 +172,7 @@ export default function CharacterEdit(){
   const [abilitiesMeta, setAbilitiesMeta] = useState<any>(null);
   const [abilityModal, setAbilityModal] = useState<any>(null);
   const [classIconUrl, setClassIconUrl] = useState<string | null>(null);
-  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
+  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
   const [classMeta, setClassMeta] = useState<any>(null);  
   const [showNewInv, setShowNewInv] = useState<boolean>(false);
   const [noteEditMode, setNoteEditMode] = useState<boolean>(false);

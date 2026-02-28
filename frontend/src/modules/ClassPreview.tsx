@@ -41,7 +41,7 @@ export default function ClassPreview({ classId }: { classId: string }) {
   const [data, setData] = useState<ClassData | null>(null);
   const [abilitiesData, setAbilitiesData] = useState<AbilitiesData>({});
   const [selectedStat, setSelectedStat] = useState<string | null>(null);
-  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
+  const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
 
   useEffect(() => {
     fetch(`${API_BASE}/characters/abilities`)

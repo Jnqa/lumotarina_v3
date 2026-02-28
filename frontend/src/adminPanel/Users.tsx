@@ -9,7 +9,7 @@ const BACKEND_URL = (() => {
       return (window as any).__RUNTIME__.VITE_API_BASE;
     }
   } catch (e) {}
-  return (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3001';
+  return (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
 })();
 
 interface User {

@@ -13,6 +13,7 @@ import App from './App.tsx';
 import Profile from './Profile';
 import Intro from './Intro';
 import MasterRoom from './MasterRoom';
+import DM from './dm/dm';
 import './index.css';
 import './utils/toast.css';
 import ClassPreview from './modules/ClassPreview';
@@ -56,6 +57,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/profile" element={<Profile />} />
         <Route path="/intro" element={<Intro />} />
         <Route path="/master-room" element={<MasterRoom />} />
+        <Route path="/dm" element={<DM />} />
         <Route path="/editor/classes" element={<ClassesEditor />} />
         <Route path="/lore" element={<Lore />} />
         <Route path="/lore/map" element={<LoreMap />} />
