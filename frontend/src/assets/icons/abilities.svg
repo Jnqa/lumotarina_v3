@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  <!-- Внешний контур -->
+  <path d="M12 2l9 6.5L17.5 19h-11L3 8.5z"/>
+  <!-- Внутренняя сетка -->
+  <path d="M12 12l0-10M12 12l9 6.5M12 12l-5.5 7M12 12l-5.5-7M12 12l5.5 7" opacity="0.3"/>
+  <!-- Точки на вершинах -->
+  <circle cx="12" cy="2" r="1" fill="currentColor"/>
+  <circle cx="21" cy="8.5" r="1" fill="currentColor"/>
+  <circle cx="17.5" cy="19" r="1" fill="currentColor"/>
+  <circle cx="6.5" cy="19" r="1" fill="currentColor"/>
+  <circle cx="3" cy="8.5" r="1" fill="currentColor"/>
+</svg>

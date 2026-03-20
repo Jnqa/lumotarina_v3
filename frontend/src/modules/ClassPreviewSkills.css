@@ -18,29 +18,20 @@
 }
 
 .class-description {
-  font-size: 14px;
-  line-height: 1.4;
-  opacity: 0.85;
-  margin-bottom: 16px;
-    padding: 8px;
-    max-width: 390px;
-    margin: 10px 10px;
-    background: rgba(6, 7, 6, 0.68);
-    backdrop-filter: blur(14px) saturate(160%);
-    -webkit-backdrop-filter: blur(14px) saturate(160%);
-    border: 1px solid rgba(205, 235, 205, 0.35);
-    border-radius: 18px;
-    color: #ffffff; /* Чистый белый для контраста */
-    font-size: 14px; /* Четкий размер вместо 'small' */
-    font-weight: 400; /* Более читабельно на темном */
-    line-height: 1.2; /* Комфорт для глаз */
-    font-weight: 200;
-    letter-spacing: 0.01em; 
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    /* Вместо blur используем градиент "под кожу" */
+    background: linear-gradient(145deg, #1a1612, #0d0c0a);
+    border: 0px solid #4a3b2a; /* Цвет темной бронзы */
+    border-radius: 4px; /* В RPG углы более строгие */
+    box-shadow: 
+        inset 0 0 15px rgba(0,0,0,0.8), /* Внутренняя тень дает объем */
+        0 4px 10px rgba(0,0,0,0.5);
+    color: #d1c1a1; /* Цвет старой бумаги */
+    font-family: 'Georgia', serif; /* Или любой антиквенный шрифт */
+    line-height: 1.5;
 }
 
 .skill-section {
-  margin-bottom: 20px;
+  margin-bottom: 0px;
 }
 
 .section-title {
@@ -60,35 +51,46 @@
 }
 
 .skill-row {
-  position: relative;
-  display: grid;
-  grid-template-columns: 28px 1fr;
-  grid-template-rows: auto auto;
-  gap: 4px 8px;
-  padding: 10px 8px;
-  background: rgba(5, 5, 5, 0.68);
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  border-bottom: 1px solid #2a2a2a;
-  overflow: hidden;
-  transition:
-    background 0.2s ease,
-    opacity 0.2s ease,
-    transform 0.25s ease;
+    background: #151515;
+    /* border-bottom: 0px solid #3d2f1f; */
+    transition: all 0.3s ease;
+
+    /* margin-bottom: 6px; */
+    padding: 10px 14px;
+    border-radius: 4px 12px 12px 4px;
+    
+    /* Тонкое свечение изученного ряда */
+    box-shadow: 
+      inset 0 0 10px rgba(255, 215, 0, 0.05),
+      0 2px 4px rgba(0, 0, 0, 0.3);
+    
+    min-height: 56px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.3s ease;
+    
+    /* Чтобы текст внутри "звенел" */
+    color: #ffffff;
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
 }
 
 .skill-row:hover {
-  background: rgba(2, 2, 22, 0.75);
+    /* Эффект магического подсвечивания при наведении */
+    background: #1c1a17;
+    box-shadow: inset 0 0 8px rgba(212, 175, 55, 0.2); 
 }
+
 
 .skill-row:last-child {
   border-bottom: none;
-  background: rgba(5, 5, 5, 0.65);
+  /* background: rgba(5, 5, 5, 0.65); */
 }
 
 .skill-row.clickable {
   cursor: pointer;
-  background: rgba(5, 5, 5, 0.65);
+  /* background: rgba(5, 5, 5, 0.65); */
 }
 
 .skill-row.clickable:active {
@@ -99,6 +101,10 @@
   opacity: 0.5;
   padding: 0;
   font-size: 12px;
+  min-height: 12px;
+  margin-left: 5px;
+  margin-right: 5px;
+  border-radius: 0 0 4px 4px;
   background: linear-gradient(180deg, #1b1b1bd0, #303030d0) ;
 }
 
@@ -114,18 +120,23 @@
 }
 
 .skill-icon {
-  grid-row: 1 / span 2;
-  opacity: 0.7;
+    filter: sepia(1) saturate(2) hue-rotate(-10deg) brightness(0.8);
 }
 
 .skill-level {
-  font-size: 11px;
-  opacity: 0.6;
+    font-family: 'Courier New', monospace; /* Числа как в старых книгах */
+    color: #f0d89f; /* Темно-красный (как кровь или вино) */
+    font-weight: bold;
+    opacity: 1;
 }
 
 .skill-name {
-  font-size: 14px;
-  font-weight: 500;
+    font-size: 12px;
+    font-weight: 700;
+    color: #c4a45a; /* Тусклое золото */
+    /* text-transform: uppercase; */
+    letter-spacing: 0.05em;
+    max-width: 120px;
 }
 
 .skill-effect {
@@ -143,8 +154,9 @@
 
 .skill-dice-mini {
   position: absolute;
-  right: 0;
-  top: -2px;
+  color: #7b8e7b;
+  right: 16px;
+  top: 4px;
   font-size: 11px;
   opacity: 0.65;
 }
@@ -156,25 +168,94 @@
 @keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateY(-4px);
+    filter: blur(5px);
+    transform: scale(0.98);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    filter: blur(0);
+    transform: scale(1);
   }
 }
 
 
 /* ClassSkills */
 .skill-row.learned {
-  opacity: 0.6;
-  background: rgba(17, 46, 6, 0.65);
+  /* Фон: благородный темный с легким золотистым отливом */
+  background: linear-gradient(90deg, rgba(88, 68, 30, 0.3) 0%, rgba(30, 30, 30, 0.6) 100%);
+  
+  /* Рамка только слева — как индикатор активации */
+  border-left: 3px solid #ffd700;
+  
+  /* margin-bottom: 6px; */
+  padding: 10px 14px;
+  border-radius: 4px 12px 12px 4px;
+  
+  /* Тонкое свечение изученного ряда */
+  box-shadow: 
+    inset 0 0 10px rgba(255, 215, 0, 0.05),
+    0 2px 4px rgba(0, 0, 0, 0.3);
+    
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.3s ease;
+  
+  /* Чтобы текст внутри "звенел" */
+  color: #ffffff;
+  text-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
+.skill-row.learned::after {
+  color: #ffd700;
+  font-size: 12px;
+  font-weight: 900;
+  opacity: 0.8;
+}
+
+.skill-dice-mini {
+  color: #e1c07e;
+}
+
+.class-preview {
+  padding: 4px;
 }
 
 .skill-learn-btn {
+  /* position: absolute; */
   margin-left: auto;
-  padding: 4px 8px;
+  padding: 5px 15px;
   cursor: pointer;
+  bottom: 2px;
+  left: 30px;
+  border: 1px solid #c4a45a2c;
+  background: linear-gradient(120deg, #ffd70049 0%, #58441e4d 100%);
+  box-shadow: 
+    inset 1px 2px 6px rgba(228, 223, 195, 0.418),
+    2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.skill-learn-btn.learned {
+  background: linear-gradient(120deg, #41423c1a, #989b0d34);
+  color: #e0e0e0;
+  box-shadow: 
+    inset -3px -2px 15px #ffd9002c,
+    inset 2px 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid #c4a45a11;
+}
+
+.skill-info-btn {
+  /* position: absolute; */
+  margin-left: auto;
+  padding: 5px 15px;
+  cursor: pointer;
+  bottom: 2px;
+  left: 30px;
+  border: 1px solid #c4a45a99;
+  background: linear-gradient(120deg, #58441e4d 0%, #ffd70049 100%);
+  box-shadow: 
+  inset 0 0 10px rgba(228, 223, 195, 0.418),
+  0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .skill-locked {
@@ -186,25 +267,220 @@
 .skills-filter-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 4px;
+  margin-bottom: 12px; /* Чуть больше отступа для "дыхания" */
   align-items: center;
+  padding: 0 4px;
+}
+
+.skills-filter-header span {
+  font-size: 14px;
+  font-weight: 600;
+  color: #c4a45a; /* Цвет заголовка */
+  font-family: 'Cinzel', serif;
+}
+
+.skill-points {
+  font-family: 'Georgia', serif;
+  font-size: 148x;
+  color: #d4af37; /* Золото */
+  background: linear-gradient(180deg, #3a2f1f 0%, #1a150e 100%);
+  padding: 4px 2px;
+  border: 2px solid #8b7355;
+  border-radius: 94px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 30px;
 }
 
 .button-skill-toggle {
-  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
   cursor: pointer;
   width: 140px;
-  background: #222;
-  height: 32px;
-  font-size: clamp(13px, 2.5vw, 16px); 
-  border: 0px;
+  height: 36px; /* Чуть выше для солидности */
+  font-family: 'Cinzel', serif;
+  
+  /* Фон: глубокий градиент кованого железа */
+  background: linear-gradient(180deg, #2c2c2c 0%, #1a1a1a 100%);
+  
+  /* Рамка: имитация чеканки */
+  border: 1px solid #4a3b2a; 
+  border-radius: 4px;
+  
+  /* Тени для объема */
+  box-shadow: 
+    inset 0 1px 0 rgba(255,255,255,0.05), 
+    0 2px 4px rgba(0,0,0,0.5);
+    
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.button-skill-toggle:hover {
+  border-color: #8b7355;
+  background: linear-gradient(180deg, #363636 0%, #222 100%);
+}
+
+.button-skill-toggle:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
+}
+
+/* Если кнопка активна (выбран фильтр) — добавляем магическое свечение */
+.button-skill-toggle.active {
+  border-color: #d4af37;
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 5px rgba(212, 175, 55, 0.2);
 }
 
 .button-skill-toggle span {
-  /* 3. Магия подстройки текста */
+  color: #d1c1a1; /* Цвет состаренного золота */
+  font-family: 'Cinzel', serif; /* Или Georgia для благородства */
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis; /* Добавляем три точки, если текст совсем не влез */
-  /* Используем динамический размер шрифта */
-  font-size: clamp(13px, 2.5vw, 16px); 
-  /* clamp: минимум 10px, адаптивно 2.5% от ширины экрана, максимум 13px */
+  text-overflow: ellipsis;
+  font-size: clamp(11px, 2.2vw, 13px); /* Чуть уменьшил для изящества */
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+/* Маленькая деталь: декоративная точка/заклепка слева */
+.button-skill-toggle::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  background: #4a3b2a;
+  border-radius: 50%;
+  margin-right: 8px;
+  box-shadow: 0 0 2px rgba(0,0,0,1);
+}
+
+.button-skill-toggle.active::before {
+  background: #d4af37;
+  box-shadow: 0 0 5px #d4af37;
+}
+
+@keyframes magicAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(10px);
+    filter: brightness(0) contrast(1.5); /* Полная темнота */
+    box-shadow: 0 0 0px rgba(212, 175, 55, 0);
+  }
+  50% {
+    filter: brightness(1.2) contrast(1.2); /* Вспышка при проявлении */
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: brightness(1) contrast(1); /* Финальный вид */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  }
+}
+
+.modal-learn {
+  background: #1a1612; /* Темный шоколад/камень */
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url('https://www.transparenttextures.com'); /* Текстура кожи */
+  
+  border: 2px solid #8b7355; /* Бронзовая рамка */
+  border-radius: 4px;
+  padding: 24px;
+  max-width: 320px;
+  color: #e2d1b1; /* Цвет пергамента */
+  box-shadow: 
+    0 0 30px rgba(0, 0, 0, 0.9), 
+    inset 0 0 15px rgba(139, 115, 85, 0.3); /* Внутреннее свечение */
+  text-align: center;
+  position: relative;
+    animation: magicAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  
+  /* Оптимизация для мобилок (ускоряет рендер на iPhone) */
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
+
+/* Заголовок как в книге заклинаний */
+.modal-learn h3 {
+  font-family: 'Cinzel', serif; /* Если нет, то Georgia */
+  color: #d4af37; /* Золото */
+  text-transform: uppercase;
+  margin: 0 0 16px 0;
+  letter-spacing: 1px;
+  border-bottom: 1px solid #4a3b2a;
+  padding-bottom: 8px;
+  animation: goldGlow 2s ease-in-out infinite alternate;
+}
+
+@keyframes goldGlow {
+  from { text-shadow: 0 0 5px rgba(212, 175, 55, 0.3); }
+  to { text-shadow: 0 0 15px rgba(212, 175, 55, 0.8), 0 0 20px rgba(255, 255, 255, 0.2); }
+}
+
+/* Описание */
+.modal-learn p {
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 8px 0;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+/* Кубик d20 — сделаем его магическим */
+.modal-learn p:nth-of-type(2) {
+  font-weight: bold;
+  color: #7b8e7b; /* Магический зеленый */
+  font-size: 16px;
+}
+
+/* Очки навыков */
+.modal-learn b {
+  color: #ffcc00;
+  text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+}
+
+/* Кнопки — самое важное */
+.modal-learn button {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  border: 1px solid #d4af37;
+  border-radius: 2px;
+  font-family: inherit;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Кнопка Изучить (Золотая/Героическая) */
+.modal-learn button:first-of-type {
+  background: linear-gradient(180deg, #8b7355 0%, #4a3b2a 100%);
+  color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.modal-learn button:first-of-type:hover {
+  filter: brightness(1.2);
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+/* Кнопка Отмена (Скромная) */
+.modal-learn button:last-of-type {
+  background: transparent;
+  border-color: #4a3b2a;
+  color: #8b7355;
+  font-size: 12px;
+}
+
+.modal-learn button:last-of-type:hover {
+  color: #e2d1b1;
+  background: rgba(139, 115, 85, 0.1);
 }

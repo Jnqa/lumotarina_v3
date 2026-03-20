@@ -1,3 +1,4 @@
 /backend/node_modules
 backend/.env
 /frontend/public/s3/**
+docker-compose.plus.yml

@@ -141,8 +141,30 @@ router.get('/user/:id/:charId', async (req, res) => {
     console.log(`[GET] Character found:`, data ? 'yes' : 'no', 'for id:', charId);
     if (!data) return res.status(404).json({ error: 'Not found' });
     // Add the id field since it's stored as the key in Firebase
-    const result = { ...data, id: charId };
+    const hpMax = data?.hpMax || 0;
+    const con = data?.abilities?.Constitution || 0;
+    const TotalMaxHP = hpMax + con;
+    const result = { ...data, id: charId, totalMaxHP: TotalMaxHP };
     res.json(result);
+  } catch (e) {
+    console.error('GET /characters/user/:id/:charId error', e);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// Получить MaxHP
+router.get('/maxhp/:id/:charId', async (req, res) => {
+  const tg_id = req.params.id;
+  const charId = req.params.charId;
+  try {
+    const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
+    const snap = await charRef.once('value');
+    const data = snap.val();
+    if (!data) return res.status(404).json({ error: 'Not found' });
+    const result = { ...data, id: charId };
+    const base = result?.hpMax || 0;
+    const con = result?.abilities?.Constitution || 0;
+    res.json({"hpMax": base, "Constitution": con, "TotalMaxHP": base + con});
   } catch (e) {
     console.error('GET /characters/user/:id/:charId error', e);
     res.status(500).json({ error: 'Server error' });

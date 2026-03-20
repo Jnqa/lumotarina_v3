@@ -1,0 +1,52 @@
+*** Begin Patch
+*** Update File: frontend/src/characterPage/character/components/CharacterHero.tsx
+@@
+-  return (
+-    <div className="character-hero" style={{display:'flex',gap:12,alignItems:'center'}}>
++  return (
++    <div className="character-hero" style={{display:'flex',gap:12,alignItems:'center',position:'relative'}}>
+@@
+-      <div style={{flex:1,display:'flex',flexDirection:'column',gap:8}}>
+-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
+-          <div>
+-            <div style={{fontSize:18,fontWeight:700,color:'#fff'}}>{name}</div>
+-            <div style={{fontSize:12,color:'#bbb'}}>{classNameStr || ''} · Уровень {level || 1}</div>
+-          </div>
+-
+-          <div style={{display:'flex',flexDirection:'column',alignItems:'flex-end',gap:8}}>
+-            <div style={{fontSize:12,color:'#ccc'}}>HP: {hp ?? 0}/{hpMax ?? 0}</div>
+-            <div style={{display:'flex',gap:8}}>
+-              <div style={{fontSize:12,color:'#ccc'}}>Armor: {armor ?? '—'}</div>
+-              <div style={{fontSize:12,color:'#ccc'}}>Lum: {lum ?? '—'}</div>
+-            </div>
+-            <button onClick={() => nav('edit')} style={{padding:'6px 10px'}}>Редактировать</button>
+-          </div>
+-        </div>
+-
+-        <div style={{marginTop:4}}>
+-          <div style={{height:10,background:'#333',borderRadius:6,overflow:'hidden'}}>
+-            <div style={{width:`${percent}%`,height:'100%',background:'#e74c3c'}} />
+-          </div>
+-        </div>
+-      </div>
++      <div style={{flex:1,display:'flex',flexDirection:'column',position:'relative',paddingLeft:8}}>
++        {/* top-right armor & hp info */}
++        <div style={{position:'absolute', top:0, right:0, textAlign:'right', fontSize:12, color:'#ccc'}}>
++          <div>Armor: {armor ?? '—'}</div>
++          <div style={{position:'relative',marginTop:4,width:120,height:10,background:'#333',borderRadius:6,overflow:'hidden'}}>
++            <div style={{width:`${percent}%`,height:'100%',background:'#e74c3c'}} />
++            <div style={{position:'absolute', top:0, left:'50%', transform:'translateX(-50%)', fontSize:10, color:'#fff'}}>{hp ?? 0}/{hpMax ?? 0}</div>
++          </div>
++        </div>
++
++        {/* name and class */}
++        <div style={{marginTop:14}}>
++          <div style={{fontSize:18,fontWeight:700,color:'#fff'}}>{name}</div>
++          <div style={{fontSize:12,color:'#bbb'}}>{classNameStr || ''} · Уровень {level || 1}</div>
++        </div>
++      </div>
+@@
+-      </div>
++      {/* edit button on right-top */}
++      <button onClick={() => nav('edit')} style={{padding:'6px 10px',position:'absolute',top:0,right:0}}>Редактировать</button>
+*** End Patch

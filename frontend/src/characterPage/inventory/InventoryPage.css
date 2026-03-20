@@ -1,0 +1,174 @@
+.inventory-page {
+  padding: 16px;
+  color: #e0e0e0;
+  background-color: #0d0d0d; /* Более глубокий черный */
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+.inventory-page h1 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.05em; /* Чуть больше воздуха для "премиальности" */
+  color: #ffd700; /* Чистое золото */
+  text-transform: uppercase;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.inventory-page ul {
+  list-style: none;
+  margin: 12px 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.inventory-page li {
+  background: #1a1a1a;
+  border: 1px solid #3d3522;
+  padding: 0 12px; /* Убираем вертикальный padding, зададим его через min-height */
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px; /* Фиксируем минимальную высоту всех строк */
+  transition: all 0.3s ease;
+}
+
+.inventory-page li:hover {
+  border-color: #d4af37; /* Яркое золото при наведении */
+  background: #221f18;
+  box-shadow: 0 0 10px rgba(212, 175, 55, 0.1);
+}
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1; /* Занимает всё свободное место, прижимая кнопку вправо */
+  min-width: 0; /* Важно для обрезки длинного текста */
+}
+
+.item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #f2e6d0;
+  /* Защита от вываливания длинных названий */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-qty {
+  flex-shrink: 0; /* Чтобы цифры не сжимались */
+  font-size: 11px;
+  font-weight: 700;
+  color: #ffd700;
+  background: #2d2616;
+  border: 1px solid #5c4b24;
+  padding: 2px 8px;
+  border-radius: 4px;
+  min-width: 24px;
+  text-align: center;
+  justify-content: space-between;
+}
+
+.add-item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #2d2616;
+  padding: 10px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 420px; /* удобная ширина на телефоне */
+  box-sizing: border-box;
+}
+
+.add-item input[type="text"] {
+  flex: 1 1 0;
+  min-width: 120px;
+}
+
+.input-number {
+  width: 44px;
+  min-width: 44px;
+  text-align: center;
+}
+
+@media (max-width: 400px) {
+  .add-item {
+    gap: 6px;
+    padding: 8px;
+  }
+
+  .input-number {
+    width: 40px;
+    min-width: 40px;
+  }
+}
+
+.add-item button {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+/* Стилизация кнопок внутри списка */
+.inventory-page li button {
+  margin-left: 16px; /* Отступ от контента */
+  flex-shrink: 0;   /* Кнопка не должна менять размер */
+  height: 32px;     /* Фиксированная высота кнопок в списке */
+  padding: 0 12px;
+}
+
+.inventory-page input {
+  background: #151515;
+  border: 1px solid #3d3522;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.inventory-page input:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.2);
+}
+
+.inventory-page button {
+  /* Более глубокий золотой градиент, чтобы черный текст выделялся */
+  background: linear-gradient(180deg, #d4af37 0%, #b8860b 100%);
+  color: #000000; 
+  
+  /* Темная тонкая граница вместо светлой — она "собирает" форму */
+  border: 1px solid #7d6117;
+  
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600; /* Максимальная жирность для четкости */
+  text-transform: uppercase; /* Капс всегда лучше читается на кнопках */
+  letter-spacing: 0.08em;
+  font-family: 'Cinzel', serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  margin: 8px;
+  /* Убираем светлую тень, она мешает. Можно добавить легкий блеск самой кнопке */
+  text-shadow: none; 
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.inventory-page button:hover {
+  background: #ffd700; /* Яркое чистое золото */
+  border-color: #aa8928;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+}
+
+.inventory-page button:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}

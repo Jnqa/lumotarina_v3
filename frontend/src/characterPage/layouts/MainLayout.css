@@ -1,0 +1,22 @@
+.main-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh; 
+  height: 100dvh; 
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  overflow: hidden; 
+  background-color: #313131;
+}
+
+.main-content {
+  flex: 1; 
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch; 
+}

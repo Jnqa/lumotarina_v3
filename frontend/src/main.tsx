@@ -6,7 +6,8 @@ import CharacterCreatingClass from './CharacterCreatingClass';
 import CharacterEdit from './CharacterEdit';
 import AdminPanel from './AdminPanel';
 import Auth from './auth';
-import React from 'react';
+// using automatic JSX runtime; explicit React import removed
+import * as React from 'react'
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
 import App from './App.tsx';
@@ -22,6 +23,13 @@ import ClassPreviewSkills from './modules/ClassPreviewSkills';
 import CharacterCreation from './creator/CharacterCreation';
 import CharacterCreationClass from './creator/CharacterCreationClass';
 import { Gallery } from './modules/Gallery';
+import MainLayout from './characterPage/layouts/MainLayout.tsx';
+import CharacterPage from './characterPage/character/CharacterPage.tsx';
+import CharacterPageEdit from './characterPage/character/CharacterPageEdit.tsx';
+import NotesPage from './characterPage/notes/NotesPage.tsx';
+import AbilitiesPage from './characterPage/abilities/AbilitiesPage.tsx';
+import PowersPage from './characterPage/powers/PowersPage.tsx';
+import InventoryPage from './characterPage/inventory/InventoryPage.tsx';
 
 const ClassPreviewPage = () => {
   const { classId } = useParams<{ classId: string }>();
@@ -70,6 +78,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/class/preview/:classId" element={<ClassPreviewPage />} />
         <Route path="/class/preview-skills/:className" element={<ClassPreviewSkillsPage />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/app/:userId/:charId" element={<MainLayout />}>
+          <Route index element={<CharacterPage />} />           {/* default */}
+          <Route path="character" element={<CharacterPage />} />
+          <Route path="character/edit" element={<CharacterPageEdit />} />
+          <Route path="edit" element={<CharacterPageEdit />} />
+          <Route path="inventory" element={<InventoryPage />} />
+          <Route path="powers" element={<PowersPage />} />
+          <Route path="abilities" element={<AbilitiesPage />} />
+          <Route path="notes" element={<NotesPage />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

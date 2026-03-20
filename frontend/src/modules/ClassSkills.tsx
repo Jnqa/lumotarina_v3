@@ -8,7 +8,8 @@ type SkillItem = {
   id: string;
   name: string;
   effect: string;
-  level: number;
+  description?: string;
+  level?: number;
   dice?: string;
   needs?: string[];
   skills?: AbilityMap[];
@@ -35,8 +36,8 @@ type ClassData = {
 };
 
 const actionTypes = [
-  { type: "actions", icon: "🔹", name: "Трюки" },
-  { type: "ShortRest", icon: "🔶", name: "Силовые приёмы" },
+  { type: "actions", icon: "◻", name: "Трюки" },
+  { type: "ShortRest", icon: "🔹", name: "Силовые приёмы" },
   { type: "LongRest", icon: "⭐", name: "Сверхприёмы" },
   { type: "Passive", icon: "🌚", name: "Черты" },
 ];
@@ -129,11 +130,14 @@ function SkillRow({
         <div className="skill-icon">
           {depth === 0 ? icon : "∟"}
         </div>
-
+        {skill.dice && (
+            <span className="skill-dice-mini">🎲 {skill.dice}</span>
+          )}
         <div className="skill-header">
           <span className="skill-level">Lv {skill.level}</span>
           <span className="skill-name">{skill.name}</span> 
-          {canLearn && (
+          <div className="skill-effect">{skill.effect}</div>
+          {canLearn ? (
             <button
               className="skill-learn-btn"
               onClick={e => {
@@ -141,16 +145,30 @@ function SkillRow({
                 onLearn(skill);
               }}
             >
-              Изучить
+              +
+            </button>
+          ) : isLearned ? (
+            <button
+              className="skill-learn-btn learned"
+              onClick={e => {
+                e.stopPropagation();
+                onLearn(skill);
+              }}
+            >
+              ✓
+            </button>
+          ) : (
+            <button
+              className="skill-learn-btn"
+              onClick={e => {
+                e.stopPropagation();
+                onLearn(skill);
+              }}
+            >
+              ...
             </button>
           )}
-
-          {skill.dice && (
-            <span className="skill-dice-mini">🎲 {skill.dice}</span>
-          )}
         </div>
-
-        <div className="skill-effect">{skill.effect}</div>
 
         {!needsMet && !isLearned && (
           <span className="skill-locked">Требуются навыки</span>
@@ -186,8 +204,10 @@ interface CharacterIDs {
 
 export default function ClassPreviewSkills({
     CharacterID,
+    isNoTitle = false
   }: {
     CharacterID: CharacterIDs;
+    isNoTitle?: boolean 
   }) {
 
   const [character, setCharacter] = useState<any | null>(null);
@@ -295,18 +315,24 @@ export default function ClassPreviewSkills({
     .flat()
     .map((s: any) => s.name)
   );
-  
+
+  const selectedIsLearned = selectedSkill ? learnedSet.has(selectedSkill.name) : false;
+  const selectedNeedsMet = selectedSkill
+    ? !selectedSkill.needs || selectedSkill.needs.every((need) => learnedSet.has(need))
+    : false;
+  const selectedCanLearn = !!selectedSkill && !selectedIsLearned && selectedNeedsMet && (character.skillpoints || 0) > 0;
+
  return (
   <div className="class-preview">
-    <div className="skills-filter">
+    {isNoTitle && <div></div> || <div className="skills-filter">
       <div className="skills-filter-header">
-        <span>Навыки:</span>
-        <button onClick={toggleFilter} className="button-skill-toggle">
+        <span>Умения:</span>
+        <button onClick={toggleFilter} className={`button-skill-toggle ${showLearnedOnly ? 'active' : ''}`}>
           {showLearnedOnly ? "Изученные" : "Все навыки"}
         </button>
-        <span>SP:{character.skillpoints}</span>
+        <div className="skill-points">{character.skillpoints}</div>
       </div>
-    </div>
+    </div>}
     {actionTypes.map(actionType => {
       const list =
         classData.skills?.[0]?.[actionType.type as keyof SkillCategory];
@@ -346,28 +372,38 @@ export default function ClassPreviewSkills({
     })}
     {selectedSkill && (
       <div className="modal-backdrop" onClick={closeModal}>
-        <div className="modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-learn" onClick={e => e.stopPropagation()}>
           <h3>{selectedSkill.name}</h3>
 
           <p>{selectedSkill.effect}</p>
-
+          {(selectedSkill.description || (selectedSkill as any).descripton) && (
+            <p>{selectedSkill.description || (selectedSkill as any).descripton}</p>
+          )}
           {selectedSkill.dice && <p>🎲 {selectedSkill.dice}</p>}
 
           <p>
             Очки навыков: <b>{character.skillpoints}</b>
           </p>
-
-          <button
-            disabled={character.skillpoints <= 0}
-            onClick={() => {
-              if (selectedSkill && selectedSectionKey) {
-                handleLearn(selectedSkill, selectedSectionKey);
-                closeModal();
-              }
-            }}
-          >
-            Изучить
-          </button>
+          {selectedCanLearn ? (
+            <button
+              onClick={() => {
+                if (selectedSkill && selectedSectionKey) {
+                  handleLearn(selectedSkill, selectedSectionKey);
+                  closeModal();
+                }
+              }}
+            >
+              Изучить
+            </button>
+          ) : (
+            <div style={{ color: '#ccc', fontSize: '0.9em', marginBottom: '8px' }}>
+              {selectedIsLearned
+                ? 'Навык уже изучен'
+                : character.skillpoints <= 0
+                ? 'Нет очков навыков'
+                : 'Требуются предшествующие навыки'}
+            </div>
+          )}
 
           <button onClick={closeModal}>Отмена</button>
         </div>

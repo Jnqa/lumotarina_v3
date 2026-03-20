@@ -1,0 +1,137 @@
+.abilities-page {
+  padding: 16px 8px 74px 8px;
+  background-color: #0d0d0d;
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: #e0e0e0;
+}
+
+.abilities-page h1 {
+  font-size: 18px;
+  text-align: center;
+  color: #ffd700;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.points-remaining {
+  text-align: center;
+  font-size: 13px;
+  color: #d4af37;
+  margin-bottom: 16px;
+}
+
+/* Вместо Grid — вертикальный список */
+.abilities-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px; /* Плотная компоновка */
+}
+
+.ability-card {
+  background: #1a1a1a;
+  border-left: 3px solid; /* Используем инлайновый цвет для акцента слева */
+  border-top: 1px solid #2d2d2d;
+  border-right: 1px solid #2d2d2d;
+  border-bottom: 1px solid #2d2d2d;
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column; /* Позволяет описанию быть под строкой */
+}
+
+.ability-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Распирает имя и кнопки */
+  width: 100%;
+}
+
+.ability-name {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.ability-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.ability-name-text {
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: #fff;
+}
+
+/* Контейнер цифр и кнопки */
+.ability-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ability-current {
+  font-size: 15px;
+  font-weight: 800;
+  color: #ffd700;
+  min-width: 20px;
+  text-align: center;
+}
+
+.ability-add {
+  font-size: 12px;
+  color: #66ff66;
+  font-weight: bold;
+}
+
+/* Компактная кнопка [+] */
+.ability-controls button {
+  width: 28px;
+  height: 28px;
+  background: #2d2616;
+  border: 1px solid #5c4b24;
+  border-radius: 4px;
+  color: #ffd700;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.ability-controls button:disabled {
+  opacity: 0.2;
+  border-color: #333;
+}
+
+.ability-desc {
+  font-size: 11px;
+  color: #888;
+  margin-top: 4px;
+  padding-left: 30px; /* Выравнивание под текстом названия, мимо иконки */
+}
+
+/* Нижняя кнопка сохранения */
+.save-row {
+  margin-top: 20px;
+  position: sticky; /* Чтобы всегда была под рукой при скролле */
+  bottom: 10px;
+}
+
+.save-row button {
+  /* width: 100%; */
+  background: linear-gradient(180deg, #d4af37 0%, #b8860b 100%);
+  color: #000;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  /* position: fixed; */
+}

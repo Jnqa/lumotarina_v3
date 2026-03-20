@@ -41,7 +41,7 @@ docker network inspect web >/dev/null 2>&1 || docker network create web
 4) Запустить certbot через docker-compose для получения сертификатов (замените email на ваш)
 
 ```bash
-docker-compose -f docker-compose.prod.yml run --rm certbot certonly \
+docker compose -f docker-compose.prod.yml run --rm certbot certonly \
 	--webroot --webroot-path=/var/www/certbot \
 	-d dnd.lumotarina.ru -d api-dnd.lumotarina.ru \
 	--email you@example.com --agree-tos --no-eff-email
@@ -52,7 +52,7 @@ docker-compose -f docker-compose.prod.yml run --rm certbot certonly \
 5) Запустить/перезапустить `nginx-proxy`, чтобы он подхватил новые сертификаты
 
 ```bash
-docker-compose -f docker-compose.prod.yml up -d nginx-proxy
+docker compose -f docker-compose.prod.yml up -d nginx-proxy
 ```
 
 6) Проверка
@@ -65,7 +65,7 @@ docker-compose -f docker-compose.prod.yml up -d nginx-proxy
 - Для автоматического renew обычно настраивают cron/таймер, или периодически вызывают команду renew в контейнере:
 
 ```bash
-docker-compose -f docker-compose.prod.yml run --rm certbot renew --webroot --webroot-path=/var/www/certbot
+docker compose -f docker-compose.prod.yml run --rm certbot renew --webroot --webroot-path=/var/www/certbot
 ```
 
 Если вы видите ошибки:

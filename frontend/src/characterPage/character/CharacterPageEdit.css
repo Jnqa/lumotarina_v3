@@ -1,0 +1,119 @@
+.cp-edit-root {
+  padding: 20px;
+  color: #e7e7e7;
+  background: #121212; /* Глубокий темный фон */
+  border-radius: 20px;
+  max-width: 400px; /* Ограничение для аккуратности */
+  margin: 0 auto;
+}
+
+.cp-edit-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 20px;
+  text-align: center;
+  color: #ffd700; /* Золотистый акцент как у героя */
+}
+
+/* Переделываем в колонку для телефона */
+.cp-edit-body { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 24px; 
+  align-items: center; 
+}
+
+/* Аватар по центру и чуть больше */
+.cp-edit-left { 
+  width: 140px; 
+  position: relative;
+}
+
+.cp-avatar-preview { 
+  width: 140px; 
+  height: 140px; 
+  background: #1e1e1e; 
+  border-radius: 50%; /* Круглый аватар смотрится современнее */
+  overflow: hidden; 
+  border: 3px solid #333;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+
+.cp-avatar-preview img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+}
+
+/* Поля ввода на всю ширину */
+.cp-edit-right { 
+  width: 100%; 
+}
+
+.cp-field { 
+  display: block; 
+  margin-bottom: 16px; 
+}
+
+.cp-field label {
+  display: block;
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 6px;
+  margin-left: 4px;
+}
+
+.cp-field input { 
+  width: 100%; 
+  box-sizing: border-box; /* Чтобы padding не раздувал ширину */
+  padding: 14px; /* Увеличенные отступы для удобства нажатия */
+  background: #1e1e1e; 
+  border: 1px solid #333; 
+  color: #fff; 
+  border-radius: 12px; 
+  font-size: 16px; /* Важно: 16px предотвращает авто-зум в iOS при фокусе */
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.cp-field input:focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
+}
+
+/* Кнопки крупные, на всю ширину */
+.cp-edit-actions { 
+  margin-top: 12px; 
+  display: flex;
+  flex-direction: column; /* Кнопки друг под другом удобнее на телефоне */
+  gap: 12px;
+  width: 100%;
+}
+
+.cp-save { 
+  background: linear-gradient(135deg, #0a851e 0%, #065a14 100%);
+  color: #fff; 
+  padding: 16px; 
+  border: none; 
+  border-radius: 12px; 
+  font-weight: 700;
+  font-size: 16px;
+  cursor: pointer;
+  order: 1; /* Сохранить — первая кнопка */
+}
+
+.cp-cancel { 
+  padding: 14px; 
+  border-radius: 12px; 
+  background: transparent; 
+  color: #888; 
+  border: 1px solid #333; 
+  font-size: 14px;
+  order: 2;
+}
+
+/* Эффект нажатия для мобилок */
+.cp-save:active, .cp-cancel:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}

@@ -1,0 +1,98 @@
+.notes-page {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-height: calc(100vh - 120px);
+}
+
+.notes-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #4a3b2a;
+  padding-bottom: 8px;
+}
+
+.notes-header h1 {
+  font-family: 'Cinzel', serif;
+  color: #d4af37;
+  margin: 0;
+  font-size: 20px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+/* Кнопка Назад */
+.btn-back {
+  background: transparent;
+  border: 1px solid #8b7355;
+  color: #8b7355;
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+/* Контейнер для текста с эффектом пергамента */
+.notes-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.notes-textarea {
+  /* width: 100%; */
+  min-height: 60dvh;
+  background: #1a1612; /* Темный фон */
+  background-image: radial-gradient(circle at center, #25201b 0%, #1a1612 100%);
+  border: 1px solid #4a3b2a;
+  border-radius: 4px;
+  padding: 16px;
+  color: #d1c1a1; /* Цвет старых чернил */
+  font-family: 'Georgia', serif;
+  font-size: 15px;
+  line-height: 1.6;
+  resize: vertical;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.notes-textarea:focus {
+  border-color: #d4af37;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+/* Кнопка Сохранить */
+.btn-save {
+  margin-top: 16px;
+  padding: 12px;
+  background: linear-gradient(180deg, #8b7355 0%, #4a3b2a 100%);
+  border: 1px solid #d4af37;
+  color: #fff;
+  font-family: 'Cinzel', serif;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+  transition: all 0.2s;
+}
+
+.btn-save:hover:not(:disabled) {
+  filter: brightness(1.2);
+  transform: translateY(-1px);
+}
+
+.btn-save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.notes-loading {
+  text-align: center;
+  color: #8b7355;
+  font-style: italic;
+  margin-top: 40px;
+}

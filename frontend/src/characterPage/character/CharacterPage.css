@@ -1,0 +1,52 @@
+.character-page {
+  /* padding: 2px; */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: #2b2b2b;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.cp-top-buttons {
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  padding: 4px;
+}
+
+.cp-top-buttons .dm-btn {
+  padding: 6px 8px;
+  background: linear-gradient(180deg, #ad9467 0%, #7d653d 100%);
+  color: azure;
+  gap: 2px;
+}
+
+.cp-loading, .cp-error {
+  text-align: center;
+  font-size: 16px;
+  color: #e7e7e7;
+}
+
+.character-page > * {
+  opacity: 1;
+  /* padding: 1px; */
+  /* border-radius: 8px; */
+  /* box-shadow: 0 2px 6px rgba(0,0,0,0.1); */
+}
+
+.abilities-map {
+  display: flex;
+  flex-wrap: wrap;
+  width: 94%;
+  flex-direction: column;
+  position: relative;
+  border-radius: 0px;
+  overflow: hidden;
+  box-shadow: 
+    0 12px 32px rgba(0, 0, 0, 0.8),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 0 30px rgba(139, 115, 85, 0.3);
+  transition: box-shadow 0.3s ease;
+}
+

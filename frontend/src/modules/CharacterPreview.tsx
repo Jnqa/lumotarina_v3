@@ -15,6 +15,7 @@ type AbilityInfo = {
   name: string;
   description: string;
   abbreviation: string;
+  abbreviation_RU: string;
   color: string;
   icon: string;
 };
@@ -43,7 +44,19 @@ export default function CharacterPreview({ userId, charId }: { userId: string; c
   const [data, setData] = useState<CharacterData | null>(null);
   const [abilitiesData, setAbilitiesData] = useState<AbilitiesData>({});
   const [selectedStat, setSelectedStat] = useState<string | null>(null);
+  const [useRU, setUseRU] = useState<boolean>(false);
+  const [showABBR, setShowABBR] = useState<boolean>(true);
+  const ABBR_KEY = 'characterPreview.abbreviation_RU';
   const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
+
+  useEffect(() => {
+    try {
+      const v = localStorage.getItem(ABBR_KEY);
+      if (v === 'true') setUseRU(true);
+    } catch (e) {
+      // ignore
+    }
+  }, []);
 
   useEffect(() => {
     fetch(`${API_BASE}/characters/abilities`)
@@ -96,19 +109,54 @@ export default function CharacterPreview({ userId, charId }: { userId: string; c
   }).join(" ");
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 0, width: '100%', fontFamily: 'consolas' }}>
-      <div style={{ flex: '1 1 20%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: '12px', whiteSpace: "nowrap" }}>
+    <div style={{ position: 'relative', display: "flex", alignItems: "center", gap: '2px', width: '100%', fontFamily: 'consolas' }}>
+      <button
+        onClick={() => {
+          try {
+            const next = !showABBR;
+            setShowABBR(next);
+            localStorage.setItem(ABBR_KEY, next ? 'true' : 'false');
+          } catch (e) {}
+        }}
+        title="Toggle abbreviation RU/EN"
+        style={{ position: 'absolute', top: 0, left: 0, zIndex: 20, padding: '2px 4px', borderRadius: 8, background: '#22222242', color: '#dddddd', border: '1px solid #4444443d' }}
+      >
+        {showABBR ? '⊷' : '⊶'}
+      </button>
+      <button
+        onClick={() => {
+          try {
+            const next = !useRU;
+            setUseRU(next);
+            localStorage.setItem(ABBR_KEY, next ? 'true' : 'false');
+          } catch (e) {}
+        }}
+        title="Toggle abbreviation RU/EN"
+        style={{ position: 'absolute', top: 0, right: 0, zIndex: 20, padding: '2px 4px', borderRadius: 8, background: '#22222242', color: '#dddddd', border: '1px solid #4444443d' }}
+      >
+        {useRU ? '🇷🇺' : '🇬🇧'}
+      </button>
+      <div className="abilities-text" style={{ flex: '1 1 20%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: showABBR ? '12px' : '18px', whiteSpace: "nowrap" }}>
         {/* Left: Intelligence skills */}
         {IntelligenceStats.map(stat => {
           const ab = abilitiesData[stat];
           const value = abilities[stat] ?? 0;
           const mod = Math.floor((value / 10));
-          return <div key={stat} style={{ color: ab?.color, cursor: 'pointer', background: '#1e1e1e90', borderRadius: '40px', padding: '4px 4px 4px 8px' }} onClick={() => setSelectedStat(stat)}>{mod} {ab?.abbreviation} {ab?.icon}</div>;
+          const getAbbr = (a?: AbilityInfo) => a ? (useRU ? (a.abbreviation_RU || a.abbreviation) : (a.abbreviation || a.abbreviation_RU)) : '';
+          return <div key={stat} style={{ color: ab?.color, cursor: 'pointer', borderRadius: '40px', padding: '4px 4px 4px 8px' }} onClick={() => setSelectedStat(stat)}>{mod} {showABBR ? getAbbr(ab) : ''} {ab?.icon}</div>;
         })}
       </div>
       
       <div>
-      <svg width={size} height={size} style={{ flex: '1 1 50%', background: '#1e1e1e90', borderRadius: '30%' }}>
+        {/* убрали - flex: '1 1 50%',*/}
+      <svg width={size} height={size} style={{  background: 'transparent', overflow: 'visible' }}> 
+        {/* Сияние */}
+        <defs>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          </filter>
+        </defs>
         {/* Сетка */}
         {[0.25, 0.5, 0.75, 1].map((k, i) => (
           <polygon
@@ -120,7 +168,7 @@ export default function CharacterPreview({ userId, charId }: { userId: string; c
               return `${x},${y}`;
             }).join(" ")}
             fill="none"
-            stroke="#333"
+            stroke="rgba(139, 115, 85, 0.2)"
             strokeWidth="1"
           />
         ))}
@@ -138,30 +186,36 @@ export default function CharacterPreview({ userId, charId }: { userId: string; c
               y1={center}
               x2={x}
               y2={y}
-              stroke="#444"
+              stroke="rgba(139, 115, 85, 0.3)"
+              strokeDasharray="2,2"
             />
           );
         })}
 
         {/* Значения */}
         <polygon
-          points={points}
-          fill="rgba(117, 174, 243, 0.4)"
-          stroke="#b3d4ffff"
-          strokeWidth="2"
-        />
-        <polygon
           points={pointsZero}
-          fill="rgba(48, 48, 48, 0.7)"
-          stroke="#747474cc"
+          fill="rgba(139, 115, 85, 0.3)"
+          stroke="rgba(139, 115, 85, 0.3)"
           strokeWidth="1"
         />
+        <polygon
+          points={points}
+          fill="rgba(255, 215, 0, 0.15)"
+          stroke="#ffd700"
+          strokeWidth="2"
+          filter="url(#glow)" /* Применяем свечение */
+        />
+
 
         {/* Подписи */}
         {radarStats.map((stat, i) => {
           const angle = i * angleStep - Math.PI / 2;
-          const x = center + Math.cos(angle) * (radius + 20);
-          const y = center + Math.sin(angle) * (radius + 20);
+          const offset = showABBR ? 12 : 10; 
+          const x = center + Math.cos(angle) * (radius + offset);
+          const y = center + Math.sin(angle) * (radius + offset + 3);
+          const x_icon = center + Math.cos(angle) * (radius + offset + 12);
+          // const y_icon = center + Math.sin(angle) * (radius + offset + 7);
           const value = abilities[stat] ?? 0;
           const mod = Math.floor((value / 10));
           const ab = abilitiesData[stat];
@@ -169,9 +223,34 @@ export default function CharacterPreview({ userId, charId }: { userId: string; c
           if (ab) {
             return (
               <g key={stat} onClick={() => setSelectedStat(stat)} style={{ cursor: 'pointer'}}>
-                <text x={x} y={y} textAnchor="middle" dominantBaseline="middle" fill={ab.color} fontSize="12" fontWeight={700} >
-                  <tspan x={x} dy="0">{ab.icon}{ab.abbreviation}</tspan>
-                  <tspan x={x} dy="1.2em">{mod}</tspan>
+                {/* Невидимый круг для легкого попадания пальцем */}
+                <circle cx={x} cy={y} r="25" fill="transparent" /> 
+                <text 
+                  x={x} 
+                  y={y} 
+                  textAnchor="middle" 
+                  dominantBaseline="middle" 
+                  fill={ab.color} 
+                  fontWeight={700} 
+                  style={{ fontFamily: 'Cinzel, serif', transition: 'all 0.3s' }} 
+                >
+                  <tspan 
+                    className="abilities-text-center" 
+                    x={x_icon} 
+                    dy="-0.2em" 
+                    fontSize={showABBR ? "12" : "18"} 
+                    fontWeight="900"
+                  >
+                    {showABBR ? (ab ? `${ab.icon} ${useRU ? ab.abbreviation_RU : ab.abbreviation}` : stat) : `${ab.icon}`}
+                  </tspan>
+                  <tspan 
+                    x={x} 
+                    dy={showABBR ? "1.4em" : "0.8em" }
+                    fontSize={showABBR ? "14" : "20"}  
+                    fontWeight="900"
+                  >
+                    {mod}
+                  </tspan>
                 </text>
               </g>
             );
@@ -195,26 +274,39 @@ export default function CharacterPreview({ userId, charId }: { userId: string; c
       </div>
 
       {selectedStat && (
-        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }} onClick={() => setSelectedStat(null)}>
+        <div style={{ 
+          position: 'fixed', 
+          top: 0, 
+          left: 0, 
+          width: '100%', 
+          height: '100%', 
+          background: 'rgba(0,0,0,0.5)', 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center', 
+          zIndex: 1000 
+          }} 
+          onClick={() => setSelectedStat(null)}>
           <div className="info-modal" onClick={e => e.stopPropagation()}>
             <h3>{abilitiesData[selectedStat]?.icon} {abilitiesData[selectedStat]?.name}</h3>
             <p>{abilitiesData[selectedStat]?.description}</p>
-            <button onClick={() => setSelectedStat(null)} className="btn-ok">ОК</button>
+            <button onClick={() => setSelectedStat(null)} className="btn-gold-ok">ОК</button>
           </div>
         </div>
       )}
 
-      <div style={{ flex: '1 1 20%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', fontSize: '12px', whiteSpace: "nowrap" }}>
+      <div style={{ flex: '1 1 20%', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', fontSize: showABBR ? '12px' : '18px', whiteSpace: "nowrap" }}>
         {/* Right: other skills */}
         {[...StrengthStats, ...DexterityStats, ...PerceptionStats].map(stat => {
           const ab = abilitiesData[stat];
           const value = abilities[stat] ?? 0;
           const mod = Math.floor((value / 10));
-          return <div key={stat} style={{ color: ab?.color, cursor: 'pointer', background: '#1e1e1e90', borderRadius: '40px', padding: '4px 8px 4px 4px' }} onClick={() => setSelectedStat(stat)}>{ab?.icon} {ab?.abbreviation} {mod}</div>;
+          return <div key={stat} className="abilities-text" style={{ color: ab?.color, cursor: 'pointer', borderRadius: '40px', padding: '4px 8px 4px 4px' }} onClick={() => setSelectedStat(stat)}>{ab?.icon} {showABBR ? (ab ? (useRU ? (ab.abbreviation_RU || ab.abbreviation) : (ab.abbreviation || ab.abbreviation_RU)) : '') : ''} {mod}</div>;
         })}
       </div>
     </div>
   );
 }
+
 
 

@@ -9,14 +9,93 @@
     -webkit-backdrop-filter: blur(14px) saturate(160%); */
 }
 
+.btn-gold-ok {
+    color: white;
+    border: 1px solid #ad946792;
+    border-radius: 4px;
+    padding: 4px 18px;
+    background: linear-gradient(310deg,#c0a404 0%, #ad946792 80%);
+    /* border: 1px solid rgba(205, 205, 205, 0.35); */
+    /* backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%); */
+}
+
 .info-modal {
-    background: rgba(25, 25, 25, 0.55);
+    background: #3b2f1ae1;
     color: var(--text, #fff);
     padding: 10px;
-    border-radius: 18px;
+    border-radius: 4px;
     box-shadow: var(--shadow);
-    max-width: 290px;
-    border: 1px solid rgba(255, 255, 255, 0.06);
+    max-width: 300px;
+    /* border: 1px solid rgba(255, 255, 255, 0.06); */
+    border: 1px solid #ad946792;
     backdrop-filter: blur(14px) saturate(160%);
     -webkit-backdrop-filter: blur(14px) saturate(160%);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.7);
+}
+
+.abilities-map {
+  /* Фон с эффектом виньетки (в центре светлее, к краям темнее) */
+  background: radial-gradient(circle at center, #4d3d22e1 0%, #2a1f0ee1 100%);
+  
+  color: var(--text, #fff);
+  padding: 8px; /* Больше пространства для мобильных пальцев */
+  
+  /* Плавные современные углы */
+  border-radius: 0px 0px 2px 2px;
+  
+  /* Сложная тень: внешнее падение + внутренний объем */
+  box-shadow: 
+    0 10px 25px rgba(0, 0, 0, 0.6),
+    inset 0 0 15px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.1); /* Легкий блик по верхнему краю */
+    
+  /* Граница как у ювелирного изделия */
+  /* border: 1px solid rgba(173, 148, 103, 0.4); */
+  
+  /* Эффект стекла */
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  
+  /* Читаемость текста */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  
+  /* Для мобильного: предотвращаем сжатие содержимого */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+/* Добавляем декоративную "золотую" полоску сверху для премиальности */
+.abilities-map::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ad9467, transparent);
+  opacity: 0.6;
+}
+
+.abilities-text {
+  font-family: 'Cinzel', serif; /* Кавычки только для названия */
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px; /* Разрядка букв — признак дорогого дизайна */
+  
+  /* Эффект "объемной чеканки" */
+  fill: #ffd700; /* Золотой цвет для SVG text */
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.7));
+}
+
+.abilities-text-center {
+  font-family: 'Cinzel', serif; /* Кавычки только для названия */
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 1px; /* Разрядка букв — признак дорогого дизайна */
+  
+  /* Эффект "объемной чеканки" */
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.9));
 }

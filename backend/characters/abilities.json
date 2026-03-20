@@ -3,48 +3,55 @@
     "name": "Сила",
     "description": "Физическая мощь, способность поднимать тяжести и наносить урон в ближнем бою.",
     "abbreviation": "STR",
-    "color": "#BB3322",
+    "abbreviation_RU": "Сила",
+    "color": "#A33124",
     "icon": "💪"
   },
   "Dexterity": {
     "name": "Ловкость",
     "description": "Координация, скорость реакции, меткость и уклонение.",
     "abbreviation": "DEX",
-    "color": "#CC8844",
+    "abbreviation_RU": "Ловк",
+    "color": "#D48943",
     "icon": "🤸"
   },
   "Constitution": {
     "name": "Телосложение",
     "description": "Здоровье, выносливость, сопротивляемость болезням и ядам.",
     "abbreviation": "CON",
-    "color": "#28a517",
+    "abbreviation_RU": "Тело",
+    "color": "#3B7A30",
     "icon": "💚"
   },
   "Intelligence": {
     "name": "Интеллект",
     "description": "Умственные способности, память, логика и знание языков.",
     "abbreviation": "INT",
-    "color": "#4775d1",
-    "icon": "🧠"
+    "abbreviation_RU": "Инте",
+    "color": "#3D6BBF",
+    "icon": "📖"
   },
   "Charisma": {
     "name": "Харизма",
     "description": "Личное обаяние, влияние на других, лидерство и умение убеждать.",
     "abbreviation": "CHA",
-    "color": "#AA33AA",
+    "abbreviation_RU": "Хари",
+    "color": "#8E3D8E",
     "icon": "🗣️"
   },
   "Perception": {
     "name": "Восприятие",
     "description": "Способность замечать детали, слышать звуки и чувствовать опасность.",
     "abbreviation": "PER",
-    "color": "#CCCC33",
-    "icon": "👀"
+    "abbreviation_RU": "Восп",
+    "color": "#B8A33D",
+    "icon": "👁"
   },
   "Willpower": {
     "name": "Сила воли",
     "description": "Внутренняя стойкость, способность противостоять стрессу и контролировать эмоции.",
     "abbreviation": "WIL",
+    "abbreviation_RU": "Воля",
     "color": "#448844",
     "icon": "🧘‍♀️"
   },
@@ -52,6 +59,7 @@
     "name": "Инженерия",
     "description": "Знание технических устройств, умение их создавать и ремонтировать.",
     "abbreviation": "ENG",
+    "abbreviation_RU": "Инж",
     "color": "#4775d1",
     "icon": "🔧"
   },
@@ -59,6 +67,7 @@
     "name": "Люмион",
     "description": "Внутренняя энергия, используемая для магических и сверхъестественных способностей.",
     "abbreviation": "LUM",
+    "abbreviation_RU": "Люми",
     "color": "#55CCFF",
     "icon": "✨"
   },
@@ -66,6 +75,7 @@
     "name": "Медицина",
     "description": "Знание анатомии, лечение ран и болезней.",
     "abbreviation": "MED",
+    "abbreviation_RU": "Мед",
     "color": "#4775d1",
     "icon": "💊"
   },
@@ -73,6 +83,7 @@
     "name": "Взлом",
     "description": "Способность открывать замки и обходить системы безопасности.",
     "abbreviation": "LPI",
+    "abbreviation_RU": "Взл",
     "color": "#CC8844",
     "icon": "🗝️"
   },
@@ -80,6 +91,7 @@
     "name": "Скрытность",
     "description": "Умение незаметно передвигаться и избегать обнаружения.",
     "abbreviation": "STL",
+    "abbreviation_RU": "Скр",
     "color": "#CC8844",
     "icon": "🕶️"
   },
@@ -87,6 +99,7 @@
     "name": "Природа",
     "description": "Знание флоры и фауны, умение ориентироваться в дикой природе.",
     "abbreviation": "NAT",
+    "abbreviation_RU": "Прд",
     "color": "#4775d1",
     "icon": "🌿"
   },
@@ -94,6 +107,7 @@
     "name": "Выживание",
     "description": "Способность находить пищу, воду и укрытие в дикой природе.",
     "abbreviation": "SUR",
+    "abbreviation_RU": "Вжв",
     "color": "#CCCC33",
     "icon": "🏕️"
   },
@@ -101,6 +115,7 @@
     "name": "Ремесло",
     "description": "Умение создавать предметы и инструменты своими руками.",
     "abbreviation": "CRF",
+    "abbreviation_RU": "Рем",
     "color": "#4775d1",
     "icon": "🛠️"
   },
@@ -108,6 +123,7 @@
     "name": "Атлетика",
     "description": "Способность лазить, прыгать, плавать и совершать тяжелые действия.",
     "abbreviation": "ATL",
+    "abbreviation_RU": "Атл",
     "color": "#BB3322",
     "icon": "🤾‍♂️"
   },
@@ -115,6 +131,7 @@
     "name": "Акробатика",
     "description": "Способность устоять на ногах, выполнять сложные маневры и трюки.",
     "abbreviation": "ACR",
+    "abbreviation_RU": "Акр",
     "color": "#CC8844",
     "icon": "🤸‍♂️"
   },
@@ -122,6 +139,7 @@
     "name": "История",
     "description": "Способность вспомнить исторические факты и события.",
     "abbreviation": "HIS",
+    "abbreviation_RU": "Ист",
     "color": "#4775d1",
     "icon": "📜"
   }

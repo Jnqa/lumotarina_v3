@@ -104,7 +104,11 @@ export default function DM(){
                 const inSet = !!lobby.find((x:any)=> x.ownerId===c.ownerId && x.charId===c.charId);
                 return (
                   <div key={`${c.ownerId}::${c.charId}`} style={{display:'flex',alignItems:'center',gap:12,padding:8,borderRadius:8,background:'transparent'}}>
-                    <img src={c.picture||''} alt="pic" style={{width:56,height:56,objectFit:'cover',borderRadius:8,background:'#222'}}/>
+                    <img
+                      src={c.picture||''}
+                      alt="pic"
+                      style={{width:56,height:56,objectFit:'cover',borderRadius:8,background:'#222',cursor:'pointer'}}
+                    />
                     <div style={{flex:1}}>
                       <div style={{fontWeight:700}}>{c.name||c.title||'Unnamed'}</div>
                       <div style={{fontSize:12,color:'var(--muted)'}}>{c.ownerDisplayName || c.ownerId}</div>

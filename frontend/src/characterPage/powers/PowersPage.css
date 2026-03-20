@@ -1,0 +1,36 @@
+/* .powers-page { 
+    padding: 16px;
+    color: #e7e7e7;
+}
+.powers-page h1 { 
+    margin: 0 0 8px 0;
+    font-size: 16px 
+}
+.powers-page .powers-grid { 
+    display:grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap:8px 
+}
+.powers-page input { 
+    width:72px; 
+    padding:6px; 
+    border-radius:6px; 
+    background:#171717; 
+    border:1px solid #2a2a2a; 
+    color:#fff 
+}
+.powers-page button { 
+    padding:8px 12px; 
+    background:#2e7dff; 
+    color:#fff; 
+    border-radius:6px; 
+    border:none 
+}
+.powers-page .ability-row { 
+    background:#222; 
+    padding:8px; 
+    border-radius:6px; 
+    display:flex; 
+    align-items:center; 
+    justify-content:space-between 
+} */

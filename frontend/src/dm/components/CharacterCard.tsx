@@ -15,7 +15,11 @@ export default function CharacterCard({ entry, onEdit }:{ entry:any, onEdit:()=>
   return (
     <div className="dm-card">
       <div style={{display:'flex',gap:10}}>
-        <div style={{width:72,height:72,flex:'0 0 72px',borderRadius:8,overflow:'hidden',background:'#222'}}>
+        <div style={{width:72,height:72,flex:'0 0 72px',borderRadius:8,overflow:'hidden',background:'#222'}} 
+        onClick={() => {
+                        window.location.href = `/app/${encodeURIComponent(entry.ownerId)}/${encodeURIComponent(entry.charId)}`;
+                      }}
+        >
           {picture ? <img src={picture} alt="pic" style={{width:'100%',height:'100%',objectFit:'cover'}}/> : <div style={{width:'100%',height:'100%'}} />}
         </div>
         <div style={{flex:1}}>

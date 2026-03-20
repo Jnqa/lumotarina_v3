@@ -179,7 +179,10 @@ export default function Profile() {
             {characters && characters.length > 0 && (
               <div className="character-grid">
                 {characters.map((c: any, idx: number) => (
-                  <div key={c.id || idx} className="character-tile" onClick={() => { nav('/character/edit', { state: { character: c } }); }}>
+                  <div key={c.id || idx} className="character-tile" onClick={() => {
+                    const ownerId = session?.tgId || 'default';
+                    nav(`/app/${encodeURIComponent(ownerId)}/${encodeURIComponent(c.id)}`);
+                  }}>
                     <div className="tile-left">
                       <img src={`${c.picture || '/profile_pictures/profile_picture_00.jpg'}`} alt={c.name || 'avatar'} />
                     </div>
