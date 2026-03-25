@@ -303,7 +303,7 @@
   width: 140px;
   height: 36px; /* Чуть выше для солидности */
   font-family: 'Cinzel', serif;
-  
+  color: #ffc60c;
   /* Фон: глубокий градиент кованого железа */
   background: linear-gradient(180deg, #2c2c2c 0%, #1a1a1a 100%);
   

@@ -1,3 +1,5 @@
+/* Тут такой бардак.. а всё потому что хотел корректный флип на айфоне*/
+
 .character-hero {
   display: flex;
   flex-direction: column;
@@ -336,6 +338,7 @@
   background: #00000000;
   backdrop-filter: none;
   /* Эффект появления */
+  rotate: 250deg;
   opacity: 0;
   transition: opacity 0.4s ease-in-out;
   pointer-events: none; /* Не нажимается, пока невидима */
@@ -380,14 +383,49 @@
   flex-direction: column;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-}
-
-/* Лицевая сторона */
-.flip-card-front, .flip-card-back {
   /* Имитация старой рамы */
   border: 4px solid;
   border-image: linear-gradient(135deg, #8a6d3b 0%, #e1c07e 50%, #8a6d3b 100%) 1;
   box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.7);
+  /* inset: 0; */
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* Плавное исчезновение сторон */
+  transition: opacity 0.3s ease-in-out; 
+}
+
+.flip-card-inner {
+  transform-style: preserve-3d;
+}
+
+.flip-card-front {
+  /* Смещаем чуть вперед */
+  transform: rotateY(0deg) translateZ(1px); 
+}
+
+.flip-card-back {
+  /* Смещаем чуть назад (относительно центра вращения) */
+  transform: rotateY(180deg) translateZ(1px);
+}
+
+/* Когда карточка НЕ перевернута */
+.flip-card:not(.is-flipped) .flip-card-front {
+  opacity: 1;
+  z-index: 2;
+}
+.flip-card:not(.is-flipped) .flip-card-back {
+  opacity: 0;
+  z-index: 1;
+}
+
+/* Когда карточка ПЕРЕВЕРНУТА */
+.flip-card.is-flipped .flip-card-front {
+  opacity: 0;
+  z-index: 1;
+}
+.flip-card.is-flipped .flip-card-back {
+  opacity: 1;
+  z-index: 2;
 }
 
 /* Обратная сторона (изначально повернута) */

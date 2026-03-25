@@ -42,7 +42,7 @@
 
 .notes-textarea {
   /* width: 100%; */
-  min-height: 60dvh;
+  min-height: 50dvh;
   background: #1a1612; /* Темный фон */
   background-image: radial-gradient(circle at center, #25201b 0%, #1a1612 100%);
   border: 1px solid #4a3b2a;

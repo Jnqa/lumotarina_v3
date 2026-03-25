@@ -63,7 +63,7 @@ export default function CharacterHero({ name, picture, avatar, hp = 0, hpMax = 0
           </div>
           <div className="hero-class-level">{classNameStr || ''} · Уровень {level || 1}</div>
           <button className={`flip-btn${flipped ? ' is-flipped' : ''} ${isAnimating ? ' is-animating' : ''}`} onClick={toggleFlip}>
-            ⮌
+            ⤿
           </button>
         </div>
         <div className="flip-card-back">

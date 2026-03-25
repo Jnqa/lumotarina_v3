@@ -24,7 +24,7 @@ export default function CharacterPage() {
           <button className="dm-btn" onClick={() => nav('/')}>← 🏠︎</button>
         </div>
         <div className="cp-top-buttons right">        
-          <button className="dm-btn" onClick={refresh}>⭮</button>
+          <button className="dm-btn" onClick={refresh}>↻</button>
           <button className="dm-btn" onClick={() => nav('edit')}>✎</button>
         </div>
       </div>
