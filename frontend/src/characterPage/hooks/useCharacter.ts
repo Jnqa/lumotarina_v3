@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback } from 'react'
 
 type StatType = { name: string; value: number }
+export type QuestStatus = 'active' | 'completed' | 'frozen' | 'forgotten' | 'available'
+type QuestType = { id: string; type: 'team' | 'private'; title: string; description: string; status: QuestStatus | boolean }
 export type CharacterType = {
   id?: string
   name: string
@@ -22,6 +24,7 @@ export type CharacterType = {
   story?: string
   skillpoints?: number
   totalMaxHP?: number
+  quests?: QuestType[]
 }
 
 function getApiBase() {

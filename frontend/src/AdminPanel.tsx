@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './AdminPanel.css';
 import Users from './adminPanel/Users';
 import Characters from './adminPanel/Characters';
@@ -20,6 +21,7 @@ export default function AdminPanel() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [error, setError] = useState('');
   const [currentTab, setCurrentTab] = useState<'users' | 'characters' | 'auth'>('users');
+  const navigate = useNavigate();
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,6 +59,7 @@ export default function AdminPanel() {
           </form>
           {error && <div className="error">{error}</div>}
         </div>
+         <button className="admin-home-float" onClick={() => navigate('/')}>🏠</button>
       </div>
     );
   }
@@ -94,6 +97,7 @@ export default function AdminPanel() {
         {currentTab === 'characters' && <Characters />}
         {currentTab === 'auth' && <UserCreation password={password} />}
       </div>
+      <button className="admin-home-float" onClick={() => navigate('/')}>🏠</button>
     </div>
   );
 }

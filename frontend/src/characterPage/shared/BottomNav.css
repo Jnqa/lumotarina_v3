@@ -4,7 +4,7 @@
   right: 0;
   bottom: 0;
   width: 100%;
-  height: calc(64px + env(safe-area-inset-bottom));
+  height: calc(80px + env(safe-area-inset-bottom));
   background: rgba(20, 20, 20, 0.85); /* Полупрозрачный черный */
   backdrop-filter: blur(12px); /* Эффект матового стекла */
   -webkit-backdrop-filter: blur(12px);

@@ -2,13 +2,17 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const admin = require('firebase-admin');
+const bcrypt = require('bcryptjs');
 const { checkTelegramAuth } = require('./telegram');
 const jwt = require('jsonwebtoken');
+const { requireAuth } = require('./auth');
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecret';
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 
 // firebase helpers
 const fb = require('./firebase');
@@ -21,6 +25,7 @@ const profileRouter = require('./profile');
 const charactersRouter = require('./characters');
 const classesRouter = require('./classes');
 const storyRouter = require('./routes/characterStory');
+const s3LoreRouter = require('./routes/s3Lore');
 
 // CORS setup (must be before routes)
 const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()) : ['https://dnd.lumotarina.ru', 'http://localhost:5173'];
@@ -39,10 +44,13 @@ app.use(cors({
 // Support preflight requests for all routes
 app.options('*', cors());
 
+// ============ ROUTERS ============
+
 app.use('/profile', profileRouter);
 app.use('/characters', charactersRouter);
 app.use('/classes', classesRouter);
 app.use('/story', storyRouter);
+app.use('/get-lore', s3LoreRouter);
 
 // Endpoint: получить публичные данные пользователя по tg_id
 app.get('/auth/user/:id', async (req, res) => {
@@ -70,8 +78,18 @@ app.post('/auth/token', express.json(), (req, res) => {
   const { token } = req.body;
   try {
     const payload = jwt.verify(token, JWT_SECRET);
-    // Здесь можно создать сессию или выдать новый JWT для фронта
-    res.json({ success: true, user: payload });
+    // Создаём новый JWT для cookie
+    const sessionToken = jwt.sign({ tgId: payload.tg_id }, JWT_SECRET, { expiresIn: '30d' });
+    
+    res.cookie('session', sessionToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      path: '/'
+    });
+
+    res.json({ success: true, user: { tgId: payload.tg_id } });
   } catch (e) {
     res.status(401).json({ success: false, error: 'Invalid or expired token' });
   }
@@ -98,12 +116,28 @@ app.post('/auth/send-code', express.json(), (req, res) => {
   }
 });
 
-// Endpoint: проверить код
+// Endpoint: проверить код и установить httpOnly cookie с JWT
 app.post('/auth/check-code', express.json(), (req, res) => {
   const { tg_id, code } = req.body;
   if (!tg_id || !code) return res.status(400).json({ success: false, error: 'tg_id and code required' });
+  
   const ok = checkLoginCode(tg_id, code);
-  res.json({ success: ok });
+  if (!ok) {
+    return res.status(401).json({ success: false, error: 'Invalid or expired code' });
+  }
+
+  // Создаём JWT и устанавливаем в httpOnly cookie
+  const token = jwt.sign({ tgId: tg_id }, JWT_SECRET, { expiresIn: '30d' });
+  
+  res.cookie('session', token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // только HTTPS в продакшене
+    sameSite: 'strict',
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 дней
+    path: '/'
+  });
+
+  res.json({ success: true });
 });
 // Endpoint для авторизации через Telegram WebApp
 app.post('/auth/telegram', express.json(), (req, res) => {
@@ -127,6 +161,64 @@ app.get('/auth/telegram-status', (req, res) => {
     res.json({ available, lastErrorMessage: null, isConflict: false });
   } catch (e) {
     res.json({ available: false, lastErrorMessage: null, isConflict: false });
+  }
+});
+
+// Endpoint: проверить текущую сессию
+app.get('/auth/me', requireAuth, (req, res) => {
+  res.json({ success: true, user: req.user });
+});
+
+// Endpoint: выход (logout)
+app.post('/auth/logout', (req, res) => {
+  res.clearCookie('session', { path: '/' });
+  res.json({ success: true });
+});
+
+// Endpoint: вход по username и password (требует хеша пароля в БД)
+app.post('/auth/login-password', express.json(), async (req, res) => {
+  const { username, password } = req.body;
+  if (!username || !password) {
+    return res.status(400).json({ success: false, error: 'Username and password required' });
+  }
+
+  try {
+    // Ищем пользователя по username
+    const usersRef = admin.database().ref('users');
+    const snapshot = await usersRef.orderByChild('username').equalTo(username).once('value');
+    
+    if (!snapshot.exists()) {
+      return res.status(401).json({ success: false, error: 'Invalid username or password' });
+    }
+
+    const usersData = snapshot.val();
+    const tgId = Object.keys(usersData)[0];
+    const userData = usersData[tgId];
+
+    // Проверяем пароль
+    if (!userData.passwordHash) {
+      return res.status(401).json({ success: false, error: 'Invalid username or password' });
+    }
+
+    const isValidPassword = await bcrypt.compare(password, userData.passwordHash);
+    if (!isValidPassword) {
+      return res.status(401).json({ success: false, error: 'Invalid username or password' });
+    }
+
+    // Создаём JWT и устанавливаем в httpOnly cookie
+    const token = jwt.sign({ tgId }, JWT_SECRET, { expiresIn: '30d' });
+    
+    res.cookie('session', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 30 * 24 * 60 * 60 * 1000,
+      path: '/'
+    });
+
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Server error' });
   }
 });
 
@@ -333,6 +425,29 @@ app.get('/auth/is_master/:id', (req, res) => {
     res.json({ isMaster: !!isMaster });
   } catch (e) {
     console.error('GET /auth/is_master error', e);
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// Endpoint: проверить, является ли пользователь админом (ADMINS env)
+app.get('/auth/is_admin/:id', (req, res) => {
+  const id = String(req.params.id || '');
+  try {
+    const raw = process.env.ADMINS || process.env.ADMINS_LIST || '';
+    let admins = [];
+    if (!raw) {
+      admins = [];
+    } else {
+      try {
+        admins = JSON.parse(raw);
+      } catch (e) {
+        admins = String(raw).split(',').map(s => s.trim()).filter(Boolean);
+      }
+    }
+    const isAdmin = admins.map(String).includes(id);
+    res.json({ isAdmin: !!isAdmin });
+  } catch (e) {
+    console.error('GET /auth/is_admin error', e);
     res.status(500).json({ error: e.message });
   }
 });

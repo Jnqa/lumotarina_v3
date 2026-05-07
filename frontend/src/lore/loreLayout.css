@@ -1,0 +1,298 @@
+.lore-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg, #f4efe6);
+  color: var(--text, #28211a);
+}
+
+.lore-layout__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border, #ddd5c4);
+  background: var(--topbar-bg, rgba(244, 239, 230, 0.95));
+  flex-shrink: 0;
+}
+
+.lore-layout__back {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border, #ddd5c4);
+  border-radius: 4px;
+  color: var(--text, #28211a);
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+}
+
+.lore-layout__back:hover {
+  background: var(--accent, #8a5a28);
+  color: var(--paper, #fefcf7);
+  border-color: var(--accent, #8a5a28);
+}
+
+.lore-layout__tabs {
+  display: flex;
+  gap: 12px;
+  margin: 0 auto;
+}
+
+.lore-layout__tab {
+  padding: 10px 20px;
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: 4px;
+  color: var(--text, #28211a);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lore-layout__tab:hover {
+  border-bottom-color: var(--accent, #8a5a28);
+}
+
+.lore-layout__tab.active {
+  border-bottom-color: var(--accent, #8a5a28);
+  color: var(--accent, #8a5a28);
+}
+
+.lore-layout__content {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+}
+
+/* Wiki styles */
+.wiki-root {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: 20px;
+}
+
+.wiki-info {
+  margin-bottom: 16px;
+  padding: 12px;
+  background: rgba(139, 90, 40, 0.1);
+  border-left: 3px solid var(--accent, #8a5a28);
+  font-size: 13px;
+  color: var(--text, #28211a);
+}
+
+.wiki-topbar {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.wiki-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.wiki-tab {
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px solid var(--border, #ddd5c4);
+  border-radius: 4px;
+  color: var(--text, #28211a);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.wiki-tab:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.wiki-tab.active {
+  background: var(--accent, #8a5a28);
+  color: var(--paper, #fefcf7);
+  border-color: var(--accent, #8a5a28);
+}
+
+.wiki-inline-list {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+.wiki-link {
+  padding: 6px 12px;
+  background: var(--tag-bg, #ece5d4);
+  border: none;
+  border-radius: 4px;
+  color: var(--text, #28211a);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.wiki-link:hover {
+  background: var(--accent, #8a5a28);
+  color: var(--paper, #fefcf7);
+}
+
+.wiki-sep {
+  border: none;
+  border-top: 1px solid var(--border, #ddd5c4);
+  margin: 0;
+}
+
+.wiki-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 0;
+}
+
+.wiki-title {
+  margin: 0 0 16px 0;
+  font-size: 20px;
+  color: var(--text, #28211a);
+}
+
+.wiki-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.wiki-thumb {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  border: 1px solid var(--border, #ddd5c4);
+  transition: transform 0.2s;
+}
+
+.wiki-thumb:hover {
+  transform: scale(1.05);
+}
+
+.wiki-article {
+  line-height: 1.8;
+  font-size: 14px;
+}
+
+.wiki-article h1, .wiki-article h2, .wiki-article h3,
+.wiki-article h4, .wiki-article h5, .wiki-article h6 {
+  margin: 20px 0 12px 0;
+  font-weight: 700;
+  color: var(--text, #28211a);
+}
+
+.wiki-article p {
+  margin: 12px 0;
+  text-align: justify;
+}
+
+.wiki-article a {
+  color: var(--accent, #8a5a28);
+  text-decoration: underline;
+}
+
+.wiki-article a:hover {
+  opacity: 0.7;
+}
+
+.wiki-article pre {
+  background: var(--bg, #f4efe6);
+  padding: 12px;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 12px 0;
+}
+
+.wiki-article code {
+  font-family: 'Courier New', monospace;
+  font-size: 13px;
+}
+
+.wiki-empty {
+  text-align: center;
+  color: var(--muted, #978f82);
+  padding: 40px 20px;
+  font-size: 14px;
+}
+
+.wiki-viewer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.wiki-viewer img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .wiki-inline-list {
+    max-height: 80px;
+  }
+
+  .wiki-content {
+    padding: 12px 0;
+  }
+
+  .wiki-article {
+    font-size: 13px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════ */
+/* ─── ВАЖНО: требования к loreLayout.css ────────────────────────────────── */
+/* Чтобы position:fixed сайдбар работал корректно, родители .er-root        */
+/* НЕ должны иметь: transform, filter, will-change, overflow:hidden          */
+/* Добавь в loreLayout.css:                                                  */
+/* ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Эти стили нужны в loreLayout.css: */
+
+.lore-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.lore-layout__header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  height: 48px;
+  border-bottom: 1px solid var(--border, #ddd5c4);
+  background: var(--topbar-bg, rgba(244,239,230,0.95));
+}
+
+.lore-layout__content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}

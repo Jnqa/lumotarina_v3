@@ -24,22 +24,40 @@ function getMagicLinkToken() {
   return params.get('token') || '';
 }
 
+// Проверяем есть ли валидная сессия (через cookies)
+async function checkSession() {
+  try {
+    const res = await fetch(`${BACKEND_URL}/auth/me`, {
+      method: 'GET',
+      credentials: 'include', // важно для отправки cookies
+      headers: { 'Content-Type': 'application/json' }
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data.success ? data.user : null;
+    }
+  } catch (e) {}
+  return null;
+}
+
 export default function Auth() {
   const navigate = useNavigate();
   const magicToken = getMagicLinkToken();
   const [tgId, setTgId] = useState(getTgIdFromUrl());
   const [code, setCode] = useState('');
-  const [step, setStep] = useState<'input' | 'code' | 'success' | 'error' | 'alt' | 'magiclink'>('input');
+  const [step, setStep] = useState<'input' | 'code' | 'success' | 'error' | 'alt' | 'magiclink' | 'password'>('input');
   const [error, setError] = useState('');
   const [user, setUser] = useState<any>(null);
   const [loadingUser, setLoadingUser] = useState(false);
   const [tgAvailable, setTgAvailable] = useState(true);
   const [lastErrorMessage, setLastErrorMessage] = useState<string | null>(null);
   const [isConflict, setIsConflict] = useState(false);
-  const [loginMode, setLoginMode] = useState<'telegram' | 'link'>('telegram');
+  const [loginMode, setLoginMode] = useState<'telegram' | 'link' | 'password'>('telegram');
   const [magicLinkInput, setMagicLinkInput] = useState('');
   const [backgroundImage, setBackgroundImage] = useState(0);
   const [backgroundImage2, setBackgroundImage2] = useState(0);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
 
   // Set random background images on mount
   useEffect(() => {
@@ -48,6 +66,15 @@ export default function Auth() {
     setBackgroundImage(randomBg1);
     setBackgroundImage2(randomBg2);
   }, []);
+
+  // Проверяем сессию при загрузке
+  useEffect(() => {
+    checkSession().then(user => {
+      if (user) {
+        navigate('/profile');
+      }
+    });
+  }, [navigate]);
 
   useEffect(() => {
     // Handle magic link login if token is in URL
@@ -61,11 +88,13 @@ export default function Auth() {
     setError('');
     try {
       const res = await fetch(`${BACKEND_URL}/auth/token`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ token })
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
       });
       const data = await res.json();
-      if (data.success && data.user && data.user.tg_id) {
-        localStorage.setItem('session', JSON.stringify({ tgId: data.user.tg_id }));
+      if (data.success) {
         navigate('/profile');
       } else {
         setStep('error');
@@ -76,18 +105,6 @@ export default function Auth() {
       setError('Connection error');
     }
   };
-
-  useEffect(() => {
-    const session = localStorage.getItem('session');
-    if (session) {
-      try {
-        const parsed = JSON.parse(session);
-        if (parsed.tgId) {
-          navigate('/profile');
-        }
-      } catch {}
-    }
-  }, [navigate]);
 
   useEffect(() => {
     fetch(`${BACKEND_URL}/auth/telegram-status`).then(r => r.json()).then(j => {
@@ -114,7 +131,10 @@ export default function Auth() {
     if (!tgId) { setError('Введите ваш Telegram ID'); return; }
     try {
       const res = await fetch(`${BACKEND_URL}/auth/send-code`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tg_id: tgId })
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tg_id: tgId })
       });
       const data = await res.json();
       if (data.success) setStep('code'); else setError(data.error || 'Ошибка отправки кода');
@@ -126,12 +146,41 @@ export default function Auth() {
     if (!code) { setError('Введите код'); return; }
     try {
       const res = await fetch(`${BACKEND_URL}/auth/check-code`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tg_id: tgId, code })
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ tg_id: tgId, code })
       });
       const data = await res.json();
-      if (data.success) { localStorage.setItem('session', JSON.stringify({ tgId })); navigate('/profile'); }
+      if (data.success) {
+        navigate('/profile');
+      }
       else { setStep('error'); setError('Неверный или просроченный код'); }
     } catch (e) { setError('Ошибка соединения с сервером'); }
+  };
+
+  const handleLoginPassword = async () => {
+    setError('');
+    if (!username || !password) {
+      setError('Введите логин и пароль');
+      return;
+    }
+    try {
+      const res = await fetch(`${BACKEND_URL}/auth/login-password`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password })
+      });
+      const data = await res.json();
+      if (data.success) {
+        navigate('/profile');
+      } else {
+        setError(data.error || 'Неверный логин или пароль');
+      }
+    } catch (e) {
+      setError('Ошибка соединения с сервером');
+    }
   };
 
   const handlePasteMagicLink = async () => {
@@ -144,18 +193,15 @@ export default function Auth() {
         processMagicLink(tokenMatch[1]);
       } else {
         setError('Ссылка не содержит токена входа');
-        setLoginMode('link');
       }
     } catch (e) {
       setError('Не удалось получить доступ к буферу обмена');
-      setLoginMode('link');
     }
   };
 
   const handleLoginByLink = () => {
     if (!magicLinkInput) {
       setError('Вставьте ссылку входа');
-      setLoginMode('link');
       return;
     }
     const tokenMatch = magicLinkInput.match(/[?&]token=([^&]+)/);
@@ -163,7 +209,6 @@ export default function Auth() {
       processMagicLink(tokenMatch[1]);
     } else {
       setError('Ссылка не содержит токена входа');
-      setLoginMode('link');
     }
   };
 
@@ -219,27 +264,73 @@ export default function Auth() {
         )}
       </div>
 
-      {/* Magic Link Login Panel */}
+      {/* Magic Link / Password Login Panel */}
       <div 
         className="auth-panel" 
         style={{ backgroundImage: `url('/media/images/login/background_${String(backgroundImage2).padStart(2, '0')}.jpg')`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', backgroundAttachment: 'scroll' }}
       >
-        <h3>🔗 Вход по ссылке</h3>
+        <h3>🔐 Альтернативный вход</h3>
         
         {step === 'input' && (
           <div className="link-section">
-            <div className="link-line">
-              <button className="paste-btn" onClick={handlePasteMagicLink} aria-label="Paste link">📋</button>
-              <input
-                className="auth-link-input"
-                type="text"
-                placeholder="Вставьте ссылку входа..."
-                value={magicLinkInput}
-                onChange={e => setMagicLinkInput(e.target.value)}
-              />
-              <button className="in-btn" onClick={handleLoginByLink} aria-label="Login by link">🚪</button>
-            </div>
-            {error && loginMode === 'link' && <div className="error">{error}</div>}
+            {loginMode === 'link' ? (
+              <>
+                <div className="link-line">
+                  <button className="paste-btn" onClick={handlePasteMagicLink} aria-label="Paste link">📋</button>
+                  <input
+                    className="auth-link-input"
+                    type="text"
+                    placeholder="Вставьте ссылку входа..."
+                    value={magicLinkInput}
+                    onChange={e => setMagicLinkInput(e.target.value)}
+                  />
+                  <button className="in-btn" onClick={handleLoginByLink} aria-label="Login by link">🚪</button>
+                </div>
+              </>
+            ) : (
+              <>
+                <input
+                  className="auth-input"
+                  type="text"
+                  placeholder="Логин"
+                  value={username}
+                  onChange={e => setUsername(e.target.value)}
+                />
+                <input
+                  className="auth-input"
+                  type="password"
+                  placeholder="Пароль"
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                />
+                <button className="in-btn" onClick={handleLoginPassword}>Войти</button>
+              </>
+            )}
+            
+            {step === 'input' && (
+              <div className="login-mode-toggle">
+                <button 
+                  className={`toggle-btn ${loginMode === 'link' ? 'active' : ''}`}
+                  onClick={() => {
+                    setLoginMode('link');
+                    setError('');
+                  }}
+                >
+                  По ссылке
+                </button>
+                <button 
+                  className={`toggle-btn ${loginMode === 'password' ? 'active' : ''}`}
+                  onClick={() => {
+                    setLoginMode('password');
+                    setError('');
+                  }}
+                >
+                  Логин/Пароль
+                </button>
+              </div>
+            )}
+
+            {error && <div className="error">{error}</div>}
           </div>
         )}
 

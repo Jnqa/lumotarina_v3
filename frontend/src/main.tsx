@@ -10,8 +10,7 @@ import Auth from './auth';
 import * as React from 'react'
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, useParams } from 'react-router-dom';
-import App from './App.tsx';
-import Profile from './Profile';
+import MainPage from './mainPage/mainPage';
 import Intro from './Intro';
 import MasterRoom from './MasterRoom';
 import DM from './dm/dm';
@@ -23,6 +22,7 @@ import ClassPreviewSkills from './modules/ClassPreviewSkills';
 import CharacterCreation from './creator/CharacterCreation';
 import CharacterCreationClass from './creator/CharacterCreationClass';
 import { Gallery } from './modules/Gallery';
+import Rewind from './rewind/Rewind';
 import MainLayout from './characterPage/layouts/MainLayout.tsx';
 import CharacterPage from './characterPage/character/CharacterPage.tsx';
 import CharacterPageEdit from './characterPage/character/CharacterPageEdit.tsx';
@@ -58,16 +58,18 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<App />} />
+        <Route path="/" element={<MainPage />} />
         <Route path="/auth" element={<Auth />} />
         <Route path="/auth/magic-link" element={<Auth />} />
         <Route path="/admin-panel" element={<AdminPanel />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile" element={<MainPage />} />
         <Route path="/intro" element={<Intro />} />
+        <Route path="/rewind" element={<Rewind />} />
         <Route path="/master-room" element={<MasterRoom />} />
         <Route path="/dm" element={<DM />} />
         <Route path="/editor/classes" element={<ClassesEditor />} />
         <Route path="/lore" element={<Lore />} />
+        <Route path="/lore/books/:bookId" element={<Lore />} />
         <Route path="/lore/map" element={<LoreMap />} />
         <Route path="/character/create" element={<CharacterCreating />} />
         <Route path="/creator/character" element={<CharacterCreationPage />} />

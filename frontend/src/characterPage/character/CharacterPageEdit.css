@@ -5,6 +5,7 @@
   border-radius: 20px;
   max-width: 400px; /* Ограничение для аккуратности */
   margin: 0 auto;
+  margin-bottom: 120px;
 }
 
 .cp-edit-title {
@@ -27,6 +28,24 @@
 .cp-edit-left { 
   width: 140px; 
   position: relative;
+  display: flex;
+  justify-content: flex-start;
+  width: 100%;
+  align-items: flex-end
+}
+
+.change-image-btn {
+  position: absolute;
+  bottom: -16px;
+  left: -50px;
+  background: #0a09088a;
+  border: 1px solid #8b7355;
+  color: #ffd198;
+  padding: 6px 12px;
+  border-radius: 14px;
+  font-size: 12px;
+  text-transform: uppercase;
+  cursor: pointer;
 }
 
 .cp-avatar-preview { 
@@ -50,9 +69,31 @@
   width: 100%; 
 }
 
+.hp-field {
+  position: relative;
+  color: #ffd198;
+  gap: 0px 0px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.hp-field input {
+  width: 30%; 
+  box-sizing: border-box; /* Чтобы padding не раздувал ширину */
+  padding: 14px; /* Увеличенные отступы для удобства нажатия */
+  background: #1e1e1e; 
+  border: 1px solid #333; 
+  color: #fff; 
+  border-radius: 12px; 
+  font-size: 16px; /* Важно: 16px предотвращает авто-зум в iOS при фокусе */
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
 .cp-field { 
   display: block; 
   margin-bottom: 16px; 
+  color: #ffd198;
 }
 
 .cp-field label {
@@ -73,6 +114,26 @@
   border-radius: 12px; 
   font-size: 16px; /* Важно: 16px предотвращает авто-зум в iOS при фокусе */
   transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.cp-field textarea { 
+  width: 100%; 
+  box-sizing: border-box;
+  padding: 14px;
+  background: #1e1e1e; 
+  border: 1px solid #333; 
+  color: #fff; 
+  border-radius: 12px; 
+  font-size: 16px;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.cp-field textarea:focus {
+  outline: none;
+  border-color: #ffd700;
+  box-shadow: 0 0 8px rgba(255, 215, 0, 0.2);
 }
 
 .cp-field input:focus {

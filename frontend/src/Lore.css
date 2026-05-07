@@ -19,6 +19,15 @@
   display:inline-block;
   margin-bottom:8px;
 }
+
+.lore-info{
+  background: #97750469;
+  border: 1px solid #3a4255;
+  padding: 12px;
+  border-radius: 8px;
+  color: #cfcfcf;
+}
+
 .lore-back-top:active{ transform: translateY(1px) }
 .lore-tabs{ display:flex; gap:6px; flex-wrap:wrap }
 .lore-inline-list{ display:flex; gap:8px; flex-wrap:wrap; align-items:center }

@@ -54,7 +54,7 @@ export default function CharacterHero({ name, picture, avatar, hp = 0, hpMax = 0
             <div className="hero-info">
               <div className="hero-name">{name}</div>
             </div>
-              <img src={picture || avatar || '/profile_pictures/profile_picture_00.jpg'} alt={name} />
+              <img src={picture || avatar || '/profile_pictures/profile_picture_00.jpg'} alt={name} onClick={toggleFlip} />
             </div>
 
           </div>
@@ -67,9 +67,9 @@ export default function CharacterHero({ name, picture, avatar, hp = 0, hpMax = 0
           </button>
         </div>
         <div className="flip-card-back">
-            <div className="hero-story title">История персонажа</div>
+            <div className="hero-story title" onClick={toggleFlip}>История персонажа</div>
             <div className="hero-story-wrapper">
-              <div className="hero-story">
+              <div className="hero-story" onClick={toggleFlip}>
               {story}
               </div>
               <div className="skills-map">

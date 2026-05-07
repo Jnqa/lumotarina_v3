@@ -15,7 +15,7 @@ export default function CharacterPageEdit() {
 
   useEffect(() => {
     if (character && !draft) {
-      setDraft({ name: character.name || '', avatar: character.picture || character.avatar || '', hp: character.hp ?? 0 })
+      setDraft({ name: character.name || '', avatar: character.picture || character.avatar || '', hp: character.hp ?? 0, story: character.story || '' })
     }
   }, [character])
 
@@ -33,7 +33,7 @@ export default function CharacterPageEdit() {
   async function handleSave() {
     if (!valid()) return alert('Проверьте поля')
     try {
-      await save({ name: draft.name, picture: draft.avatar, avatar: draft.avatar, hp: draft.hp })
+      await save({ name: draft.name, picture: draft.avatar, avatar: draft.avatar, hp: draft.hp, story: draft.story })
       nav(-1)
     } catch (e: any) {
       alert('Ошибка сохранения: ' + (e?.message || ''))
@@ -57,19 +57,22 @@ export default function CharacterPageEdit() {
           </div>
           <label className="cp-field">
             <div className="name-row">
-              <button className="simple-btn" onClick={() => setGalleryOpen(true)}>Изменить изображение</button>
+              <button className="change-image-btn" onClick={() => setGalleryOpen(true)}>Изменить изображение</button>
             </div>
           </label>
         </div>
-        <div className="cp-edit-right">
-          <label className="cp-field">
+        <div className="cp-edit-right">          <label className="cp-field">
             Имя Персонажа
             <input value={draft?.name || ''} onChange={e => setDraft({ ...draft, name: e.target.value })} />
           </label>
+          <label className="hp-field">
+            HP
+            <input type="number" value={draft?.hp || 0} onChange={e => setDraft({ ...draft, hp: Number(e.target.value) })} />
+          </label>
 
           <label className="cp-field">
-            HP (Не меняй просто так, Мастер узнает) 
-            <input type="number" value={draft?.hp || 0} onChange={e => setDraft({ ...draft, hp: Number(e.target.value) })} />
+            История
+            <textarea value={draft?.story || ''} onChange={e => setDraft({ ...draft, story: e.target.value })} rows={16} />
           </label>
 
           <div className="cp-edit-actions">

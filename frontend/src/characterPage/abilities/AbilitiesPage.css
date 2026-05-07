@@ -1,5 +1,5 @@
 .abilities-page {
-  padding: 16px 8px 74px 8px;
+  padding: 16px 8px 100px 8px;
   background-color: #0d0d0d;
   font-family: 'Inter', -apple-system, sans-serif;
   color: #e0e0e0;
@@ -122,6 +122,8 @@
   margin-top: 20px;
   position: sticky; /* Чтобы всегда была под рукой при скролле */
   bottom: 10px;
+  display: flex;
+  justify-content: center
 }
 
 .save-row button {

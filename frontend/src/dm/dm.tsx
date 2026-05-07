@@ -72,6 +72,46 @@ export default function DM(){
     }catch(e){ console.warn('save edited', e); }
   }
 
+  async function handleCreateQuest(quest: { title: string; description: string; type: 'team' | 'private' }, character?: any) {
+    const questId = Date.now().toString();
+    const newQuest = { id: questId, ...quest, status: false };
+
+    let charactersToUpdate = [];
+    if (quest.type === 'team') {
+      // Team quest for all in lobby
+      charactersToUpdate = lobby;
+    } else if (character) {
+      // Private quest for specific character
+      charactersToUpdate = [character];
+    } else {
+      // Fallback to all if no character specified
+      charactersToUpdate = lobby;
+    }
+
+    // Update lobby
+    const updatedLobby = lobby.map((c: any) => {
+      if (charactersToUpdate.find((uc: any) => uc.ownerId === c.ownerId && uc.charId === c.charId)) {
+        const quests = c.quests || [];
+        return { ...c, quests: [...quests, newQuest] };
+      }
+      return c;
+    });
+
+    saveLobby(updatedLobby);
+
+    // Save to server for each character
+    for (const c of charactersToUpdate) {
+      try {
+        const updated = { ...c, quests: [...(c.quests || []), newQuest] };
+        await fetch(`${API_BASE}/characters/user/${encodeURIComponent(c.ownerId)}/${encodeURIComponent(c.charId)}`, {
+          method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(updated)
+        });
+      } catch (e) {
+        console.warn('save quest', e);
+      }
+    }
+  }
+
   return (
     <div className="dm-root">
       <header className="dm-header">
@@ -136,8 +176,8 @@ export default function DM(){
         </div>
       )}
 
-      {showQuick && <QuickModal apiBase={API_BASE} onClose={() => setShowQuick(false)} />}
-      {editing && <EditModal character={editing} onClose={() => setEditing(null)} onSave={handleSaveEdited} />}
+      {showQuick && <QuickModal apiBase={API_BASE} onClose={() => setShowQuick(false)} onCreateQuest={handleCreateQuest} />}
+      {editing && <EditModal character={editing} onClose={() => setEditing(null)} onSave={handleSaveEdited} onCreateQuest={handleCreateQuest} />}
     </div>
   );
 }

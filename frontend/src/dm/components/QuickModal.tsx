@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 
-export default function QuickModal({ apiBase, onClose }:{ apiBase:string, onClose:()=>void }){
+export default function QuickModal({ apiBase, onClose, onCreateQuest }:{ apiBase:string, onClose:()=>void, onCreateQuest: (quest: { title: string; description: string; type: 'team' | 'private' }, character?: any) => void }){
   const [tab, setTab] = useState<'actions'|'tea'>('actions');
   const [teaData, setTeaData] = useState<any|null>(null);
   const [loading, setLoading] = useState(false);
-  const [lastRoll, setLastRoll] = useState<{tableId:string, roll:number, effect:any}|null>(null);
+  const [lastRoll] = useState<{tableId:string, roll:number, effect:any}|null>(null);
+  const [showCreateQuest, setShowCreateQuest] = useState(false);
+  const [questForm, setQuestForm] = useState({ title: '', description: '', type: 'team' as 'team' | 'private' });
 
   useEffect(()=>{
     if (tab === 'tea') loadTea();
@@ -22,87 +24,131 @@ export default function QuickModal({ apiBase, onClose }:{ apiBase:string, onClos
     setLoading(false);
   }
 
-  function rollDice(dice:string){
-    const m = String(dice||'d20').match(/d(\d+)/i);
-    const sides = m ? Number(m[1]) : 20;
-    return Math.floor(Math.random()*sides) + 1;
+  async function handleCreateQuest() {
+    if (!questForm.title.trim()) {
+      alert('Введите название квеста');
+      return;
+    }
+    onCreateQuest(questForm);
+    setQuestForm({ title: '', description: '', type: 'team' });
+    setShowCreateQuest(false);
   }
 
-  function onRollTable(table:any){
-    const r = rollDice(table.dice || 'd20');
-    const eff = (table.effects || []).find((e:any)=> Number(e.roll) === Number(r)) || null;
-    setLastRoll({ tableId: table.id, roll: r, effect: eff });
-  }
 
   return (
     <div className="modal-overlay-x" onClick={onClose}>
-      <div className="modal modal-available" onClick={e=>e.stopPropagation()}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-          <h3>Quick Actions</h3>
-          <div>
-            <button className="dm-btn" onClick={onClose}>Close</button>
+      {!showCreateQuest && (
+        <div className="modal modal-available" onClick={e=>e.stopPropagation()}>
+          <div className="modal-header">
+            <h3>Быстрые действия</h3>
+            <div>
+              <button className="dm-btn close" onClick={onClose}>Закрыть</button>
+            </div>
+          </div>
+
+          <div className='dm-tabs'>
+            <button className={tab==='actions'? 'dm-tab active':'dm-tab'} onClick={()=>setTab('actions')}>Действия</button>
+            <button className={tab==='tea'? 'dm-tab active':'dm-tab'} onClick={()=>setTab('tea')}>Чай</button>
+          </div>
+
+          <div style={{marginTop:12,overflow:'auto', borderRadius:6}}>
+            {tab === 'actions' && (
+              <div>
+                <p>Действия:</p>
+                <div className="dm-btn-group">
+                  <button className="dm-btn-qm">Вылечить всех</button>
+                  <button className="dm-btn-qm">Нанести урон всем</button>
+                  <button className="dm-btn-qm">Установить полное HP</button>
+                  <button className="dm-btn-qm" onClick={() => setShowCreateQuest(true)}>Создать квест для команды</button>
+                </div>
+              </div>
+            )}
+
+            {tab === 'tea' && (
+              <div>
+                {loading && <div>Loading...</div>}
+                {!loading && !teaData && <div>No tea tables</div>}
+                {!loading && teaData && Array.isArray(teaData.tables) && (
+                  <div>
+                    {teaData.tables.map((t:any)=> (
+                      <div key={t.id}>
+                        <div className='tea-table'>
+                          <div>
+                            <div className='tea-caption'>🍵 {t.name}</div>
+                          </div>
+                        </div>
+
+                        <div>
+                          {Array.isArray(t.effects) && t.effects.map((e:any)=> (
+                            <div key={String(e.roll)}>
+                              <div className="tea-1">🎲 {e.roll} — {e.title || e.effect || ''}</div>
+                              <div className="tea-random">{e.dice_effect || e.effect || ''}</div>
+                              {e.roleplay_effect && <div className="tea-number">{e.roleplay_effect}</div>}
+                            </div>
+                          ))}
+                        </div>
+
+                        {lastRoll && lastRoll.tableId===t.id && (
+                          <div style={{marginTop:8,padding:8,borderRadius:6,background:'rgba(7,209,142,0.06)'}}>
+                            <div style={{fontWeight:800}}>Roll: {lastRoll.roll}</div>
+                            <div style={{marginTop:6}}>{lastRoll.effect ? (lastRoll.effect.title || lastRoll.effect.effect || lastRoll.effect.dice_effect) : 'No matching effect'}</div>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </div>
+      )}
 
-        <div style={{display:'flex',gap:8,marginTop:8}}>
-          <button className={tab==='actions'? 'dm-btn active':'dm-btn'} onClick={()=>setTab('actions')}>Действия</button>
-          <button className={tab==='tea'? 'dm-btn active':'dm-btn'} onClick={()=>setTab('tea')}>Чай</button>
-        </div>
-
-        <div style={{marginTop:12,maxHeight:420,overflow:'auto'}}>
-          {tab === 'actions' && (
-            <div>
-              <p>Здесь можно добавить быстрые действия (heal everyone, damage, level up и т.д.).</p>
-              <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>
-                <button className="dm-btn">Heal everyone</button>
-                <button className="dm-btn">Damage everyone</button>
-                <button className="dm-btn">Set full HP</button>
+      {showCreateQuest && (
+        <div className="modal-overlay-x" onClick={() => setShowCreateQuest(false)}>
+          <div className="modal modal-available" onClick={e => e.stopPropagation()}>
+            <div className="modal-header">
+              <h3>Создать квест</h3>
+              <button className="dm-btn close" onClick={() => setShowCreateQuest(false)}>×</button>
+            </div>
+            <div style={{ marginTop: 12 }}>
+              <label>
+                Название квеста
+                <input
+                  type="text"
+                  value={questForm.title}
+                  onChange={e => setQuestForm({ ...questForm, title: e.target.value })}
+                  style={{ width: '100%', marginBottom: 12, padding: 8, borderRadius: 4, border: '1px solid #ccc' }}
+                />
+              </label>
+              <label>
+                Описание
+                <textarea
+                  value={questForm.description}
+                  onChange={e => setQuestForm({ ...questForm, description: e.target.value })}
+                  rows={4}
+                  style={{ width: '100%', marginBottom: 12, padding: 8, borderRadius: 4, border: '1px solid #ccc' }}
+                />
+              </label>
+              <label>
+                Тип
+                <select
+                  value={questForm.type}
+                  onChange={e => setQuestForm({ ...questForm, type: e.target.value as 'team' | 'private' })}
+                  style={{ width: '100%', marginBottom: 12, padding: 8, borderRadius: 4, border: '1px solid #ccc' }}
+                >
+                  <option value="team">Командный</option>
+                  <option value="private">Личный</option>
+                </select>
+              </label>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+                <button className="dm-btn" onClick={() => setShowCreateQuest(false)}>Отмена</button>
+                <button className="dm-btn" onClick={() => handleCreateQuest()}>Создать</button>
               </div>
             </div>
-          )}
-
-          {tab === 'tea' && (
-            <div>
-              {loading && <div>Loading...</div>}
-              {!loading && !teaData && <div>No tea tables</div>}
-              {!loading && teaData && Array.isArray(teaData.tables) && (
-                <div style={{display:'flex',flexDirection:'column',gap:12}}>
-                  {teaData.tables.map((t:any)=> (
-                    <div key={t.id} style={{border:'1px solid rgba(255,255,255,0.04)',padding:10,borderRadius:8,background:'rgba(255,255,255,0.02)'}}>
-                      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                        <div>
-                          <div style={{fontWeight:800}}>{t.name}</div>
-                          <div style={{fontSize:12,color:'var(--muted)'}}>{t.type} • {t.dice}</div>
-                        </div>
-                        <div style={{display:'flex',gap:8,alignItems:'center'}}>
-                          <button className="dm-btn" onClick={()=> onRollTable(t)}>Roll {t.dice || 'd20'}</button>
-                        </div>
-                      </div>
-
-                      <div style={{marginTop:8,display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))',gap:8}}>
-                        {Array.isArray(t.effects) && t.effects.map((e:any)=> (
-                          <div key={String(e.roll)} style={{padding:8,borderRadius:6,background: (lastRoll && lastRoll.tableId===t.id && lastRoll.roll===Number(e.roll)) ? 'linear-gradient(90deg,#09302348,#07d18e7a)' : 'transparent',border: '1px solid rgba(255,255,255,0.03)'}}>
-                            <div style={{fontWeight:700}}>#{e.roll} — {e.title || e.effect || ''}</div>
-                            <div style={{fontSize:13,marginTop:6}}>{e.dice_effect || e.effect || ''}</div>
-                            {e.roleplay_effect && <div style={{fontSize:12,marginTop:4,color:'var(--muted)'}}>{e.roleplay_effect}</div>}
-                          </div>
-                        ))}
-                      </div>
-
-                      {lastRoll && lastRoll.tableId===t.id && (
-                        <div style={{marginTop:8,padding:8,borderRadius:6,background:'rgba(7,209,142,0.06)'}}>
-                          <div style={{fontWeight:800}}>Roll: {lastRoll.roll}</div>
-                          <div style={{marginTop:6}}>{lastRoll.effect ? (lastRoll.effect.title || lastRoll.effect.effect || lastRoll.effect.dice_effect) : 'No matching effect'}</div>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

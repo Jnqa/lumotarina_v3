@@ -1,0 +1,20 @@
+[
+  {
+    "id": "session-2026-01-10",
+    "title": "Сессия 10 января 2026",
+    "description": "Запись текстовой истории и список пройденных сюжетных веток.",
+    "url": "https://example-bucket.s3.amazonaws.com/rewind/session-2026-01-10.html",
+    "tags": ["публичное", "запись"],
+    "public": true,
+    "publishedAt": "2026-01-10"
+  },
+  {
+    "id": "session-2026-03-20-private",
+    "title": "Закрытая сессия для команды Альфа",
+    "description": "Материалы доступны только участникам команды Альфа.",
+    "url": "https://example-bucket.s3.amazonaws.com/rewind/session-2026-03-20.html",
+    "tags": ["закрытое", "команда"],
+    "allowedTgIds": ["123456789", "987654321"],
+    "publishedAt": "2026-03-20"
+  }
+]

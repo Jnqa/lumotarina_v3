@@ -1,0 +1,116 @@
+.quests-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.quests-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #3d3522;
+  background: #2a2a2a;
+}
+
+.quests-header h2 {
+  margin: 0;
+  color: #ffd700;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.quests-tabs {
+  display: flex;
+  gap: 4px;
+  font-size: 14px;
+}
+
+.quests-close {
+  background: none;
+  border: none;
+  color: #e0e0e0;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quests-close:hover {
+  color: #ffd700;
+}
+
+.quests-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+}
+
+.quests-empty {
+  text-align: center;
+  color: #888;
+  font-style: italic;
+  padding: 40px;
+}
+
+.quests-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.quest-item {
+  background: #1e1e1e;
+  border: 1px solid #3d3522;
+  border-radius: 8px;
+  padding: 16px;
+  transition: border-color 0.3s;
+}
+
+.quest-item.completed {
+  border-color: #4caf50;
+  background: #1a2a1a;
+}
+
+.quest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.quest-type {
+  font-size: 12px;
+  color: #888;
+  background: #333;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.quest-status {
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffd700;
+}
+
+.quest-item.completed .quest-status {
+  color: #4caf50;
+}
+
+.quest-title {
+  margin: 0 0 8px 0;
+  color: #e0e0e0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.quest-description {
+  margin: 0;
+  color: #b0b0b0;
+  line-height: 1.4;
+}

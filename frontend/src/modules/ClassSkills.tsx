@@ -130,11 +130,13 @@ function SkillRow({
         <div className="skill-icon">
           {depth === 0 ? icon : "∟"}
         </div>
+        {skill.level && (
+          <span className="skill-level-mini">Lv {skill.level}</span>
+        )}
         {skill.dice && (
             <span className="skill-dice-mini">🎲 {skill.dice}</span>
           )}
         <div className="skill-header">
-          <span className="skill-level">Lv {skill.level}</span>
           <span className="skill-name">{skill.name}</span> 
           <div className="skill-effect">{skill.effect}</div>
           {canLearn ? (
@@ -347,11 +349,9 @@ export default function ClassPreviewSkills({
 
       return (
         <section key={actionType.type} className="skill-section">
-          {!showLearnedOnly && (
-            <h3 className="section-title">
-              {actionType.icon} {actionType.name}
-            </h3>
-          )}
+          <h3 className="section-title">
+            {actionType.icon} {actionType.name}
+          </h3>
 
           {tree.length > 0 && (
             <div className="skill-table">

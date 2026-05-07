@@ -5,6 +5,7 @@
   gap: 8px;
   background-color: #2b2b2b;
   padding: 16px;
+  padding-bottom: 90px;
   box-sizing: border-box;
 }
 
@@ -13,6 +14,11 @@
   gap: 8px;
   justify-content: space-between;
   padding: 4px;
+}
+
+.cp-top-buttons.left, .cp-top-buttons.center, .cp-top-buttons.right {
+  display: flex;
+  gap: 8px;
 }
 
 .cp-top-buttons .dm-btn {
@@ -48,5 +54,30 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     0 0 30px rgba(139, 115, 85, 0.3);
   transition: box-shadow 0.3s ease;
+}
+
+.quests-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.quests-modal-content {
+  background: #1a1a1a;
+  border: 1px solid #3d3522;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 

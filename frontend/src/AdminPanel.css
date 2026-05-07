@@ -3,17 +3,19 @@
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  background: linear-gradient(135deg, #281a2e 0%, #21163e 100%);
 }
 
 .admin-login-box {
-  background: #242838;
+  background: #35023b;
   padding: 40px;
   border-radius: 8px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.5);
   width: 100%;
   max-width: 400px;
   border: 1px solid #3a4255;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .admin-login-box h1 {
@@ -39,17 +41,19 @@
 
 .admin-login-box button {
   padding: 10px 16px;
-  background: #667eea;
+  background: #a70b9f;
   color: white;
   border: none;
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .admin-login-box button:hover {
-  background: #7a8ff5;
+  background: #3f1441;
 }
 
 .admin-login-box .error {
@@ -69,7 +73,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #16213e;
+  background: #3f0c44;
   color: white;
   padding: 16px 24px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
@@ -97,8 +101,8 @@
 
 .admin-tabs {
   display: flex;
-  background: #16213e;
-  border-bottom: 2px solid #3a4255;
+  background: #2e0d3552;
+  border-bottom: 2px solid #0c1630;
   gap: 0;
 }
 
@@ -108,7 +112,7 @@
   border: none;
   cursor: pointer;
   border-bottom: 3px solid transparent;
-  color: #a0a0a0;
+  color: #e393fc;
   font-weight: 500;
   transition: all 0.2s;
 }
@@ -118,8 +122,8 @@
 }
 
 .tab-btn.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
+  color: #d36cfc;
+  border-bottom-color: #9f66ea;
 }
 
 .admin-content {
@@ -127,3 +131,25 @@
   padding: 2px;
   overflow: auto;
 }
+
+.admin-home-float {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 20;
+  background: #ffd700;
+  color: #080808;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 700;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.admin-home-float:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.28);
+}
+

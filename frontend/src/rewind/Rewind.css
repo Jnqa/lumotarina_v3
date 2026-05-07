@@ -1,0 +1,130 @@
+.rewind-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 20px 50px;
+  color: #f4f4f4;
+}
+
+.rewind-header {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.rewind-header h1 {
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 2.5vw, 2.6rem);
+}
+
+.rewind-header p {
+  margin: 0;
+  color: #cbd5e1;
+  max-width: 720px;
+}
+
+.rewind-back-btn {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.rewind-back-btn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  transform: translateY(-1px);
+}
+
+.rewind-message,
+.rewind-note,
+.rewind-empty {
+  margin: 20px 0;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+}
+
+.rewind-error {
+  color: #ffbaba;
+  background: rgba(255, 80, 80, 0.12);
+}
+
+.rewind-list {
+  display: grid;
+  gap: 18px;
+}
+
+.rewind-card {
+  padding: 22px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.rewind-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.rewind-card-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.rewind-card-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.rewind-card-header span {
+  display: inline-block;
+  margin-top: 8px;
+  color: #94a3b8;
+  font-size: 0.92rem;
+}
+
+.rewind-card p {
+  margin: 0 0 14px;
+  color: #d1d5db;
+  line-height: 1.65;
+}
+
+.rewind-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 110px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  color: #fff;
+  background: #64748b;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.rewind-link:hover {
+  background: #94a3b8;
+}
+
+.rewind-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.rewind-tag {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #cbd5e1;
+  font-size: 0.82rem;
+}

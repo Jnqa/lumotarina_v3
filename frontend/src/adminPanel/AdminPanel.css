@@ -1,5 +1,5 @@
 .users-tab {
-  background: #242838;
+  background: #3e354448;
   padding: 4px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.3);
@@ -8,7 +8,7 @@
 
 .users-tab h2 {
   margin-top: 0;
-  color: #e0e0e0;
+  color: #db5fd5dc;
 }
 
 .users-table {
@@ -231,8 +231,8 @@
 
 .magiclink-btn {
   padding: 6px 12px;
-  background: #255f53 !;
-  color: rgb(179, 243, 252);
+  background: #480363;
+  color: rgb(252, 242, 255);
   border: none;
   border-radius: 4px;
   cursor: pointer;

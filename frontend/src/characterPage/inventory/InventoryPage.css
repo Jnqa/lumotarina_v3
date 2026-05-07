@@ -1,5 +1,6 @@
 .inventory-page {
   padding: 16px;
+  padding-bottom: 90px;
   color: #e0e0e0;
   background-color: #0d0d0d; /* Более глубокий черный */
   font-family: 'Inter', -apple-system, sans-serif;
@@ -27,13 +28,14 @@
 .inventory-page li {
   background: #1a1a1a;
   border: 1px solid #3d3522;
-  padding: 0 12px; /* Убираем вертикальный padding, зададим его через min-height */
+  padding: 0 12px;
   border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   min-height: 52px; /* Фиксируем минимальную высоту всех строк */
   transition: all 0.3s ease;
+  cursor: pointer; /* Кликабельный элемент */
 }
 
 .inventory-page li:hover {
@@ -93,8 +95,8 @@
 }
 
 .input-number {
-  width: 44px;
-  min-width: 44px;
+  width: 24px !important;
+  min-width: 24px;
   text-align: center;
 }
 
@@ -113,6 +115,31 @@
 .add-item button {
   margin: 0;
   flex-shrink: 0;
+}
+
+.add-item-desc {
+  width: 100%;
+  margin-top: 8px;
+  background: #151515;
+  border: 1px solid #3d3522;
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  outline: none;
+  font-size: 13px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 60px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.add-item-desc:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.2);
+}
+
+.add-item-desc::placeholder {
+  color: #666;
 }
 
 /* Стилизация кнопок внутри списка */
@@ -171,4 +198,129 @@
 .inventory-page button:active {
   transform: scale(0.96);
   opacity: 0.9;
+}
+
+/* Modal styles */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.modal-content {
+  background: #1a1a1a;
+  border: 1px solid #3d3522;
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 400px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.item-edit-modal h2 {
+  margin: 0 0 16px 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffd700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #b8b8b8;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.modal-field input,
+.modal-field textarea {
+  width: 100%;
+  background: #151515;
+  border: 1px solid #3d3522;
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 8px;
+  outline: none;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.modal-field input:focus,
+.modal-field textarea:focus {
+  border-color: #ffd700;
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.2);
+}
+
+.modal-field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Quantity field inline with label */
+.modal-field-qty {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.modal-field-qty label {
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.modal-field-qty input {
+  width: 80px;
+  flex-shrink: 0;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.modal-actions button {
+  flex: 1;
+  margin: 0;
+}
+
+.modal-actions .btn-delete {
+  background: linear-gradient(180deg, #8b0000 0%, #5c0000 100%);
+  border: 1px solid #7d1717;
+  color: #fff;
+}
+
+.modal-actions .btn-delete:hover {
+  background: #a00000;
+  box-shadow: 0 0 10px rgba(139, 0, 0, 0.4);
+}
+
+.modal-actions .btn-save {
+  background: linear-gradient(180deg, #d4af37 0%, #b8860b 100%);
+  border: 1px solid #7d6117;
+  color: #000;
+}
+
+.modal-actions .btn-save:hover {
+  background: #ffd700;
+  box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
 }
