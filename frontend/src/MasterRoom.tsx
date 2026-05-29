@@ -61,19 +61,27 @@ export default function MasterRoom(){
   const [noteForm, setNoteForm] = useState<any>({ type: 'place', title: '', name: '', description: '', tags: [] as string[], gender: 'other', placeId: '' });
   const [randomNameSets, setRandomNameSets] = useState<any>({ male: [], female: [], surnames: [] });
 
-  // helper to get current userId from local session
-  function getCurrentUserId(){
-    try{ const session = JSON.parse(localStorage.getItem('session') || '{}'); return session?.tgId || session?.uid || session?.userId || null; }catch(e){ return null; }
-  }
+  // helper to get current userId from backend session (cookie)
+  // usage: call fetch(`${API_BASE}/auth/me`, { credentials: 'include' }) and read response
 
   async function loadNotes(){
-    const userId = getCurrentUserId(); if (!userId) return;
-    try{ const r = await fetch(`${API_BASE}/notes/${userId}`); if (r.ok) setNotes(await r.json()); }catch(e){ console.warn('loadNotes', e); }
+    try{
+      const s = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
+      if (!s.ok) return; const sj = await s.json(); const userId = sj?.success && sj.user ? (sj.user.tgId || sj.user.userId) : null;
+      if (!userId) return;
+      const r = await fetch(`${API_BASE}/notes/${userId}`);
+      if (r.ok) setNotes(await r.json());
+    }catch(e){ console.warn('loadNotes', e); }
   }
 
   async function loadTags(){
-    const userId = getCurrentUserId(); if (!userId) return;
-    try{ const r = await fetch(`${API_BASE}/note_tags/${userId}`); if (r.ok) setNoteTags(await r.json()); }catch(e){ console.warn('loadTags', e); }
+    try{
+      const s = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
+      if (!s.ok) return; const sj = await s.json(); const userId = sj?.success && sj.user ? (sj.user.tgId || sj.user.userId) : null;
+      if (!userId) return;
+      const r = await fetch(`${API_BASE}/note_tags/${userId}`);
+      if (r.ok) setNoteTags(await r.json());
+    }catch(e){ console.warn('loadTags', e); }
   }
 
   async function loadRandomNames(){
@@ -101,7 +109,12 @@ export default function MasterRoom(){
   function removeTagFromForm(tag:string){ setNoteForm((f:any)=> ({ ...f, tags: (f.tags||[]).filter((t:any)=> t!==tag) })); }
 
   async function saveNoteFromForm(){
-    const userId = getCurrentUserId(); if (!userId) { alert('Неавторизовано'); return; }
+    try{
+      const s = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
+      if (!s.ok) { alert('Неавторизовано'); return; }
+      const sj = await s.json();
+      const userId = sj?.success && sj.user ? (sj.user.tgId || sj.user.userId) : null;
+      if (!userId) { alert('Неавторизовано'); return; }
     const payload = { ...noteForm };
     // normalize fields
     if (payload.type === 'place') payload.title = payload.title || payload.name || '';
@@ -131,6 +144,7 @@ export default function MasterRoom(){
       setNoteForm({ type: 'place', title: '', name: '', description: '', tags: [] });
       await loadNotes(); await loadTags();
     }catch(e){ console.warn('saveNote', e); alert('Ошибка сохранения'); }
+  }catch(e){ console.warn('saveNoteFromForm', e); alert('Ошибка сохранения'); }
   }
 
   // simple in-memory cache for display names to avoid refetching
@@ -380,7 +394,10 @@ export default function MasterRoom(){
   useEffect(() => {
     (async () => {
       try {
-        const userId = getCurrentUserId();
+        const s = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
+        if (!s.ok) { window.location.href = '/profile'; return; }
+        const sj = await s.json();
+        const userId = sj?.success && sj.user ? (sj.user.tgId || sj.user.userId) : null;
         if (!userId) { window.location.href = '/profile'; return; }
         const r = await fetch(`${API_BASE}/auth/is_master/${encodeURIComponent(userId)}`);
         if (!r.ok) { window.location.href = '/profile'; return; }
@@ -639,7 +656,7 @@ export default function MasterRoom(){
                   </div>
                   <div style={{display:'flex',gap:8}}>
                     <button className="simple-btn" onClick={async()=>{ setNoteForm(n); setNotesModalOpen(true); }}>Ред.</button>
-                    <button className="simple-btn" onClick={async()=>{ if (!confirm('Удалить?')) return; const userId = getCurrentUserId(); if (!userId) return; await fetch(`${API_BASE}/notes/${userId}/${n.id}`, { method: 'DELETE' }); loadNotes(); }}>Удалить</button>
+                    <button className="simple-btn" onClick={async()=>{ if (!confirm('Удалить?')) return; try{ const s = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' }); if (!s.ok) return; const sj = await s.json(); const userId = sj?.success && sj.user ? (sj.user.tgId || sj.user.userId) : null; if (!userId) return; await fetch(`${API_BASE}/notes/${userId}/${n.id}`, { method: 'DELETE' }); loadNotes(); }catch(e){ console.warn(e); } }}>Удалить</button>
                   </div>
                 </div>
               ))}

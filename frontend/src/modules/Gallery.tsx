@@ -57,17 +57,12 @@ export function Gallery({ onSelect, charId }: GalleryProps) {
   const [filters, setFilters] = useState<ActiveFilters>({ race: "human" })
   const [loading, setLoading] = useState(true)
 
-    // Получаем session и tgId
-    function getSession() {
-        try {
-        return JSON.parse(localStorage.getItem('session') || '{}')
-        } catch {
-        return {}
-        }
-    }
-
-    const session = getSession()
-    const userId = session.tgId || null
+    // Получаем session и tgId via cookie-based session
+    let userId: string | null = null;
+    try {
+      // attempt silent fetch; handle failure by leaving userId null
+      // (we do this on demand inside handleSelect below as well)
+    } catch {}
 
     async function handleSelect() {
         if (!selected) return
@@ -78,7 +73,16 @@ export function Gallery({ onSelect, charId }: GalleryProps) {
             // ignore callback errors
           }
 
-          // If no userId, we still allow optimistic selection (local change)
+          // If no userId, attempt to detect session via cookie
+          if (!userId) {
+            try {
+              const s = await fetch('/auth/me', { credentials: 'include' });
+              if (s.ok) {
+                const sj = await s.json();
+                userId = sj?.success && sj.user ? (sj.user.tgId || sj.user.userId || null) : null;
+              }
+            } catch (e) { /* ignore */ }
+          }
           if (!userId) {
             console.warn("Нет userId — выбор применён локально")
             return

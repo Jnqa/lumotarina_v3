@@ -264,10 +264,14 @@ export default function ClassPreviewSkills({
 
     // persist to server
     (async () => {
-      const session = JSON.parse(localStorage.getItem('session') || '{}');
-      const userId = session?.tgId || session?.uid || session?.userId || null;
-      const remoteId = CharacterID.characterId;
-      if (userId && remoteId) {
+      // use cookie-based session check instead of localStorage
+      try {
+        const sresp = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
+        if (!sresp.ok) throw new Error('no session');
+        const sj = await sresp.json();
+        const userId = sj?.success && sj.user ? (sj.user.tgId || sj.user.userId || sj.user.uid) : null;
+        const remoteId = CharacterID.characterId;
+        if (userId && remoteId) {
         try {
           const resp = await fetch(
             `${API_BASE}/characters/user/${encodeURIComponent(userId)}/${encodeURIComponent(remoteId)}`,
@@ -282,7 +286,10 @@ export default function ClassPreviewSkills({
         } catch (e) {
           showToast('Ошибка соединения при сохранении навыка', { type: 'error' });
         }
-      } else {
+        } else {
+          showToast('Навык добавлен локально (неавторизовано)', { type: 'info' });
+        }
+      } catch (e) {
         showToast('Навык добавлен локально (неавторизовано)', { type: 'info' });
       }
     })();

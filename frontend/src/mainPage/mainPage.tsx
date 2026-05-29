@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './mainPage.css';
 import { showToast } from '../utils/toast';
 import Auth from '../auth';
+import SettingsModal from './components/settings';
 
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
 
@@ -131,6 +132,8 @@ export default function MainPage() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [characters, setCharacters] = useState<any[] | null>(null);
   const [showRoomConfirm, setShowRoomConfirm] = useState<boolean>(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState<boolean>(false);
+  const [showChangePassword, setShowChangePassword] = useState<boolean>(false);
 
   // Случайный фон
   useEffect(() => {
@@ -300,7 +303,8 @@ export default function MainPage() {
                   >
                     Редактировать профиль
                   </button>
-                  <button className="mainpage-menu-item" onClick={clearSession}>Выйти</button>
+                  <button className="mainpage-menu-item" onClick={() => setShowChangePassword(true)}>Изменить пароль</button>
+                  <button className="mainpage-menu-item" onClick={() => setShowLogoutConfirm(true)}>Выйти</button>
                 </div>
               )}
             </div>
@@ -416,6 +420,21 @@ export default function MainPage() {
               </div>
             </div>
           </div>
+        )}
+        {isLoggedIn && showLogoutConfirm && (
+          <div className="modal-overlay" onClick={() => setShowLogoutConfirm(false)}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+              <h3>Подтверждение выхода</h3>
+              <p>Вы действительно хотите выйти?</p>
+              <div className="modal-buttons">
+                <button className="modal-btn cancel" onClick={() => setShowLogoutConfirm(false)}>Отмена</button>
+                <button className="modal-btn confirm" onClick={() => { setShowLogoutConfirm(false); clearSession(); }}>Выйти</button>
+              </div>
+            </div>
+          </div>
+        )}
+        {isLoggedIn && showChangePassword && (
+          <SettingsModal onClose={() => setShowChangePassword(false)} />
         )}
       </div>
     </>

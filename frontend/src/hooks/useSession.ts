@@ -18,14 +18,7 @@
  */
 
 import { useEffect, useState } from 'react';
-
-const API_BASE = (() => {
-  try {
-    const rt = (window as any).__RUNTIME__;
-    if (rt?.VITE_API_BASE) return rt.VITE_API_BASE;
-  } catch {}
-  return (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
-})();
+import { fetchSession } from '../utils/session';
 
 const CACHE_KEY = 'session_user_cache';
 const CACHE_TTL = 60_000; // 1 минута
@@ -67,20 +60,6 @@ export function clearSessionCache() {
   try { sessionStorage.removeItem(CACHE_KEY); } catch {}
 }
 
-export async function fetchSession(): Promise<SessionUser | null> {
-  try {
-    const res = await fetch(`${API_BASE}/auth/me`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.success ? data.user : null;
-  } catch {
-    return null;
-  }
-}
 
 export function useSession(_options?: { redirect?: string }) {
   const cached = readCache();

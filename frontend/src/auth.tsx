@@ -48,7 +48,7 @@ export default function Auth() {
 
   // Редирект если уже авторизован
   useEffect(() => {
-    checkSession().then(u => { if (u) navigate('/'); });
+    checkSession().then(u => { if (u) navigate('/profile'); });
   }, [navigate]);
 
   // Автообработка magic link из URL
@@ -67,7 +67,7 @@ export default function Auth() {
         body: JSON.stringify({ token }),
       });
       const data = await res.json();
-      if (data.success) navigate('/');
+      if (data.success) navigate('/profile?random=0');
       else { setStep('error'); setError(data.error || 'Недействительная или истёкшая ссылка'); }
     } catch {
       setStep('error');
@@ -105,7 +105,10 @@ export default function Auth() {
         body: JSON.stringify({ username, password }),
       });
       const data = await res.json();
-      if (data.success) navigate('/');
+      if (data.success) {
+        setStep('success');
+        setTimeout(() => navigate('/profile?random=0'), 500);
+      }
       else setError(data.error || 'Неверный логин или пароль');
     } catch {
       setError('Ошибка соединения');
@@ -185,6 +188,12 @@ export default function Auth() {
         {step === 'magiclink' && (
           <div className="link-section">
             <div className="auth-status-text">Проверяем ссылку...</div>
+          </div>
+        )}
+
+        {step === 'success' && (
+          <div className="link-section">
+            <div className="auth-status-text">✓ Вход выполнен, перенаправляем...</div>
           </div>
         )}
       </div>

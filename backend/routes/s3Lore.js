@@ -10,8 +10,33 @@ const fetch = require('node-fetch');
 // Base S3 URL from environment
 const S3_BASE_URL = process.env.S3_BASE_URL || 'https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru';
 const S3_LORE_PATH = '/lore/stories';
-const S3_CITIES_PATH = '/images/media/cities';
+const S3_CITIES_PATH = '/media/cities';
+const S3_WIKI_PATH = '/s3/lore/wiki';
 // /s3/media/cities_list
+
+/**
+ * GET /get-lore/lore
+ * Returns lore manifest JSON from S3
+ */
+router.get('/lore', async (req, res) => {
+  try {
+    const url = `${S3_BASE_URL}${S3_WIKI_PATH}/lore.json`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      return res.status(response.status).json({ 
+        success: false, 
+        error: `S3 returned ${response.status}` 
+      });
+    }
+
+    const data = await response.json();
+    res.json(data);
+  } catch (err) {
+    console.error('Failed to fetch lore manifest:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 /**
  * GET /get-lore/books_list

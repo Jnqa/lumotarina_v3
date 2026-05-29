@@ -1,12 +1,23 @@
 import { useEffect, useState } from 'react';
+import { API_BASE } from '../utils/session';
 
-type IndexManifest = {
-  poi: string[];
-  buildings: string[];
-  characters: string[];
-  clippings: string[];
-  timeline: string[];
+type LoreSection = {
+  id: string;
+  title: string;
+  url: string;
+  color?: string;
 };
+
+type WikiSectionItem = {
+  id?: string;
+  name?: string;
+  title?: string;
+  filename?: string;
+  description?: string;
+  images?: string[];
+};
+
+type SectionItem = string | WikiSectionItem;
 
 function simpleMarkdownToHtml(md: string) {
   // Very small lightweight renderer: headings, bold, italics, links, code blocks, paragraphs, lists
@@ -40,35 +51,107 @@ function simpleMarkdownToHtml(md: string) {
 }
 
 export default function LoreWiki() {
-  const [manifest, setManifest] = useState<IndexManifest | null>(null);
-  const [active, setActive] = useState<'poi' | 'buildings' | 'characters' | 'clippings' | 'timeline'>('poi');
+  const [sections, setSections] = useState<LoreSection[] | null>(null);
+  const [activeSection, setActiveSection] = useState<LoreSection | null>(null);
+  const [items, setItems] = useState<SectionItem[]>([]);
   const [contentHtml, setContentHtml] = useState<string | null>(null);
   const [title, setTitle] = useState<string>('');
   const [images, setImages] = useState<string[] | null>(null);
   const [viewer, setViewer] = useState<string | null>(null);
+  const [loadingSection, setLoadingSection] = useState(false);
 
   useEffect(() => {
-    fetch('/lore/index.json')
+    fetch(`${API_BASE}/get-lore/lore`)
       .then((r) => {
-        if (!r.ok) throw new Error('no manifest');
+        if (!r.ok) throw new Error('no lore manifest');
         return r.json();
       })
-      .then((j) => setManifest(j))
+      .then((data: LoreSection[]) => {
+        setSections(data);
+        setActiveSection(data[0] || null);
+      })
       .catch(() => {
-        // fallback: empty manifest
-        setManifest({ poi: [], buildings: [], characters: [], clippings: [], timeline: [] });
+        setSections([]);
+        setActiveSection(null);
       });
   }, []);
 
-  function openFile(category: string, filename: string) {
+  useEffect(() => {
+    if (!activeSection) {
+      setItems([]);
+      return;
+    }
+
+    setLoadingSection(true);
+    setItems([]);
+    fetch(activeSection.url)
+      .then(async (r) => {
+        if (!r.ok) throw new Error('failed to load section');
+        return r.json();
+      })
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setItems(data);
+        } else if (data && Array.isArray((data as any).items)) {
+          setItems((data as any).items);
+        } else {
+          setItems([]);
+        }
+      })
+      .catch(() => {
+        setItems([]);
+      })
+      .finally(() => {
+        setLoadingSection(false);
+      });
+  }, [activeSection]);
+
+  const normalizeDescriptionPath = (description: string) => {
+    if (description.startsWith('/images/media/cities/')) {
+      return description.replace('/images/media/cities/', '/s3/media/cities/');
+    }
+    return description;
+  };
+
+  const getDisplayName = (item: SectionItem) => {
+    if (typeof item === 'string') return item.replace(/\.md$/i, '');
+    return item.title || item.name || item.filename || item.id || 'Без имени';
+  };
+
+  const openRemoteMarkdown = (path: string, label: string) => {
+    setContentHtml(null);
+    setTitle(label);
+    setImages(null);
+    setViewer(null);
+
+    const url = encodeURI(normalizeDescriptionPath(path));
+
+    fetch(url)
+      .then(async (r) => {
+        const ct = (r.headers.get('content-type') || '').toLowerCase();
+        const text = await r.text();
+        if (ct.includes('text/html') || text.trim().toLowerCase().startsWith('<!doctype html')) {
+          throw new Error('not-found-html');
+        }
+        if (!r.ok) throw new Error('failed');
+        return text;
+      })
+      .then((md) => setContentHtml(simpleMarkdownToHtml(md)))
+      .catch((err) => {
+        console.warn('failed to load lore file', err);
+        setContentHtml(`<p>Не удалось загрузить файл: ${err.message || 'неизвестная ошибка'}</p>`);
+      });
+  };
+
+  const openFile = (category: string, filename: string) => {
     setContentHtml(null);
     setTitle(filename);
+    setViewer(null);
     const enc = encodeURIComponent(filename);
     const tryPath = (p: string) =>
       fetch(p).then(async (r) => {
         const ct = (r.headers.get('content-type') || '').toLowerCase();
         const text = await r.text();
-        // Vite (or the dev server) may return index.html (spa fallback) with text/html
         if (ct.includes('text/html') || text.trim().toLowerCase().startsWith('<!doctype html')) {
           throw new Error('not-found-html');
         }
@@ -81,87 +164,107 @@ export default function LoreWiki() {
 
     tryPath(primary)
       .catch((err) => {
-        // if dev-server returned html fallback, try unencoded filename as fallback
         if (err && err.message === 'not-found-html') {
           return tryPath(fallback);
         }
-        // otherwise propagate
         throw err;
       })
       .then((md) => {
         setContentHtml(simpleMarkdownToHtml(md));
-        // try to load images manifest for this item: /lore/{category}/{baseName}/images.json
         const base = filename.replace(/\.md$/i, '');
         const encBase = encodeURIComponent(base);
-        fetch(`/lore/${category}/${encBase}/images.json`).then(r => {
-          if (!r.ok) throw new Error('no images');
-          return r.json();
-        }).then((arr: string[]) => {
-          // map to full paths
-          const paths = arr.map((n) => `/lore/${category}/${encBase}/${n}`);
-          setImages(paths);
-        }).catch(() => setImages(null));
+        fetch(`/lore/${category}/${encBase}/images.json`)
+          .then((r) => {
+            if (!r.ok) throw new Error('no images');
+            return r.json();
+          })
+          .then((arr: string[]) => {
+            const paths = arr.map((n) => `/lore/${category}/${encBase}/${n}`);
+            setImages(paths);
+          })
+          .catch(() => setImages(null));
       })
       .catch((err) => {
         console.warn('failed to load lore file', err);
         setContentHtml(`<p>Не удалось загрузить файл: ${err.message || 'неизвестная ошибка'}</p>`);
       });
-  }
+  };
 
-  if (!manifest) return <div className="wiki-root">Loading...</div>;
+  const openItem = (item: SectionItem) => {
+    if (!activeSection) return;
 
-  const tabs: { key: typeof active; label: string }[] = [
-    { key: 'poi', label: 'Точки Интереса' },
-    { key: 'buildings', label: 'Строения' },
-    { key: 'characters', label: 'Персонажи' },
-    { key: 'clippings', label: 'Газетные статьи' },
-    { key: 'timeline', label: 'Время' },
-  ];
+    if (typeof item === 'string') {
+      openFile(activeSection.id, item);
+      return;
+    }
 
-  const listFor = (k: typeof active) => {
-    switch (k) {
-      case 'poi': return manifest.poi;
-      case 'buildings': return manifest.buildings;
-      case 'characters': return manifest.characters;
-      case 'clippings': return manifest.clippings;
-      case 'timeline': return manifest.timeline;
+    if (item.description) {
+      openRemoteMarkdown(item.description, getDisplayName(item));
+      return;
+    }
+
+    if (item.filename) {
+      openFile(activeSection.id, item.filename);
+      return;
+    }
+
+    if (item.id) {
+      openRemoteMarkdown(`/s3/media/cities/${encodeURIComponent(item.id)}.md`, getDisplayName(item));
     }
   };
 
-  const displayName = (fn: string) => fn.replace(/\.md$/i, '');
+  if (!sections) return <div className="wiki-root">Loading...</div>;
 
   return (
     <div className="wiki-root">
       <h2>Вики</h2>
-      <div className="wiki-info">⚠ 📰 газетные статьи не актуальны. <br></br>✍ Лор в процессе обновления.📒</div>
+      <div className="wiki-info">⚠ 📰 газетные статьи не актуальны. <br />✍ Лор в процессе обновления.📒</div>
       <div className="wiki-topbar">
         <div className="wiki-tabs">
-          {tabs.map(t => (
+          {sections.map((section) => (
             <button
-              key={t.key}
-              className={`wiki-tab ${active === t.key ? 'active' : ''}`}
-              onClick={() => setActive(t.key)}
+              key={section.id}
+              className={`wiki-tab ${activeSection?.id === section.id ? 'active' : ''}`}
+              style={section.color ? { borderColor: section.color } : undefined}
+              onClick={() => setActiveSection(section)}
             >
-              {t.label}
+              {section.title}
             </button>
           ))}
         </div>
         <div className="wiki-inline-list">
-          {listFor(active).map((f) => (
-            <button key={f} className="wiki-link" onClick={() => openFile(active, f)}>{displayName(f)}</button>
-          ))}
+          {loadingSection ? (
+            <div className="wiki-empty">Загрузка списка...</div>
+          ) : items.length > 0 ? (
+            items.map((item, index) => (
+              <button
+                key={`${getDisplayName(item)}-${index}`}
+                className="wiki-link"
+                onClick={() => openItem(item)}
+              >
+                {getDisplayName(item)}
+              </button>
+            ))
+          ) : (
+            <div className="wiki-empty">Выберите раздел, чтобы загрузить список.</div>
+          )}
         </div>
       </div>
 
       <hr className="wiki-sep" />
 
       <main className="wiki-content">
-        {title && <h3 className="wiki-title">{displayName(title)}</h3>}
+        {title && <h3 className="wiki-title">{title}</h3>}
         {images && images.length > 0 && (
           <div className="wiki-gallery">
             {images.map((src) => (
-              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-              <img key={src} src={src} className="wiki-thumb" alt="" onClick={() => setViewer(src)} />
+              <img
+                key={src}
+                src={src}
+                className="wiki-thumb"
+                alt=""
+                onClick={() => setViewer(src)}
+              />
             ))}
           </div>
         )}

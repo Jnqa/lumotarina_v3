@@ -1,4 +1,5 @@
 import React, { useEffect, useState  } from 'react';
+import { fetchSession } from '../../../utils/session';
 import styles from './BottomBar.module.css';
 import type { ClassData, Character, CharacterProfile } from './types';
 
@@ -89,36 +90,22 @@ interface Props {
   onCreate: (name: string, items: string[]) => void;
 }
 
-function getSession() {
-  try {
-    return JSON.parse(localStorage.getItem('session') || '{}');
-  } catch {
-    return {};
-  }
-}
-
 export const CharacterFinalizer: React.FC<Props> = ({ selectedClass }) => {
   const [name, setName] = useState('');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [session, setSession] = useState<any>(getSession());
-
-  const API_BASE = getApiBase();
+  const [session, setSession] = useState<any>(null);
 
   useEffect(() => {
-      // try to fetch session from backend (cookie-based)
       (async () => {
         try {
-          const r = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-          if (r.ok) {
-            const j = await r.json();
-            if (j?.success && j.user) setSession(j.user);
-          }
+          const user = await fetchSession();
+          setSession(user);
         } catch (e) {
-          // ignore
           console.error('Ошибка при получении сессии:', e);
         }
-      })();}, []);
+      })();
+  }, []);
 
   // Добавляем состояние для превью билда
   const [preview, setPreview] = useState<CharacterProfile | null>(null);

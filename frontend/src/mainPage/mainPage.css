@@ -6,6 +6,9 @@
 body {
   margin: 0;
   padding: 0;
+  /* Предотвращаем таскание страницы вверх-вниз (over-scroll) */
+  overscroll-behavior: contain;
+  overflow: hidden;
 }
 
 body.mainpage-bg {
@@ -102,10 +105,13 @@ body.mainpage-bg::before {
 .mainpage-container {
   font-family: 'Crimson Pro', Georgia, serif;
   color: #e8e0cc;
-  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   padding: 0 0 48px;
   box-sizing: border-box;
-  position: relative;
+  position: fixed;
+  inset: 0;
   z-index: 1;
   /* Видимость управляется JS */
   opacity: 0;

@@ -148,34 +148,57 @@ app.post('/auth/check-code', express.json(), (req, res) => {
 
   res.json({ success: true });
 });
-// Endpoint для авторизации через Telegram WebApp
+// Endpoint для авторизации через Telegram WebApp (DISABLED)
 app.post('/auth/telegram', express.json(), (req, res) => {
-  const isValid = checkTelegramAuth(req.body, process.env.TELEGRAM_BOT_TOKEN);
-  if (isValid) {
-    // Здесь можно создать сессию или JWT для пользователя
-    res.json({ success: true });
-  } else {
-    res.status(401).json({ success: false, error: 'Invalid Telegram auth' });
-  }
+  res.status(501).json({ success: false, error: 'Telegram authentication is disabled' });
 });
 
-// Endpoint: проверить доступность Telegram (для фронтенда)
+// Endpoint: проверить доступность Telegram (для фронтенда) (DISABLED)
 app.get('/auth/telegram-status', (req, res) => {
-  try {
-    if (botModule && botModule.getTelegramStatus) {
-      const st = botModule.getTelegramStatus();
-      return res.json(st);
-    }
-    const available = !!(botModule && botModule.isTelegramAvailable && botModule.isTelegramAvailable());
-    res.json({ available, lastErrorMessage: null, isConflict: false });
-  } catch (e) {
-    res.json({ available: false, lastErrorMessage: null, isConflict: false });
-  }
+  res.json({ available: false, reason: 'Telegram authentication is disabled' });
 });
 
 // Endpoint: проверить текущую сессию
 app.get('/auth/me', requireAuth, (req, res) => {
   res.json({ success: true, user: req.user });
+});
+
+// Endpoint: узнать, есть ли у текущего пользователя пароль (не возвращаем hash)
+app.get('/auth/has-password', requireAuth, async (req, res) => {
+  try {
+    const tgId = req.user.tgId;
+    const userRef = admin.database().ref(`users/${tgId}`);
+    const snapshot = await userRef.once('value');
+    const user = snapshot.val() || {};
+    res.json({ success: true, hasPassword: !!user.passwordHash });
+  } catch (e) {
+    res.status(500).json({ success: false, error: 'Server error' });
+  }
+});
+
+// Endpoint: изменить пароль текущего пользователя (без раскрытия хеша)
+app.post('/auth/change-password', express.json(), requireAuth, async (req, res) => {
+  const { oldPassword, newPassword } = req.body;
+  if (!newPassword) return res.status(400).json({ success: false, error: 'newPassword required' });
+  try {
+    const tgId = req.user.tgId;
+    const userRef = admin.database().ref(`users/${tgId}`);
+    const snapshot = await userRef.once('value');
+    const user = snapshot.val() || {};
+
+    // If user already has a password, require oldPassword and verify it
+    if (user.passwordHash) {
+      if (!oldPassword) return res.status(400).json({ success: false, error: 'oldPassword required' });
+      const ok = await bcrypt.compare(oldPassword, user.passwordHash);
+      if (!ok) return res.status(401).json({ success: false, error: 'Invalid old password' });
+    }
+
+    const newHash = await bcrypt.hash(newPassword, 10);
+    await admin.database().ref(`users/${tgId}`).update({ passwordHash: newHash });
+    res.json({ success: true });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
 });
 
 // Endpoint: выход (logout)
