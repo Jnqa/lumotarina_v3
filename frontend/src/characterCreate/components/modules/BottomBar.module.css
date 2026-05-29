@@ -1,0 +1,96 @@
+.bottomBar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+    background: rgba(2, 26, 26, 0.38);
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid rgba(205, 205, 205, 0.35);
+  border-top: 1px solid #333;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.5);
+  border-radius: 20px 20px 0 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.inventorySelect {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  align-items: center;
+}
+
+.itemBadge {
+  padding: 6px 12px;
+  border: 1px solid #03642b6c;
+  border-radius: 12px;
+  color: #73cc8a94;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.itemSelected {
+  background: #f0b40090;
+  background: linear-gradient(210deg, #00f0a090, #00f0b460);
+  color: #ffffff;
+  font-weight: 600;
+  border-color: #00f0a090;
+  align-items: center;
+}
+
+.inputName {
+  flex: 1;
+  background: #2a2a2a62;
+  border: 1px solid #054726;
+  color: #fff;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.createBtn {
+  background: #029b6d;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.createBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Модалка */
+.modalOverlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.modalContent {
+  background: #222;
+  padding: 24px;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 400px;
+}

@@ -1,130 +1,376 @@
-.rewind-container {
-  max-width: 1000px;
-  margin: 0 auto;
-  padding: 30px 20px 50px;
-  color: #f4f4f4;
+/* Rewind — Lumotarina D&D style */
+
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap');
+
+/* ─── Body bg (same as mainPage) ─── */
+body.rewind-bg {
+  background-color: #0c0e14;
+  background-size: cover;
+  background-position: center top;
+  background-attachment: scroll;
+  background-repeat: no-repeat;
 }
 
+body.rewind-bg::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 25% 0%,  rgba(90, 55, 18, 0.5)  0%, transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(25, 15, 55, 0.6)  0%, transparent 55%),
+    linear-gradient(180deg, rgba(6,8,14,0.45) 0%, rgba(6,8,14,0.78) 100%);
+  pointer-events: none;
+  z-index: 0;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* ─── Container ─── */
+.rewind-container {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0 0 60px;
+  color: #e8e0cc;
+  font-family: 'Crimson Pro', Georgia, serif;
+  position: relative;
+  z-index: 1;
+  /* entrance */
+  animation: rewindFadeIn 0.5s ease forwards;
+}
+
+@keyframes rewindFadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ─── Header ─── */
 .rewind-header {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  margin-bottom: 24px;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(210, 170, 80, 0.15);
+  background: rgba(6, 8, 14, 0.72);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  margin-bottom: 18px;
 }
 
-.rewind-header h1 {
-  margin: 0 0 8px;
-  font-size: clamp(2rem, 2.5vw, 2.6rem);
-}
-
-.rewind-header p {
+.rewind-header-text h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 15px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(220, 185, 110, 0.9);
   margin: 0;
-  color: #cbd5e1;
-  max-width: 720px;
+  font-weight: 600;
+}
+
+.rewind-header-text p {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 12px;
+  color: rgba(210, 185, 130, 0.45);
+  margin: 3px 0 0;
 }
 
 .rewind-back-btn {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 12px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  background: rgba(18, 20, 30, 0.82);
+  border: 1px solid rgba(210, 170, 80, 0.22);
+  color: rgba(220, 185, 110, 0.8);
+  padding: 8px 16px;
+  border-radius: 50px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .rewind-back-btn:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(30, 34, 48, 0.92);
+  border-color: rgba(210, 170, 80, 0.45);
   transform: translateY(-1px);
 }
 
+/* ─── Messages ─── */
 .rewind-message,
 .rewind-note,
 .rewind-empty {
-  margin: 20px 0;
-  padding: 18px 20px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
-  color: #e2e8f0;
+  margin: 0 16px 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: rgba(18, 20, 30, 0.75);
+  border: 1px solid rgba(210, 170, 80, 0.12);
+  color: rgba(220, 195, 145, 0.7);
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .rewind-error {
-  color: #ffbaba;
-  background: rgba(255, 80, 80, 0.12);
+  color: rgba(240, 120, 100, 0.9) !important;
+  background: rgba(180, 40, 20, 0.12) !important;
+  border-color: rgba(200, 60, 40, 0.2) !important;
 }
 
+.rewind-note {
+  border-left: 2px solid rgba(210, 170, 80, 0.5);
+  border-radius: 0 14px 14px 0;
+  text-align: left;
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(220, 195, 145, 0.65);
+}
+
+.rewind-empty {
+  letter-spacing: 0;
+  text-transform: none;
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 14px;
+  color: rgba(210, 185, 130, 0.5);
+}
+
+.rewind-empty p { margin: 0 0 4px; }
+
+/* ─── List ─── */
 .rewind-list {
-  display: grid;
-  gap: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 16px;
 }
 
+/* ─── Card ─── */
 .rewind-card {
-  padding: 22px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 22px;
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  padding: 14px 14px 12px;
+  background: rgba(18, 20, 30, 0.84);
+  border: 1px solid rgba(210, 170, 80, 0.16);
+  border-radius: 14px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+  /* staggered entrance */
+  animation: cardSlideIn 0.35s ease both;
+}
+
+.rewind-card:nth-child(1)  { animation-delay: 0.04s; }
+.rewind-card:nth-child(2)  { animation-delay: 0.08s; }
+.rewind-card:nth-child(3)  { animation-delay: 0.12s; }
+.rewind-card:nth-child(4)  { animation-delay: 0.16s; }
+.rewind-card:nth-child(5)  { animation-delay: 0.20s; }
+.rewind-card:nth-child(6)  { animation-delay: 0.24s; }
+.rewind-card:nth-child(7)  { animation-delay: 0.28s; }
+.rewind-card:nth-child(8)  { animation-delay: 0.32s; }
+.rewind-card:nth-child(n+9){ animation-delay: 0.36s; }
+
+@keyframes cardSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* left accent */
+.rewind-card::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2.5px;
+  background: linear-gradient(180deg, rgba(210,170,80,0.7), rgba(210,170,80,0.04));
+  border-radius: 2px 0 0 2px;
+}
+
+/* gold shimmer top */
+.rewind-card::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(210,170,80,0.25), transparent);
 }
 
 .rewind-card:hover {
-  transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(210, 170, 80, 0.32);
+  background: rgba(26, 28, 42, 0.9);
+  transform: translateX(2px);
 }
 
+/* ─── Card header ─── */
 .rewind-card-header {
   display: flex;
   justify-content: space-between;
-  gap: 14px;
   align-items: center;
-  margin-bottom: 12px;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.rewind-card-header > div {
+  min-width: 0;
+  flex: 1;
 }
 
 .rewind-card-header h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ede4cc;
   margin: 0;
-  font-size: 1.2rem;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .rewind-card-header span {
-  display: inline-block;
-  margin-top: 8px;
-  color: #94a3b8;
-  font-size: 0.92rem;
+  display: block;
+  margin-top: 2px;
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  color: rgba(210, 180, 110, 0.45);
+  font-size: 12px;
 }
 
-.rewind-card p {
-  margin: 0 0 14px;
-  color: #d1d5db;
-  line-height: 1.65;
+/* ─── Description ─── */
+.rewind-card > p {
+  margin: 0 0 8px;
+  font-family: 'Crimson Pro', serif;
+  font-size: 13px;
+  color: rgba(220, 200, 160, 0.65);
+  line-height: 1.5;
+  /* clamp to 2 lines */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
+/* ─── Characters — horizontal row ─── */
+.rewind-characters {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  margin: 6px 0;
+  padding-bottom: 2px;
+}
+
+.rewind-characters::-webkit-scrollbar { display: none; }
+
+.rewind-character-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px 3px 4px;
+  border-radius: 50px;
+  background: rgba(210, 170, 80, 0.07);
+  border: 1px solid rgba(210, 170, 80, 0.14);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.rewind-character-picture {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  -o-object-fit: cover;
+  object-fit: cover;
+  border: 1px solid rgba(210, 170, 80, 0.25);
+  flex-shrink: 0;
+  display: block;
+}
+
+.rewind-character-row span {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.3px;
+  color: rgba(220, 195, 140, 0.8);
+}
+
+/* ─── Tags ─── */
+.rewind-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 6px;
+}
+
+.rewind-tag {
+  padding: 3px 9px;
+  border-radius: 50px;
+  background: rgba(18, 20, 30, 0.7);
+  border: 1px solid rgba(210, 170, 80, 0.14);
+  color: rgba(210, 185, 130, 0.55);
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+/* ─── Open button ─── */
 .rewind-link {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 110px;
-  padding: 10px 16px;
-  border-radius: 999px;
-  color: #fff;
-  background: #64748b;
+  padding: 7px 14px;
+  border-radius: 50px;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: rgba(210, 170, 80, 0.11);
+  border: 1px solid rgba(210, 170, 80, 0.3);
+  color: rgba(220, 185, 110, 0.9);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
   text-decoration: none;
-  font-weight: 600;
 }
 
 .rewind-link:hover {
-  background: #94a3b8;
+  background: rgba(210, 170, 80, 0.2);
+  border-color: rgba(210, 170, 80, 0.55);
+  transform: translateY(-1px);
 }
 
-.rewind-tags {
+/* ─── Reader overlay ─── */
+.rewind-reader-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.82);
+  z-index: 1100;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  align-items: stretch;
+  animation: overlayIn 0.2s ease;
 }
 
-.rewind-tag {
-  padding: 8px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #cbd5e1;
-  font-size: 0.82rem;
+@keyframes overlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 400px) {
+  .rewind-header { padding: 12px 14px; }
+  .rewind-list   { padding: 0 12px; gap: 7px; }
+  .rewind-card   { padding: 12px 12px 10px; border-radius: 12px; }
+  .rewind-card-header h2 { font-size: 12px; }
 }

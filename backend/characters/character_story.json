@@ -1,46 +1,125 @@
 {
   "meta": {
-    "version": "1.0",
-    "description": "Character background questionnaire"
+    "version": "1.1",
+    "description": "Character background questionnaire",
+    "base_lucoins": 0,
+    "base_abilities": {
+      "Strength": 0,
+      "Dexterity": 0,
+      "Constitution": 0,
+      "Intelligence": 0,
+      "Charisma": 0,
+      "Perception": 0,
+      "Willpower": 0,
+      "Engineering": 0,
+      "Lumion": 0,
+      "Medicine": 0,
+      "Lockpicking": 0,
+      "Stealth": 0,
+      "Nature": 0,
+      "Survival": 0,
+      "Crafting": 0,
+      "Athletics": 0,
+      "Acrobatics": 0,
+      "History": 0
+    },
+    "ability_list": [
+      "Strength", "Dexterity", "Constitution", "Intelligence",
+      "Charisma", "Perception", "Willpower", "Engineering",
+      "Lumion", "Medicine", "Lockpicking", "Stealth",
+      "Nature", "Survival", "Crafting", "Athletics",
+      "Acrobatics", "History"
+    ]
   },
   "questions": [
+  {
+    "id": "world",
+    "order": 0,
+    "text": "Из какого мира начинается твоя история?",
+    "type": "choice",
+    "options": [
+      {
+        "id": "lumotarina",
+        "text": "Люмотарина",
+        "effects": {
+          "tags": ["lumotarina", "light_world"],
+          "abilities": {
+            "Engineering": 2
+          }
+        },
+        "media": {
+          "text": "Технологичный мир огромных городов, неоновых улиц и цифровых систем. Здесь ценят науку, прогресс и инженерное мышление, а магия считается лишь древним мифом.",
+          "badge": {
+            "label": "Технологии • Города • Прогресс | Люди • Майты | Сауркельм • Белый Крон • Тайвель • Мустальма • ..."
+          }
+        },
+        "visuals": {
+          "progressColor": "#5EF6FF",
+          "progressBg": "#132A3A"
+        }
+      },
+      {
+        "id": "noktarina",
+        "text": "Ноктарина",
+        "effects": {
+          "tags": ["noktarina", "dark_world"],
+          "abilities": {
+            "Nature": 2
+          }
+        },
+        "media": {
+          "text": "Мир штормовых морей, хвойных островов и древней магии. Туманы скрывают забытые тайны, старые механизмы соседствуют с мистическими существами, а сила природы здесь важнее технологий.",
+          "badge": {
+            "label": "Магия • Штормы • Туманы | Люди • Майты • Регалифы • Луноликие • Звероликие | Тарина • Ньюбург • Натвик • Люмир • Скарфьорд • ..."
+          }
+        },
+        "visuals": {
+          "progressColor": "#A978FF",
+          "progressBg": "#24163D"
+        }
+      }
+    ]
+  },
     {
       "id": "gender",
       "order": 1,
       "text": "Выбери пол персонажа",
+      "description": "Выбор пола влияет на некоторые характеристики и доступные варианты в будущих вопросах.",
       "type": "choice",
       "options": [
         {
           "id": "male",
           "text": "Мужской",
-          "effects": { "abilities": { "Constitution": 4 }, "tags": ["male"] },
-          "media": {
-            "text": null,
-            "image": null
+          "effects": {
+            "abilities": { "Constitution": 4 },
+            "tags": ["male"]
           },
+          "media": { "text": null, "image": null },
           "visuals": {
-            "progressColor": "#2196F3", "progressBg": "#BBDEFB"
+            "progressColor": "#2196F3",
+            "progressBg": "#BBDEFB"
           }
         },
         {
           "id": "female",
           "text": "Женский",
-          "effects": { "abilities": { "Dexterity": 4 }, "tags": ["female"] },
-          "media": {
-            "text": null,
-            "image": null
+          "effects": {
+            "abilities": { "Dexterity": 4 },
+            "tags": ["female"]
           },
+          "media": { "text": null, "image": null },
           "visuals": {
-            "progressColor": "#c66999", "progressBg": "#d689d9"
+            "progressColor": "#c66999",
+            "progressBg": "#d689d9"
           }
         }
       ]
     },
-
     {
       "id": "race",
       "order": 2,
       "text": "Выбери расу",
+      "description": "Раса определяет твои природные способности и внешний вид. Некоторые варианты в следующих вопросах будут доступны только для определённых рас.",
       "type": "choice",
       "options": [
         {
@@ -51,7 +130,13 @@
           },
           "media": {
             "text": "Адаптивны, социальны, амбициозны. Люди доминирующая раса в Люмотарине, распространены повсеместно, обладают разнообразной внешностью и культурами.",
-            "images": "media/images/races/human/images.json"
+            "images": [
+              "/media/images/races/human/human_1.webp",
+              "/media/images/races/human/human_2.webp",
+              "/media/images/races/human/human_3.webp",
+              "/media/images/races/human/human_4.webp",
+              "/media/images/races/human/human_5.webp"
+            ]
           }
         },
         {
@@ -62,7 +147,13 @@
           },
           "media": {
             "text": "То, что называют дворфами. Низкорослые, крепкие, выносливые. Умелые, могут создавать сверхтехнологичные устройства. Живут заметно дольше людей.",
-            "images": "media/images/races/mait/images.json"
+            "images": [
+              "/media/images/races/mait/mait_1.webp",
+              "/media/images/races/mait/mait_3.webp",
+              "/media/images/races/mait/mait_4.webp",
+              "/media/images/races/mait/mait_female.webp",
+              "/media/images/races/mait/mait_male.webp"
+            ]
           }
         },
         {
@@ -70,13 +161,26 @@
           "text": "Луноликие",
           "effects": {
             "tags": ["no_city", "dark_origin"],
-            "classes": ["pickpocket","shadow_thrall"]
+            "classes": ["pickpocket", "shadow_thrall"]
           },
           "media": {
             "text": "Рождённые в тени. Бледная кожа, внешность может быть разной, Лучше видят в темноте, Слабеют на ярком солнце. В темноте могут совершать быстрые перемещения, но слабы силой и откровенно туповаты, В Люмотарине вызывают тревогу и интерес спецслужб",
-            "images": "media/images/races/shadowblood/images.json"
+            "images": [
+              "/media/images/races/shadowblood/shadowblood_1.webp",
+              "/media/images/races/shadowblood/shadowblood_2.webp",
+              "/media/images/races/shadowblood/shadowblood_3.webp",
+              "/media/images/races/shadowblood/shadowblood_4.webp",
+              "/media/images/races/shadowblood/shadowblood_5.webp",
+              "/media/images/races/shadowblood/shadowblood_7.webp",
+              "/media/images/races/shadowblood/shadowblood_8.webp",
+              "/media/images/races/shadowblood/shadowblood_9.webp",
+              "/media/images/races/shadowblood/shadowblood_10.webp",
+              "/media/images/races/shadowblood/shadowblood_female.webp",
+              "/media/images/races/shadowblood/shadowblood_male.webp"
+            ]
           }
-        },{
+        },
+        {
           "id": "regalif",
           "text": "Регалифы",
           "effects": {
@@ -85,7 +189,13 @@
           },
           "media": {
             "text": "Связаны с древними лесами Ноктарины Магия через кристаллы с энергией, которые добывают из особых растений в их лесах Ценят природу и не терпят когда кто-то наносит ей ущерб Если надолго покидают лес, то лишаются магии.",
-            "images": "media/images/races/regalif/images.json"
+            "images": [
+              "/media/images/races/regalif/regalif2.webp",
+              "/media/images/races/regalif/regalif3.webp",
+              "/media/images/races/regalif/regalif4.webp",
+              "/media/images/races/regalif/regalif6.webp",
+              "/media/images/races/regalif/regalif7.webp"
+            ]
           }
         },
         {
@@ -96,24 +206,30 @@
           },
           "media": {
             "text": "Звериные формы, магии нет, сильны в охоте и ближнем бою, способности опциональны. В Люмотарине таких существ нет, воспринимается как монстр, игроку придётся прятать внешность.",
-            "images": "media/images/races/animalic/images.json"
+            "images": [
+              "/media/images/races/animalic/animalic_1.webp",
+              "/media/images/races/animalic/animalic_2.webp",
+              "/media/images/races/animalic/animalic_3.webp",
+              "/media/images/races/animalic/animalic_4.webp",
+              "/media/images/races/animalic/animalic_5.webp"
+            ]
           }
-        }        
+        }
       ]
     },
-
     {
       "id": "birth_city",
       "order": 3,
       "text": "Выбери город рождения",
       "type": "choice",
       "conditions": {
-        "race": ["human", "mait"]
+        "require": { "race": ["human", "mait", "shadowblood", "regalif", "animalic"] }
       },
       "options": [
         {
           "id": "white_crown",
           "text": "Белый Крон",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Engineering": 4,
@@ -125,16 +241,14 @@
           },
           "media": {
             "text": "Город науки, дисциплины и идеального порядка. Остров в сердце Белокронского залива. Спокойные воды и выверенный порядок отражают его сущность: чистота, величие и дисциплина. Когда-то торговый центр Империи, теперь — оплот науки, дипломатии и искусств. Городом управляет Совет Знаний — союз учёных и чиновников, поддерживающих идеальный порядок и почти полное отсутствие преступности.",
-            "images": "lore/cities/white_crown",
-            "badge": {
-              "level": 5,
-              "label": "Центр Знаний"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/belyy-kron",
+            "badge": { "level": 5, "label": "Центр Знаний" }
           }
         },
         {
           "id": "kivigrad",
           "text": "Кивиград",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Medicine": 5,
@@ -144,16 +258,14 @@
           },
           "media": {
             "text": "Тихий прибрежный городок у реки Кивикоски и Белокронского залива. Скромные низкие дома, неторопливая жизнь и доброжелательные жители создают ощущение уюта. Город не богат, но славится чистым воздухом, зелёными берегами и множеством живописных мест, где природа остаётся главной ценностью.",
-            "images": "lore/cities/kivigrad",
-            "badge": {
-              "level": 2,
-              "label": "Медицина и Здравоохранение"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/kivigrad",
+            "badge": { "level": 2, "label": "Медицина и Здравоохранение" }
           }
         },
-        { 
-          "id": "kutarinovsk", 
+        {
+          "id": "kutarinovsk",
           "text": "Кутариновск",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Crafting": 5,
@@ -163,17 +275,15 @@
             "classes": ["mechanic"]
           },
           "media": {
-            "text": "Небольшой промышленный город на берегу Веленора. Заводы и фабрики формируют его облик, а рабочие кварталы отражают суровую реальность жизни. Несмотря на индустриальный характер, город окружён лесами и холмами, предоставляя жителям возможность отдохнуть на природе.",
-            "images": "lore/cities/kutarinovsk",
-            "badge": {
-              "level": 1,
-              "label": "Промышленный городок"
-            }
+            "text": "Небольшой промышленный город на берегу Веленора. Заводы и фабрики формируют его облик, а рабочие кварталы отражают суровую реальность жизни. Несмотря на индустриальный характер, город окружён лесами и холмами, providing жителям возможность отдохнуть на природе.",
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/kutarinovsk",
+            "badge": { "level": 1, "label": "Промышленный городок" }
           }
         },
-        { 
-          "id": "laululahthi", 
+        {
+          "id": "laululahti",
           "text": "Лаулулахти",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Perception": 4,
@@ -183,17 +293,15 @@
             "tags": ["fishing_village", "quiet"]
           },
           "media": {
-            "text": "Рыбацкая деревушка среди сосен и скал Белокронского залива. Известна “поющими скалами”, где ветер в шторм звучит как мелодия духов моря. Здесь до сих пор подают копчёного сига в погребке “Хювя пайкка” и стоит старая заброшенная часовня, хранящая тайны прошлого.",
-            "images": "lore/cities/laululahthi",
-            "badge": {
-              "level": 1,
-              "label": "Рыбацкое поселение"
-            }
+            "text": "Рыбацкая деревушка среди сосен и скал Белокронского залива. Известна \"поющими скалами\", где ветер в шторм звучит как мелодия духов моря. Здесь до сих пор подают копчёного сига в погребке \"Хювя пайкка\" и стоит старая заброшенная часовня, хранящая тайны прошлого.",
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/laululahti",
+            "badge": { "level": 1, "label": "Рыбацкое поселение" }
           }
         },
-        { 
-          "id": "liymola", 
+        {
+          "id": "liymola",
           "text": "Лиймола",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Perception": 3,
@@ -204,16 +312,14 @@
           },
           "media": {
             "text": "Прибрежная деревушка на берегу Велемора, куда ведёт узкая каменистая дорога. Дома скрыты среди сосен, воздух чист и прохладен, а окрестности полны диких зверей и пения птиц. Жители живут охотой, рыбалкой и ремёслами, сохраняя традиционный образ жизни вдали от цивилизации.",
-            "images": "lore/cities/liymola",
-            "badge": {
-              "level": 2,
-              "label": "Далёкая деревушка"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/liymola",
+            "badge": { "level": 2, "label": "Далёкая деревушка" }
           }
         },
-        { 
-          "id": "luborg", 
+        {
+          "id": "luborg",
           "text": "Люборг",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Perception": 3,
@@ -224,16 +330,14 @@
           },
           "media": {
             "text": "Современный прибрежный городок, сверкающий стеклом и неоном. Здесь находятся штаб-квартиры крупнейших корпораций, среди которых выделяется Luminous — символ технологий и статуса. Улицы ухожены, дороги без пробок, в воздухе — запах кофе и озона. Город живёт в ритме инноваций: парки освещены мягким светом умных фонарей, а фасады зданий переливаются интерактивной рекламой. Люборг дорог, амбициозен и безупречно упорядочен — как сама эпоха, которую он олицетворяет.",
-            "images": "lore/cities/luborg",
-            "badge": {
-              "level": 5,
-              "label": "Технологический городок"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/lyuborg",
+            "badge": { "level": 5, "label": "Технологический городок" }
           }
         },
-        { 
-          "id": "mezhozerec", 
+        {
+          "id": "mezhozerec",
           "text": "Межозёрец",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Perception": -5,
@@ -242,17 +346,15 @@
             "tags": ["techological", "modern"]
           },
           "media": {
-            "text": "Современный прибрежный городок, сверкающий стеклом и неоном. Здесь находятся штаб-квартиры крупнейших корпораций, среди которых выделяется Luminous — символ технологий и статуса. Улицы ухожены, дороги без пробок, в воздухе — запах кофе и озона. Город живёт в ритме инноваций: парки освещены мягким светом умных фонарей, а фасады зданий переливаются интерактивной рекламой. Люборг дорог, амбициозен и безупречно упорядочен — как сама эпоха, которую он олицетворяет.",
-            "images": "lore/cities/mezhozerec",
-            "badge": {
-              "level": 5,
-              "label": "Технологический городок"
-            }
+            "text": "TODO: добавить описание Межозёрца",
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/mezhozherec",
+            "badge": { "level": 5, "label": "Технологический городок" }
           }
         },
-        { 
-          "id": "mustalma", 
+        {
+          "id": "mustalma",
           "text": "Мустальма",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Stealth": 2,
@@ -263,16 +365,14 @@
           },
           "media": {
             "text": "Мрачный портовый город на берегу Велемора, наполовину ушедший под воду после древнего катаклизма. В туманах слышны колокола с глубины, а местные шепчут о «людях из тумана» и живом городе, что забирает тех, кто слишком долго глядит на воду.",
-            "images": "lore/cities/mustalma",
-            "badge": {
-              "level": 3,
-              "label": "Мрачный порт"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/mustalma",
+            "badge": { "level": 3, "label": "Мрачный порт" }
           }
         },
-        { 
-          "id": "nesaual", 
+        {
+          "id": "nesaual",
           "text": "Несауаль",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "History": -20,
@@ -283,20 +383,18 @@
           },
           "media": {
             "text": "Жаркий прибрежный город-гавань, затерянный у далёкого океана. Когда-то торговый центр, теперь — пристанище тех, кто скрывается от прошлого. В скалах слышен шёпот ветра и ночные звуки, а запечатанные двери у берега напоминают, что город хранит больше тайн, чем жителей.",
-            "images": "lore/cities/nesaual",
-            "badge": {
-              "level": 4,
-              "label": "Далёкий город"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/nesaual",
+            "badge": { "level": 4, "label": "Далёкий город" }
           }
         },
-        { 
-          "id": "velemor", 
+        {
+          "id": "velemor",
           "text": "Острова Велемора",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Lumion": 9,
-              "History":-27,
+              "History": -27,
               "Charisma": -9
             },
             "tags": ["lumion"],
@@ -304,16 +402,14 @@
           },
           "media": {
             "text": "Велемор — тёмное и бурное море, укрытое вечными туманами. Красивое, но коварное: местные верят, что оно не прощает неуважения. Говорят, в его глубинах скрыт забытый остров Тарина — легенда, до которой никто не добирался.",
-            "images": "lore/cities/velemor",
-            "badge": {
-              "level": 1,
-              "label": "Сердце Люмотарины"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/ozero-velemor",
+            "badge": { "level": 1, "label": "Сердце Люмотарины" }
           }
         },
-        { 
-          "id": "saurkelm", 
+        {
+          "id": "saurkelm",
           "text": "Сауркельм",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "History": 10,
@@ -323,16 +419,14 @@
           },
           "media": {
             "text": "Бывшее сердце индустриальной Империи. Когда-то он утопал в дыме, вонял нефтью и жил по законам улиц: мафия, бандиты, контрабанда, кровавые разборки. Власть держали те, кого боялись. Двадцать лет назад всё изменилось. Теперь Сауркельм — мощный экономический центр, город без явных границ между бедными и богатыми. Металл, стекло и паровые шпили напоминают о прошлом, но под блестящей оболочкой всё ещё живут тени старого города.",
-            "images": "lore/cities/saurkelm",
-            "badge": {
-              "level": 5,
-              "label": "Сердце Люмотарины"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/saurkhelm",
+            "badge": { "level": 5, "label": "Сердце Люмотарины" }
           }
         },
-        { 
-          "id": "sosnovo", 
+        {
+          "id": "sosnovo",
           "text": "Сосново",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Strength": 6,
@@ -343,16 +437,14 @@
           },
           "media": {
             "text": "Город дровосеков, утопающий в густых лесах. Большинство жителей - Майты. Главная сила и гордость — лесозаготовки: древесина Сосново ценится повсюду, а жители мастерски управляются с топором и пилой, поддерживая процветание и традиции своего города.",
-            "images": "lore/cities/sosnovo",
-            "badge": {
-              "level": 3,
-              "label": "Лесозаготовки"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/sosnovo",
+            "badge": { "level": 3, "label": "Лесозаготовки" }
           }
         },
-        { 
-          "id": "suograd", 
+        {
+          "id": "suograd",
           "text": "Суоград",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "Crafting": 7,
@@ -362,16 +454,14 @@
           },
           "media": {
             "text": "Промышленный городок с историей оружейного производства. Сейчас его мощные мастерские и верфи сосредоточены на кораблестроении, а жители сохраняют традиции ремесла и инженерного мастерства, делая город важным центром промышленности и торговли.",
-            "images": "lore/cities/suograd",
-            "badge": {
-              "level": 3,
-              "label": "Город ремесла"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/suograd",
+            "badge": { "level": 3, "label": "Город ремесла" }
           }
         },
-        { 
-          "id": "taivel", 
+        {
+          "id": "taivel",
           "text": "Тайвель",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "History": -11,
@@ -382,43 +472,40 @@
           },
           "media": {
             "text": "Скрытый среди скал город на берегу Велемора. Дорога сюда известна лишь местным, а закрытость поселения делает его окутанным тайной: о жизни внутри знают немногое даже соседние поселения.",
-            "images": "lore/cities/taivel",
-            "badge": {
-              "level": 1,
-              "label": "Деревня отшельников"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/taivel",
+            "badge": { "level": 1, "label": "Деревня отшельников" }
           }
         },
-        { 
-          "id": "tarina", 
+        {
+          "id": "tarina",
           "text": "Тарина",
+          "conditions": { "require": { "world": ["noktarina"] } },
           "effects": {
             "abilities": {
-              "History": -90,    
+              "History": -90,
               "Strength": -50,
               "Dexterity": -10,
               "Intelligence": -30,
-              "Constitution": -5,    
-              "Charisma": 20,    
+              "Constitution": -5,
+              "Charisma": 20,
               "Lumion": 70,
               "Willpower": -20,
               "Engineering": -40,
               "Nature": 3
             },
-            "tags": ["tarina"]
+            "tags": ["tarina"],
+            "special": "no_backstory"
           },
           "media": {
             "text": "Остров из легенд. // Игрок, выбирая этот путь, ты не сможешь выбрать предисторию персонажа, твой персонаж не будет ничего помнить о прошлом и по навыкам будет страдать как чорт. Но..",
-            "images": "lore/cities/tarina",
-            "badge": {
-              "level": 1,
-              "label": "[Нет данных]"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/ostrov-tarina",
+            "badge": { "level": 1, "label": "[Нет данных]" }
           }
         },
-        { 
-          "id": "tihoborie", 
+        {
+          "id": "tihoborie",
           "text": "Тихоборье",
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
               "History": -11,
@@ -430,26 +517,23 @@
           },
           "media": {
             "text": "Мрачный город с темными улицами, утонувший в мелкой преступности. Торговцы обходят его стороной, а разрушенные дома и заброшенные площади создают атмосферу упадка и опасности.",
-            "images": "lore/cities/tihoborie",
-            "badge": {
-              "level": 2,
-              "label": "Город преступности"
-            }
+            "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/tikhobore",
+            "badge": { "level": 2, "label": "Город преступности" }
           }
-        }        
+        }
       ]
     },
     {
       "id": "social_environment",
       "order": 4,
       "text": "В какой среде ты рос?",
+      "description": "Твоё детское окружение формирует твои навыки и связи. Некоторые варианты доступны только если у тебя есть соответствующий опыт или происхождение.",
       "type": "choice",
       "options": [
         {
           "id": "wealthy",
           "text": "Обеспеченной",
           "effects": {
-            "lucoins": 5,
             "tags": ["privileged"]
           },
           "media": { "text": null, "image": null }
@@ -476,10 +560,7 @@
           "id": "street",
           "text": "Улицы и подворотни",
           "effects": {
-            "abilities": {
-              "Stealth": 2,
-              "Perception": 2
-            },
+            "abilities": { "Stealth": 2, "Perception": 2 },
             "tags": ["streetwise", "danger"]
           },
           "media": { "text": null, "image": null }
@@ -488,33 +569,29 @@
           "id": "academic",
           "text": "Интеллигентной и образованной",
           "effects": {
-            "abilities": {
-              "Intelligence": 2,
-              "Willpower": 1
-            },
+            "abilities": { "Intelligence": 2, "Willpower": 1 },
             "tags": ["educated", "intellectual"]
           },
+          "conditions": { "require": { "world": ["lumotarina"] } },
           "media": { "text": null, "image": null }
         },
         {
           "id": "criminal",
           "text": "Полукриминальной",
           "effects": {
-            "abilities": {
-              "Dexterity": 2,
-              "Lockpicking": 1
-            },
+            "abilities": { "Dexterity": 2, "Lockpicking": 1 },
             "tags": ["criminal_contacts", "shady"]
           },
+          "conditions": { "require": { "social_environment": ["street", "working_class"] } },
           "media": { "text": null, "image": null }
         }
       ]
     },
-
     {
       "id": "family",
       "order": 5,
       "text": "Твоя семья была...",
+      "description": "Отношения в семье формируют твой характер и определяют базовые навыки взаимодействия с окружающим миром.",
       "type": "choice",
       "options": [
         {
@@ -529,10 +606,7 @@
           "id": "strict",
           "text": "Строгой и требовательной",
           "effects": {
-            "abilities": {
-              "Willpower": 3,
-              "Constitution": 3
-            },
+            "abilities": { "Willpower": 3, "Constitution": 3 },
             "tags": ["discipline"]
           },
           "media": { "text": null, "image": null }
@@ -541,10 +615,7 @@
           "id": "distant",
           "text": "Холодной и отстранённой",
           "effects": {
-            "abilities": {
-              "Perception": 4,
-              "Charisma": -3
-            },
+            "abilities": { "Perception": 4, "Charisma": -3 },
             "tags": ["detached"]
           },
           "media": { "text": null, "image": null }
@@ -562,10 +633,7 @@
           "id": "criminal",
           "text": "Связанной с криминалом",
           "effects": {
-            "abilities": {
-              "Stealth": 3,
-              "Lockpicking": 2
-            },
+            "abilities": { "Stealth": 3, "Lockpicking": 2 },
             "tags": ["criminal_family", "shady"]
           },
           "media": { "text": null, "image": null }
@@ -574,17 +642,13 @@
           "id": "scholarly",
           "text": "Образованной и любознательной",
           "effects": {
-            "abilities": {
-              "Intelligence": 4,
-              "History": 7
-            },
+            "abilities": { "Intelligence": 4, "History": 7 },
             "tags": ["educated"]
           },
           "media": { "text": null, "image": null }
         }
       ]
     },
-
     {
       "id": "childhood_focus",
       "order": 6,
@@ -687,14 +751,13 @@
         }
       ]
     },
-
     {
       "id": "education",
       "order": 8,
       "text": "Где ты учился, если учился вообще?",
       "type": "choice",
       "conditions": {
-        "allowed_races": ["human", "mait"]
+        "require": { "race": ["human", "mait"] }
       },
       "options": [
         {
@@ -742,7 +805,6 @@
         }
       ]
     },
-
     {
       "id": "hidden_skill",
       "order": 9,
@@ -792,30 +854,37 @@
         {
           "id": "engineering",
           "text": "Инженерное мастерство",
-          "effects": { "abilities": { "Engineering": 7 } },
+          "effects": {
+            "abilities": { "Engineering": 7 }
+          },
           "media": { "text": null, "image": null }
         },
         {
           "id": "nature_knowledge",
           "text": "Знание природы",
-          "effects": { "abilities": { "Nature": 6, "Survival": 3 } },
+          "effects": {
+            "abilities": { "Nature": 6, "Survival": 3 }
+          },
           "media": { "text": null, "image": null }
         },
         {
           "id": "crafting_mastery",
           "text": "Мастерство ремесел",
-          "effects": { "abilities": { "Crafting": 7 } },
+          "effects": {
+            "abilities": { "Crafting": 7 }
+          },
           "media": { "text": null, "image": null }
         },
         {
           "id": "historical_knowledge",
           "text": "Исторические знания",
-          "effects": { "abilities": { "History": 7, "Intelligence": 3 } },
+          "effects": {
+            "abilities": { "History": 7, "Intelligence": 3 }
+          },
           "media": { "text": null, "image": null }
         }
       ]
     },
-
     {
       "id": "motivation",
       "order": 10,
@@ -833,30 +902,41 @@
         {
           "id": "knowledge",
           "text": "Знания",
-          "effects": { "tags": ["curious"], "abilities": { "Intelligence": 3 } },
+          "effects": {
+            "tags": ["curious"],
+            "abilities": { "Intelligence": 3 }
+          },
           "media": { "text": null, "image": null }
         },
         {
           "id": "wealth",
           "text": "Богатство",
-          "effects": { "tags": ["greedy"], "abilities": { "Charisma": 1 }, "lucoins": 5 },
+          "effects": {
+            "tags": ["greedy"],
+            "abilities": { "Charisma": 1 }
+          },
           "media": { "text": null, "image": null }
         },
         {
           "id": "freedom",
           "text": "Свобода",
-          "effects": { "tags": ["independent"], "abilities": { "Dexterity": 2 } },
+          "effects": {
+            "tags": ["independent"],
+            "abilities": { "Dexterity": 2 }
+          },
           "media": { "text": null, "image": null }
         },
         {
           "id": "justice",
           "text": "Справедливость",
-          "effects": { "tags": ["righteous"], "abilities": { "Perception": 2, "Willpower": 1 } },
+          "effects": {
+            "tags": ["righteous"],
+            "abilities": { "Perception": 2, "Willpower": 1 }
+          },
           "media": { "text": null, "image": null }
         }
       ]
     },
-
     {
       "id": "weakness",
       "order": 11,
@@ -866,31 +946,46 @@
         {
           "id": "fear",
           "text": "Страх",
-          "effects": { "abilities": { "Willpower": -10 }, "tags": ["timid"] },
+          "effects": {
+            "abilities": { "Willpower": -10 },
+            "tags": ["timid"]
+          },
           "media": { "text": null, "image": null }
         },
         {
           "id": "pride",
           "text": "Гордость",
-          "effects": { "abilities": { "Charisma": -15 }, "tags": ["stubborn"] },
+          "effects": {
+            "abilities": { "Charisma": -15 },
+            "tags": ["stubborn"]
+          },
           "media": { "text": null, "image": null }
         },
         {
           "id": "clumsiness",
           "text": "Неуклюжесть",
-          "effects": { "abilities": { "Dexterity": -15, "Acrobatics": -13 }, "tags": ["awkward"] },
+          "effects": {
+            "abilities": { "Dexterity": -15, "Acrobatics": -13 },
+            "tags": ["awkward"]
+          },
           "media": { "text": null, "image": null }
         },
         {
           "id": "naivety",
           "text": "Наивность",
-          "effects": { "abilities": { "Perception": -13, "Intelligence": -2 }, "tags": ["gullible"] },
+          "effects": {
+            "abilities": { "Perception": -13, "Intelligence": -2 },
+            "tags": ["gullible"]
+          },
           "media": { "text": null, "image": null }
         },
         {
           "id": "stamina",
           "text": "Слабое тело",
-          "effects": { "abilities": { "Constitution": -5, "Athletics": -13 }, "tags": ["fragile"] },
+          "effects": {
+            "abilities": { "Constitution": -5, "Athletics": -13 },
+            "tags": ["fragile"]
+          },
           "media": { "text": null, "image": null }
         }
       ]

@@ -1,270 +1,412 @@
-.auth-container {
-  max-width: 350px;
+/* Auth — Lumotarina D&D style */
 
-  /* margin: auto; */
-  padding: 16px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap');
+
+/* ─── Container ─── */
+.auth-container {
+  max-width: 420px;
+  margin: 0 auto;
+  padding: 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
   text-align: center;
   position: relative;
-  justify-content: start;
-  overflow-y: auto;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
-@media (max-width: 768px) {
-  .auth-container {
-    grid-template-columns: 1fr;
-  }
-}
-
+/* ─── Panel ─── */
 .auth-panel {
-  background: rgba(255, 255, 255, 0.01);
+  background: rgba(14, 16, 24, 0.88);
   background-size: cover;
   background-position: center;
-  background-attachment: fixed;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  padding: 24px;
-  backdrop-filter: blur(10px);
+  background-attachment: scroll;
+  background-repeat: no-repeat;
+  border: 1px solid rgba(210, 170, 80, 0.2);
+  border-radius: 16px;
+  padding: 20px;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   position: relative;
-  height: 260px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 14px;
+  box-sizing: border-box;
 }
 
+/* gold shimmer top edge */
 .auth-panel::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.01);
-  border-radius: 12px;
+  top: 0; left: 10%; right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(210,170,80,0.4), transparent);
+  pointer-events: none;
   z-index: 1;
 }
 
+/* darken bg image so text stays readable */
+.auth-panel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(8, 10, 18, 0.72);
+  border-radius: 16px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* everything above the overlay */
 .auth-panel h3,
 .auth-panel h4,
-.auth-panel > div {
+.auth-panel > div,
+.auth-panel > button {
   position: relative;
   z-index: 2;
 }
 
+/* ─── Headings ─── */
 .auth-panel h3 {
-  color: #fff;
-  font-size: 16px;
+  font-family: 'Cinzel', serif;
+  font-size: 13px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(220, 185, 110, 0.9);
+  text-align: left;
+  margin: 0;
+  padding: 0;
+  font-weight: 600;
   position: relative;
   z-index: 2;
-  align-items: left;
-  text-align: left;
-  font-weight: 600;
-  background: #00020521;
-  backdrop-filter: blur(4px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  margin: 0 auto 12px 0;
-  padding: 8px;
-  border-radius: 10px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
 }
 
+.auth-panel h4 {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(210, 185, 130, 0.7);
+  margin: 0 0 4px;
+  font-weight: 400;
+}
+
+/* ─── Sections ─── */
 .telegram-section,
 .link-section {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
   position: relative;
   z-index: 2;
 }
 
+/* ─── Link row ─── */
 .link-line {
   display: flex;
   flex-direction: row;
-  gap: 2px;
+  gap: 6px;
   align-items: center;
+}
+
+/* ─── Inputs ─── */
+.auth-input,
+.auth-link-input,
+.tg-available,
+.tg-unavailable {
+  padding: 11px 14px;
+  background: rgba(14, 16, 24, 0.75);
+  border: 1px solid rgba(210, 170, 80, 0.22);
+  border-radius: 10px;
+  color: #e8e0cc;
+  font-family: 'Crimson Pro', serif;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.18s ease, background 0.18s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.auth-input:focus,
+.auth-link-input:focus,
+.tg-available:focus {
+  border-color: rgba(210, 170, 80, 0.55);
+  background: rgba(20, 22, 34, 0.85);
 }
 
 .auth-link-input {
-  padding: 12px 14px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 6px;
-  color: #fff;
-  font-size: 13px;
-  word-break: break-all;
   flex: 1;
-  max-width: 160px;
-  /* height: 44px; */
-}
-
-.auth-link-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
-}
-
-.paste-btn {
-  border-radius: 6px;
-  border: none;
-  background: #0088CC87 !important;
-  color: #fff;
-  cursor: pointer;
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  padding: 4px;
-  border-radius: 10px;
-  margin: 0 auto;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
-  transition: background 0.2s;
-  aspect-ratio: 1/1;
-  height: 40px;
-}
-
-.paste-btn:hover {
-  background: #0077b3;
-}
-
-.auth-container button {
-  padding: 8px 14px;
-  border-radius: 6px;
-  border: none;
-  background: #61616188;
-  color: #fff;
-  cursor: pointer;
-}
-
-.auth-container .error {
-  margin-top: 12px;
-  color: #a00;
-}
-
-.telegram-down {
-  background: #fff4e597;
-  color: #4d1605;
-  padding: 8px 12px;
-  border: 1px solid #ffdca844;
-  font-weight: 500;
-  border-radius: 6px;
-  margin-bottom: 12px;
-}
-
-.tg-available {
-  background: #0088CC24;
-  color: #ffffff ;
-  padding: 8px 12px;
-  border: 1px solid #0088CC17;
-  border-radius: 6px;
-  margin-bottom: 12px;
-  backdrop-filter: blur(4px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  max-width: none;
+  min-width: 0;
 }
 
 ::placeholder {
-  color: rgb(255, 255, 255) !important;
-  font-family: 'Tahoma', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-weight: 800;
+  color: rgba(210, 185, 130, 0.4) !important;
+  font-family: 'Crimson Pro', serif !important;
+  font-weight: 400 !important;
+  font-style: italic;
 }
 
+/* Telegram available state */
+.tg-available {
+  border-color: rgba(0, 136, 204, 0.35);
+  background: rgba(0, 136, 204, 0.07);
+  color: #e8e0cc;
+}
 
-/* Highlight inputs/buttons when Telegram is unavailable */
+.tg-available:focus {
+  border-color: rgba(0, 136, 204, 0.6);
+}
+
+/* Telegram unavailable state */
 .tg-unavailable {
-  border: 2px solid #ffb2a822 !important;
-  box-shadow: 0 0 0 3px rgba(198,40,40,0.08);
-  background: #5e380299;
+  border: 1px solid rgba(200, 80, 60, 0.35) !important;
+  background: rgba(120, 40, 20, 0.3) !important;
+  color: rgba(220, 180, 150, 0.7) !important;
+  box-shadow: none;
 }
 
-.tg-unavailable[type="button"], .tg-unavailable[type="submit"], .tg-unavailable.button {
-  background: #7f1d1d33 !important;
-}
-
-.in-btn {
-  padding: 8px 14px;
-  border-radius: 6px;
+/* ─── Base button reset ─── */
+.auth-container button {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   border: none;
-  background: #0088CC87 !important;
-  color: #fff;
-  cursor: pointer;
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  padding: 8px;
   border-radius: 10px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+  position: relative;
+  z-index: 2;
 }
 
-.previewName {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  justify-content: center;
-  margin-bottom: 8px;
-  margin-left: auto;
-  margin-right: auto;
-  color: #fff;
-  font-weight: 600;
-  background: #00020521;
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  padding: 4px 8px;
-  border-radius: 26px;
-}
-
-.pwa-install {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  margin-bottom: 12px;
-  color: #c0c0c0;
-  font-size: small;
-  font-weight: 500;
-  background: #1e1e1f80;
-  backdrop-filter: blur(14px) saturate(160%);
-  -webkit-backdrop-filter: blur(14px) saturate(160%);
-  padding: 12px 16px;
-}
-
-.auth-input {
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  border-radius: 6px;
-  color: #fff;
-  font-size: 13px;
+/* ─── Primary action button ─── */
+.in-btn {
+  padding: 11px 18px !important;
+  background: rgba(210, 170, 80, 0.13) !important;
+  border: 1px solid rgba(210, 170, 80, 0.35) !important;
+  color: rgba(220, 185, 110, 0.95) !important;
+  border-radius: 10px !important;
+  font-family: 'Cinzel', serif !important;
+  font-size: 11px !important;
+  letter-spacing: 1px !important;
+  text-transform: uppercase !important;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s ease, border-color 0.18s ease, transform 0.15s ease;
+  position: relative;
+  z-index: 2;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  text-shadow: none;
   width: 100%;
-  box-sizing: border-box;
 }
 
-.auth-input::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+.in-btn:hover {
+  background: rgba(210, 170, 80, 0.22) !important;
+  border-color: rgba(210, 170, 80, 0.6) !important;
+  transform: translateY(-1px);
 }
 
+.in-btn:active {
+  transform: translateY(0);
+}
+
+/* Unavailable state on button */
+.tg-unavailable.in-btn,
+button.tg-unavailable {
+  background: rgba(120, 40, 20, 0.3) !important;
+  border: 1px solid rgba(200, 80, 60, 0.3) !important;
+  color: rgba(220, 160, 130, 0.6) !important;
+}
+
+/* ─── Paste button (square icon btn) ─── */
+.paste-btn {
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(14, 16, 24, 0.75) !important;
+  border: 1px solid rgba(210, 170, 80, 0.25) !important;
+  border-radius: 10px !important;
+  color: rgba(220, 185, 110, 0.8) !important;
+  font-size: 16px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.18s ease, border-color 0.18s ease;
+  position: relative;
+  z-index: 2;
+  aspect-ratio: unset !important;
+  text-shadow: none !important;
+  margin: 0 !important;
+}
+
+.paste-btn:hover {
+  background: rgba(210, 170, 80, 0.12) !important;
+  border-color: rgba(210, 170, 80, 0.45) !important;
+}
+
+/* ─── Mode toggle ─── */
 .login-mode-toggle {
   display: flex;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 4px;
   justify-content: center;
 }
 
 .toggle-btn {
   flex: 1;
-  padding: 6px 12px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.6);
-  border-radius: 6px;
+  padding: 8px 12px;
+  background: rgba(14, 16, 24, 0.7);
+  border: 1px solid rgba(210, 170, 80, 0.18);
+  color: rgba(210, 185, 130, 0.55);
+  border-radius: 50px;
   cursor: pointer;
-  transition: all 0.2s;
-  font-size: 12px;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 0.18s ease;
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  position: relative;
+  z-index: 2;
 }
 
 .toggle-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(30, 34, 48, 0.85);
+  color: rgba(220, 195, 140, 0.8);
+  border-color: rgba(210, 170, 80, 0.32);
 }
 
 .toggle-btn.active {
-  background: #0088CC87;
-  color: #fff;
-  border-color: #0088CC;
+  background: rgba(210, 170, 80, 0.13);
+  border-color: rgba(210, 170, 80, 0.6);
+  color: rgba(220, 185, 110, 1);
+  transform: translateY(-1px);
+}
+
+/* ─── User preview ─── */
+.previewName {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  padding: 6px 14px;
+  background: rgba(14, 16, 24, 0.7);
+  border: 1px solid rgba(210, 170, 80, 0.2);
+  border-radius: 50px;
+  color: #e8e0cc;
+  font-family: 'Cinzel', serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  position: relative;
+  z-index: 2;
+  align-self: center;
+}
+
+.previewName img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(210, 170, 80, 0.3);
+  -o-object-fit: cover;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* ─── Alerts ─── */
+.telegram-down {
+  background: rgba(120, 60, 10, 0.35);
+  color: rgba(240, 200, 140, 0.9);
+  padding: 9px 12px;
+  border: 1px solid rgba(200, 130, 40, 0.3);
+  border-radius: 10px;
+  font-family: 'Crimson Pro', serif;
+  font-size: 13px;
+  position: relative;
+  z-index: 2;
+  text-align: left;
+}
+
+.error {
+  color: rgba(240, 120, 100, 0.9);
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 13px;
+  padding: 6px 10px;
+  background: rgba(180, 40, 20, 0.12);
+  border: 1px solid rgba(200, 60, 40, 0.2);
+  border-radius: 8px;
+  position: relative;
+  z-index: 2;
+  text-align: left;
+  margin-top: 2px;
+}
+
+/* ─── Success / Error full panels ─── */
+.auth-panel h2 {
+  font-family: 'Cinzel', serif;
+  font-size: 18px;
+  letter-spacing: 1px;
+  margin: 0;
+  position: relative;
+  z-index: 2;
+}
+
+/* ─── PWA install hint ─── */
+.pwa-install {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  color: rgba(210, 185, 130, 0.5);
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  font-size: 13px;
+  background: rgba(14, 16, 24, 0.6);
+  border: 1px solid rgba(210, 170, 80, 0.1);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  padding: 12px 16px;
+  text-align: center;
+}
+
+/* ─── Loading state ─── */
+.auth-panel [style*="color: '#ffffff'"],
+.auth-panel [style*="color: #aaa"] {
+  font-family: 'Crimson Pro', serif;
+  font-style: italic;
+  color: rgba(210, 185, 130, 0.5) !important;
+  font-size: 13px;
+  position: relative;
+  z-index: 2;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 420px) {
+  .auth-container {
+    padding: 0;
+    gap: 12px;
+  }
+
+  .auth-panel {
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .in-btn {
+    padding: 10px 14px !important;
+  }
 }

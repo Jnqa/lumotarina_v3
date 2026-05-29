@@ -133,18 +133,33 @@ router.get('/user/:id', async (req, res) => {
 router.get('/user/:id/:charId', async (req, res) => {
   const tg_id = req.params.id;
   const charId = req.params.charId;
-  console.log(`[GET] /characters/user/${tg_id}/${charId}`);
+  const fields = req.query.fields;
   try {
     const charRef = admin.database().ref(`characters/${tg_id}/${charId}`);
     const snap = await charRef.once('value');
     const data = snap.val();
-    console.log(`[GET] Character found:`, data ? 'yes' : 'no', 'for id:', charId);
     if (!data) return res.status(404).json({ error: 'Not found' });
     // Add the id field since it's stored as the key in Firebase
     const hpMax = data?.hpMax || 0;
     const con = data?.abilities?.Constitution || 0;
     const TotalMaxHP = hpMax + con;
     const result = { ...data, id: charId, totalMaxHP: TotalMaxHP };
+    // If fields query specified, return only requested fields
+    if (fields) {
+      const requested = String(fields).split(',').map(f => f.trim()).filter(Boolean);
+      const out = {};
+      requested.forEach(f => {
+        if (f === 'name') {
+          out.name = data.name || data.title || null;
+        } else if (f === 'id' || f === 'charId') {
+          out[f] = charId;
+        } else if (f in data) {
+          out[f] = data[f];
+        }
+      });
+      return res.json(out);
+    }
+
     res.json(result);
   } catch (e) {
     console.error('GET /characters/user/:id/:charId error', e);

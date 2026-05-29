@@ -1,70 +1,73 @@
 #!/usr/bin/env node
 
 /**
- * Скрипт для хеширования пароля и добавления пользователю
- * Использование: node add-password-hash.js <username> <password>
+ * Скрипт для добавления пароля пользователю
+ * Использование: node add-password-hash.js <username> <password> [adminPassword]
+ * 
+ * ⚠️  ТРЕБУЕТ чтобы backend был запущен (npm start)
  */
 
-const bcrypt = require('bcryptjs');
-const admin = require('firebase-admin');
 require('dotenv').config();
 
-// Инициализируем Firebase (используем существующую конфигурацию из index.js)
-// Предполагаем что serviceAccountKey.json уже настроена
-try {
-  const serviceAccount = require('./serviceAccountKey.json');
-  admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-    databaseURL: process.env.FIREBASE_DB_URL || 'https://lumotarina-default-rtdb.europe-west1.firebasedatabase.app'
-  });
-} catch (e) {
-  console.error('Ошибка инициализации Firebase:', e.message);
-  process.exit(1);
-}
+const API_BASE = process.env.VITE_API_BASE || 'http://localhost:3111';
+const ADMIN_PASSWORD = process.env.ADMIN_PANEL_PASSWORD || 'admin';
 
 async function addPasswordHash() {
   const args = process.argv.slice(2);
   
   if (args.length < 2) {
-    console.error('Использование: node add-password-hash.js <username> <password>');
+    console.error('Использование: node add-password-hash.js <username> <password> [adminPassword]');
     console.error('Пример: node add-password-hash.js johndoe mypassword123');
+    console.error('\n⚠️  Backend должен быть запущен: npm start\n');
     process.exit(1);
   }
 
   const username = args[0];
   const password = args[1];
+  const adminPassword = args[2] || ADMIN_PASSWORD;
 
   try {
-    console.log(`\n🔐 Хеширование пароля для ${username}...`);
+    console.log(`\n🔐 Добавление пароля для ${username}...`);
+    console.log(`📡 Подключение к ${API_BASE}\n`);
     
-    // Ищем пользователя по username
-    const usersRef = admin.database().ref('users');
-    const snapshot = await usersRef.orderByChild('username').equalTo(username).once('value');
-    
-    if (!snapshot.exists()) {
-      console.error(`❌ Пользователь ${username} не найден!`);
+    // Вызываем API endpoint
+    const response = await fetch(`${API_BASE}/admin/set-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        adminPassword,
+        username,
+        newPassword: password 
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error(`❌ Ошибка (${response.status}): ${data.error || data.message}`);
+      if (response.status === 401) {
+        console.error('\n💡 Подсказка: Проверьте что админский пароль правильный');
+        console.error('   Укажите через аргумент: node add-password-hash.js jnqa pass123 admin_password');
+      }
       process.exit(1);
     }
 
-    const usersData = snapshot.val();
-    const tgId = Object.keys(usersData)[0];
-    const userData = usersData[tgId];
-
-    console.log(`✓ Найден пользователь: ${userData.displayName || username} (tgId: ${tgId})`);
-
-    // Хешируем пароль
-    const saltRounds = 10;
-    const passwordHash = await bcrypt.hash(password, saltRounds);
-    console.log(`✓ Пароль захеширован`);
-
-    // Обновляем пользователя
-    await admin.database().ref(`users/${tgId}`).update({ passwordHash });
-    console.log(`✓ Пароль сохранён в БД для ${username}`);
-    
-    console.log(`\n✅ Готово! Пользователь ${username} может входить по логину/паролю\n`);
-    process.exit(0);
+    if (data.success) {
+      console.log(`✅ Пароль успешно добавлен для ${username}!`);
+      console.log(`\n💡 Теперь можно входить по логину/паролю:`);
+      console.log(`   Логин: ${username}`);
+      console.log(`   Пароль: ${password}\n`);
+      process.exit(0);
+    } else {
+      console.error(`❌ ${data.error || 'Неизвестная ошибка'}`);
+      process.exit(1);
+    }
   } catch (e) {
-    console.error('❌ Ошибка:', e.message);
+    console.error(`❌ Ошибка подключения: ${e.message}`);
+    console.error('\n⚠️  Убедитесь что:');
+    console.error('1. Backend запущен: npm start');
+    console.error('2. Backend доступен по адресу:', API_BASE);
+    console.error('3. Интернет соединение работает\n');
     process.exit(1);
   }
 }

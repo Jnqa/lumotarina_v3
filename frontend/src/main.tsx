@@ -20,7 +20,7 @@ import ClassPreview from './modules/ClassPreview';
 import CharacterPreview from './modules/CharacterPreview';
 import ClassPreviewSkills from './modules/ClassPreviewSkills';
 import CharacterCreation from './creator/CharacterCreation';
-import CharacterCreationClass from './creator/CharacterCreationClass';
+import CharacterCreationClass from './characterCreate/components/CharacterCreationClass';
 import { Gallery } from './modules/Gallery';
 import Rewind from './rewind/Rewind';
 import MainLayout from './characterPage/layouts/MainLayout.tsx';
@@ -30,6 +30,7 @@ import NotesPage from './characterPage/notes/NotesPage.tsx';
 import AbilitiesPage from './characterPage/abilities/AbilitiesPage.tsx';
 import PowersPage from './characterPage/powers/PowersPage.tsx';
 import InventoryPage from './characterPage/inventory/InventoryPage.tsx';
+import CharacterCreate from './characterCreate/CharacterCreation.tsx';
 
 const ClassPreviewPage = () => {
   const { classId } = useParams<{ classId: string }>();
@@ -54,6 +55,10 @@ const CharacterCreationClassPage = () => {
   return <CharacterCreationClass />;
 };
 
+const CharacterCreatePage = () => {
+  return <CharacterCreate />;
+};
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <BrowserRouter>
@@ -71,7 +76,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/lore" element={<Lore />} />
         <Route path="/lore/books/:bookId" element={<Lore />} />
         <Route path="/lore/map" element={<LoreMap />} />
-        <Route path="/character/create" element={<CharacterCreating />} />
+        <Route path="/character/create-old" element={<CharacterCreating />} />
+        <Route path="/character/create" element={<CharacterCreatePage />} />
         <Route path="/creator/character" element={<CharacterCreationPage />} />
         <Route path="/creator/character/class" element={<CharacterCreationClassPage />} />
         <Route path="/character/class" element={<CharacterCreatingClass />} />

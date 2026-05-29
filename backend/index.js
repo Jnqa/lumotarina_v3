@@ -28,9 +28,18 @@ const storyRouter = require('./routes/characterStory');
 const s3LoreRouter = require('./routes/s3Lore');
 
 // CORS setup (must be before routes)
-const allowedOrigins = process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()) : ['https://dnd.lumotarina.ru', 'http://localhost:5173'];
+const allowedOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(s => s.trim()) 
+  : ['https://dnd.lumotarina.ru', 'http://localhost:5173', 'http://localhost:5174'];
+
+const isDev = process.env.NODE_ENV !== 'production';
+
 app.use(cors({
   origin: function(origin, callback) {
+    // In development, allow all localhost origins
+    if (isDev && origin && origin.includes('localhost')) {
+      return callback(null, true);
+    }
     // allow requests with no origin (like curl, mobile apps)
     if (!origin) return callback(null, true);
     if (allowedOrigins.indexOf(origin) !== -1) return callback(null, true);
@@ -318,6 +327,50 @@ app.post('/admin/create-user', express.json(), async (req, res) => {
 
     await admin.database().ref(`users/${tg_id}`).set(newUserData);
     res.json({ success: true, user: newUserData });
+  } catch (e) {
+    res.status(500).json({ success: false, error: e.message });
+  }
+});
+
+// Endpoint: установить пароль для пользователя (для скрипта и админа)
+app.post('/admin/set-password', express.json(), async (req, res) => {
+  const { adminPassword, username, newPassword } = req.body;
+  
+  if (!adminPassword || !username || !newPassword) {
+    return res.status(400).json({ 
+      success: false, 
+      error: 'adminPassword, username, and newPassword required' 
+    });
+  }
+
+  const ADMIN_PASS = process.env.ADMIN_PANEL_PASSWORD || '';
+  if (adminPassword !== ADMIN_PASS) {
+    return res.status(401).json({ success: false, error: 'Invalid admin password' });
+  }
+
+  try {
+    // Ищем пользователя по username
+    const usersRef = admin.database().ref('users');
+    const snapshot = await usersRef.orderByChild('username').equalTo(username).once('value');
+    
+    if (!snapshot.exists()) {
+      return res.status(404).json({ success: false, error: `User with username "${username}" not found` });
+    }
+
+    const usersData = snapshot.val();
+    const tgId = Object.keys(usersData)[0];
+    const userData = usersData[tgId];
+
+    // Хешируем пароль
+    const passwordHash = await bcrypt.hash(newPassword, 10);
+    
+    // Обновляем в БД
+    await admin.database().ref(`users/${tgId}`).update({ passwordHash });
+    
+    res.json({ 
+      success: true, 
+      message: `Password set for user "${username}" (tgId: ${tgId})` 
+    });
   } catch (e) {
     res.status(500).json({ success: false, error: e.message });
   }

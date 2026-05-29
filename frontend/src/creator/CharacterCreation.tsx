@@ -46,8 +46,13 @@ export default function CharacterCreation() {
     useEffect(() => {
       fetch(`${API_BASE}/story/questions`)
         .then(res => res.json())
-        .then(setQuestions);
+        .then(qs => {
+          // Sort questions by their 'order' field
+          const sorted = [...qs].sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+          setQuestions(sorted);
+        });
     }, []);
+
 
     useEffect(() => {
     let s = step;

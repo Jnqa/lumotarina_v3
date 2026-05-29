@@ -150,7 +150,7 @@ export default function DM(){
                       style={{width:56,height:56,objectFit:'cover',borderRadius:8,background:'#222',cursor:'pointer'}}
                     />
                     <div style={{flex:1}}>
-                      <div style={{fontWeight:700}}>{c.name||c.title||'Unnamed'}</div>
+                      <div style={{fontWeight:700,color:'var(--accent)'}}>{c.name||c.title||'Unnamed'}</div>
                       <div style={{fontSize:12,color:'var(--muted)'}}>{c.ownerDisplayName || c.ownerId}</div>
                     </div>
                     <div style={{display:'flex',gap:8}}>

@@ -84,6 +84,7 @@ export default function QuickModal({ apiBase, onClose, onCreateQuest }:{ apiBase
                               <div className="tea-1">🎲 {e.roll} — {e.title || e.effect || ''}</div>
                               <div className="tea-random">{e.dice_effect || e.effect || ''}</div>
                               {e.roleplay_effect && <div className="tea-number">{e.roleplay_effect}</div>}
+                              {e.npc_effect && <div className="tea-npc">{e.npc_effect}</div>}
                             </div>
                           ))}
                         </div>
