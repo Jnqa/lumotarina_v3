@@ -37,7 +37,7 @@
 .change-image-btn {
   position: absolute;
   bottom: -16px;
-  left: -50px;
+  left: 0px;
   background: #0a09088a;
   border: 1px solid #8b7355;
   color: #ffd198;

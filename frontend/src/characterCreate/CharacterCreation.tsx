@@ -158,7 +158,7 @@ export default function CharacterCreation() {
   };
 
   const handleContinue = () => {
-    navigate('/creator/character/class');
+    navigate('/character/create/class');
   };
 
   if (loading) {

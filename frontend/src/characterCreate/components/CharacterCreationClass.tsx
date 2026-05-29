@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './CharacterCreationClass.css';
-import type { ClassInfo, ClassData } from '../../creator/types';
+import type { ClassInfo, ClassData } from './modules/types';
 import ClassPreview from '../../modules/ClassPreview';
 import ClassPreviewSkills from '../../modules/ClassPreviewSkills';
 import { CharacterFinalizer } from './modules/BottomBar.module.tsx';

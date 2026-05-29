@@ -20,24 +20,17 @@ interface RewindItem {
   url?: string; // legacy, maps to content
 }
 
-function getSession() {
-  try {
-    return JSON.parse(localStorage.getItem('session') || '{}');
-  } catch {
-    return {};
-  }
-}
-
 const API_BASE = (import.meta as any).env?.VITE_API_BASE || 'http://localhost:3111';
 
 const manifestUrl = `${API_BASE}/get-lore/rewind`;
 
 export default function Rewind() {
   const navigate = useNavigate();
+  const { user: sessionUser, isLoggedIn } = useSession(); // ← вся логика сессии здесь
+
   const [items, setItems] = useState<RewindItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
-  const [session, setSession] = useState<any>(getSession());
   const [readerUrl, setReaderUrl] = useState<string | null>(null);
   const [readerOpen, setReaderOpen] = useState(false);
 
@@ -48,19 +41,6 @@ export default function Rewind() {
   }, []);
 
   useEffect(() => {
-    // try to fetch session from backend (cookie-based)
-    (async () => {
-      try {
-        const r = await fetch(`${API_BASE}/auth/me`, { credentials: 'include' });
-        if (r.ok) {
-          const j = await r.json();
-          if (j?.success && j.user) setSession(j.user);
-        }
-      } catch (e) {
-        // ignore
-      }
-    })();
-
     async function loadManifest() {
       setLoading(true);
       setError(null);
@@ -110,7 +90,7 @@ export default function Rewind() {
 
   const allowedItems = useMemo(() => {
     if (!items) return [];
-    const userId = String(session?.userId || session?.tgId || '').trim();
+    const userId = String(sessionUser?.userId || sessionUser?.tgId || '').trim();
 
     return items.filter((item) => {
       if (item.public) return true;
@@ -118,9 +98,7 @@ export default function Rewind() {
       if (item.allowedUserIds?.length && userId && item.allowedUserIds.includes(userId)) return true;
       return false;
     });
-  }, [items, session]);
-
-  const isLoggedIn = Boolean(session?.userId || session?.tgId);
+  }, [items, sessionUser]);
 
   // If items include charactersID entries like "ownerId.charId", fetch their names from backend
   useEffect(() => {

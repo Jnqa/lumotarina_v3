@@ -362,7 +362,7 @@ export default function MainPage() {
                 {characters?.length === 0 && (
                   <div className="character-card empty">
                     <div className="no-character">Нет персонажа</div>
-                    <button className="create-btn" onClick={() => { window.location.href = '/creator/character'; }}>
+                    <button className="create-btn" onClick={() => { window.location.href = '/character/create'; }}>
                       + Создать персонажа
                     </button>
                   </div>

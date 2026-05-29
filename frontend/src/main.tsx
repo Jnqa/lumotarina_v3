@@ -1,9 +1,6 @@
-import ClassesEditor from './editor/ClassesEditor';
 import LoreMap from './LoreMap';
 import Lore from './Lore';
-import CharacterCreating from './CharacterCreating';
-import CharacterCreatingClass from './CharacterCreatingClass';
-import CharacterEdit from './CharacterEdit';
+import CharacterCreatingClass from './characterCreate/components/CharacterCreationClass';
 import AdminPanel from './AdminPanel';
 import Auth from './auth';
 // using automatic JSX runtime; explicit React import removed
@@ -19,7 +16,6 @@ import './utils/toast.css';
 import ClassPreview from './modules/ClassPreview';
 import CharacterPreview from './modules/CharacterPreview';
 import ClassPreviewSkills from './modules/ClassPreviewSkills';
-import CharacterCreation from './creator/CharacterCreation';
 import CharacterCreationClass from './characterCreate/components/CharacterCreationClass';
 import { Gallery } from './modules/Gallery';
 import Rewind from './rewind/Rewind';
@@ -47,10 +43,6 @@ const ClassPreviewSkillsPage = () => {
   return <ClassPreviewSkills className={className || ''} />;
 };
 
-const CharacterCreationPage = () => {
-  return <CharacterCreation />;
-};
-
 const CharacterCreationClassPage = () => {
   return <CharacterCreationClass />;
 };
@@ -72,16 +64,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/rewind" element={<Rewind />} />
         <Route path="/master-room" element={<MasterRoom />} />
         <Route path="/dm" element={<DM />} />
-        <Route path="/editor/classes" element={<ClassesEditor />} />
         <Route path="/lore" element={<Lore />} />
         <Route path="/lore/books/:bookId" element={<Lore />} />
         <Route path="/lore/map" element={<LoreMap />} />
-        <Route path="/character/create-old" element={<CharacterCreating />} />
         <Route path="/character/create" element={<CharacterCreatePage />} />
-        <Route path="/creator/character" element={<CharacterCreationPage />} />
-        <Route path="/creator/character/class" element={<CharacterCreationClassPage />} />
+        <Route path="/character/create/class" element={<CharacterCreationClassPage />} />
         <Route path="/character/class" element={<CharacterCreatingClass />} />
-        <Route path="/character/edit" element={<CharacterEdit />} />
         <Route path="/character/module/AbilityMap/:userId/:charId" element={<CharacterPreviewPage />} />
         <Route path="/class/preview/:classId" element={<ClassPreviewPage />} />
         <Route path="/class/preview-skills/:className" element={<ClassPreviewSkillsPage />} />
