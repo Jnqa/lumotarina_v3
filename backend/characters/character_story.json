@@ -287,7 +287,7 @@
           "effects": {
             "abilities": {
               "Perception": 4,
-              "Engineering": -30,
+              "Engineering": -10,
               "Nature": 9
             },
             "tags": ["fishing_village", "quiet"]
@@ -305,7 +305,7 @@
           "effects": {
             "abilities": {
               "Perception": 3,
-              "Engineering": -20,
+              "Engineering": -8,
               "Nature": 9
             },
             "tags": ["nature", "quiet"]
@@ -322,11 +322,11 @@
           "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
-              "Perception": 3,
-              "Engineering": -20,
-              "Nature": 9
+              "Engineering": 6,
+              "Charisma": 3,
+              "Intelligence": 2
             },
-            "tags": ["fishing_village", "quiet"]
+            "tags": ["tech_city", "corporate", "modern"]
           },
           "media": {
             "text": "Современный прибрежный городок, сверкающий стеклом и неоном. Здесь находятся штаб-квартиры крупнейших корпораций, среди которых выделяется Luminous — символ технологий и статуса. Улицы ухожены, дороги без пробок, в воздухе — запах кофе и озона. Город живёт в ритме инноваций: парки освещены мягким светом умных фонарей, а фасады зданий переливаются интерактивной рекламой. Люборг дорог, амбициозен и безупречно упорядочен — как сама эпоха, которую он олицетворяет.",
@@ -375,9 +375,11 @@
           "conditions": { "require": { "world": ["lumotarina"] } },
           "effects": {
             "abilities": {
-              "History": -20,
-              "Charisma": -12,
-              "Constitution": -3
+              "History": -10,
+              "Charisma": -5,
+              "Constitution": -3,
+              "Stealth": 6,
+              "Survival": 5
             },
             "tags": ["another"]
           },
@@ -500,6 +502,171 @@
             "text": "Остров из легенд. // Игрок, выбирая этот путь, ты не сможешь выбрать предисторию персонажа, твой персонаж не будет ничего помнить о прошлом и по навыкам будет страдать как чорт. Но..",
             "images-json": "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/cities/ostrov-tarina",
             "badge": { "level": 1, "label": "[Нет данных]" }
+          }
+        },
+        {
+          "id": "natvik_ruins",
+          "text": "Руины Натвика",
+          "conditions": { "require": { "world": ["noktarina"] } },
+          "effects": {
+            "abilities": {
+              "History": -60,
+              "Strength": -20,
+              "Dexterity": -15,
+              "Intelligence": -25,
+              "Constitution": -20,
+              "Charisma": -10,
+              "Lumion": 15,
+              "Willpower": -15,
+              "Perception": -10,
+              "Survival": 5,
+              "Nature": 5
+            },
+            "tags": ["natvik", "amnesiac", "cursed"],
+            "special": "no_backstory"
+          },
+          "media": {
+            "text": "Город-призрак. Сто лет назад Натвик был уничтожен во время катастрофической битвы магов — теперь это пустые руины, занесённые песком. Твой персонаж не помнит, как оказался здесь. Он не помнит ничего.",
+            "badge": { "level": 1, "label": "[Данные уничтожены]" }
+          }
+        },
+        {
+          "id": "nyuborg",
+          "text": "Ньюборг",
+          "conditions": { "require": { "world": ["noktarina"] } },
+          "effects": {
+            "abilities": {
+              "Survival": 8,
+              "Constitution": 5,
+              "History": 5,
+              "Perception": 3,
+              "Nature": 2,
+              "Charisma": -3
+            },
+            "tags": ["coastal", "refugee_city", "noktarina_north"]
+          },
+          "media": {
+            "text": "Прибрежный городок на северной стороне залива, возникший сто лет назад после катастрофы южных земель. Его основали беженцы из Натвика. На противоположном берегу темнеют южные пески и безмолвные руины погибшего города. Здесь ничего не забывают, но о прошлом говорят мало.",
+            "badge": { "level": 2, "label": "Город беженцев" }
+          }
+        },
+        {
+          "id": "siltanvik",
+          "text": "Деревня Сильтэнвик",
+          "conditions": { "require": { "world": ["noktarina"] } },
+          "effects": {
+            "abilities": {
+              "Nature": 8,
+              "Survival": 6,
+              "Stealth": 4,
+              "Perception": 3,
+              "Charisma": -5,
+              "Engineering": -5
+            },
+            "tags": ["isolated", "quiet", "noktarina_village"]
+          },
+          "media": {
+            "text": "Небольшое поселение из двадцати–тридцати домов. Живёт замкнуто, чужакам не рады. Жители избегают разговоров о южных песках — будто сама деревня что-то скрывает.",
+            "badge": { "level": 1, "label": "Закрытое поселение" }
+          }
+        },
+        {
+          "id": "scarfjord",
+          "text": "Скарфьорд",
+          "conditions": { "require": { "world": ["noktarina"] } },
+          "effects": {
+            "abilities": {
+              "Strength": 8,
+              "Constitution": 6,
+              "Athletics": 5,
+              "Engineering": 4,
+              "Crafting": 4,
+              "Charisma": -3,
+              "Nature": -2
+            },
+            "tags": ["mountain_city", "regalif_city", "fortified"],
+            "classes": ["regalif"]
+          },
+          "media": {
+            "text": "Каменный город Регалифов среди горных скал. С юга — холодный морской фьорд, с востока — огромные врата, прорубленные сквозь гору. Построен из массивных каменных блоков и частично высечен в скале. Естественная крепость, которую почти невозможно взять штурмом.",
+            "badge": { "level": 4, "label": "Горная крепость" }
+          }
+        },
+        {
+          "id": "grinkvill",
+          "text": "Гринквилль",
+          "conditions": { "require": { "world": ["noktarina"] } },
+          "effects": {
+            "abilities": {
+              "Nature": 7,
+              "Perception": 5,
+              "Crafting": 4,
+              "Survival": 4,
+              "Dexterity": 3,
+              "Strength": -5,
+              "Intelligence": -3
+            },
+            "tags": ["fishing_village", "coastal", "small_folk"]
+          },
+          "media": {
+            "text": "Маленькая прибрежная деревня на каменистом берегу холодного океана. Здесь живёт народ мелких существ со своей культурой и именем в мире Ноктарины. Поселение держится за счёт рыболовства, сбора морских растений и торговли редкими находками, которые выбрасывает море.",
+            "badge": { "level": 1, "label": "Рыбацкая деревушка" }
+          }
+        },
+        {
+          "id": "lyumir",
+          "text": "Люмир",
+          "conditions": { "require": { "world": ["noktarina"] } },
+          "effects": {
+            "abilities": {
+              "Charisma": 6,
+              "History": 5,
+              "Intelligence": 4,
+              "Crafting": 4,
+              "Engineering": 3,
+              "Perception": 2,
+              "Survival": -4
+            },
+            "tags": ["port_city", "trade_hub", "noktarina_east"]
+          },
+          "media": {
+            "text": "Крупный портовый город на восточном и северном побережьях. С севера и востока — море, с северо-запада — большое озеро, связанное рекой с западными землями. Центр торговли, ремёсел и морской логистики всего региона. Здесь пересекаются пути с западных полей, южных песков и соседних утёсов.",
+            "badge": { "level": 4, "label": "Торговый порт" }
+          }
+        },
+        {
+          "id": "heimstad",
+          "text": "Хеймстад",
+          "conditions": { "require": { "world": ["noktarina"] } },
+          "effects": {
+            "abilities": {
+              "Lumion": 8,
+              "Willpower": 6,
+              "Constitution": 5,
+              "Medicine": 3,
+              "Intelligence": 3,
+              "Nature": -3,
+              "Dexterity": -2
+            },
+            "tags": ["magic_city", "northern", "mait_friendly"],
+            "classes": ["luminomancer"]
+          },
+          "media": {
+            "text": "Город на северном побережье среди ледяных гор. Отапливается магическими башнями, созданными Майтами — они держат тепло даже в лютые метели. Прибрежные бурлящие источники поднимают пар, создавая ощущение живой, почти сказочной атмосферы.",
+            "badge": { "level": 3, "label": "Магический порт" }
+          }
+        },
+        {
+          "id": "custom_city",
+          "text": "Иной город",
+          "conditions": { "require": { "world": ["noktarina"] } },
+          "effects": {
+            "abilities": {},
+            "tags": ["custom_origin"]
+          },
+          "media": {
+            "text": "Город на твой выбор. Ты можешь придумать его сам — его название, атмосферу, историю. Этот выбор не даёт никаких преимуществ, но открывает простор для собственной предыстории.",
+            "badge": { "level": 0, "label": "На твоё усмотрение" }
           }
         },
         {
@@ -895,7 +1062,8 @@
           "id": "power",
           "text": "Власть",
           "effects": {
-            "tags": ["ambition"]
+            "tags": ["ambition"],
+            "abilities": { "Willpower": 2, "Charisma": 1 }
           },
           "media": { "text": null, "image": null }
         },
@@ -913,7 +1081,7 @@
           "text": "Богатство",
           "effects": {
             "tags": ["greedy"],
-            "abilities": { "Charisma": 1 }
+            "abilities": { "Charisma": 3, "Perception": 1 }
           },
           "media": { "text": null, "image": null }
         },
@@ -947,7 +1115,7 @@
           "id": "fear",
           "text": "Страх",
           "effects": {
-            "abilities": { "Willpower": -10 },
+            "abilities": { "Willpower": -10, "Charisma": -3 },
             "tags": ["timid"]
           },
           "media": { "text": null, "image": null }
@@ -956,7 +1124,7 @@
           "id": "pride",
           "text": "Гордость",
           "effects": {
-            "abilities": { "Charisma": -15 },
+            "abilities": { "Charisma": -10, "Perception": -3 },
             "tags": ["stubborn"]
           },
           "media": { "text": null, "image": null }
@@ -965,7 +1133,7 @@
           "id": "clumsiness",
           "text": "Неуклюжесть",
           "effects": {
-            "abilities": { "Dexterity": -15, "Acrobatics": -13 },
+            "abilities": { "Dexterity": -8, "Acrobatics": -5 },
             "tags": ["awkward"]
           },
           "media": { "text": null, "image": null }
@@ -974,7 +1142,7 @@
           "id": "naivety",
           "text": "Наивность",
           "effects": {
-            "abilities": { "Perception": -13, "Intelligence": -2 },
+            "abilities": { "Perception": -8, "Intelligence": -5 },
             "tags": ["gullible"]
           },
           "media": { "text": null, "image": null }
@@ -983,8 +1151,17 @@
           "id": "stamina",
           "text": "Слабое тело",
           "effects": {
-            "abilities": { "Constitution": -5, "Athletics": -13 },
+            "abilities": { "Constitution": -8, "Athletics": -5 },
             "tags": ["fragile"]
+          },
+          "media": { "text": null, "image": null }
+        },
+        {
+          "id": "impulsiveness",
+          "text": "Импульсивность",
+          "effects": {
+            "abilities": { "Willpower": -6, "Intelligence": -4, "Strength": 2 },
+            "tags": ["impulsive", "reckless"]
           },
           "media": { "text": null, "image": null }
         }

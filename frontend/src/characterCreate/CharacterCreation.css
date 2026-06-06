@@ -13,14 +13,6 @@
   box-sizing: border-box;
 }
 
-body {
-  margin: 0;
-  padding: 0;
-  background: var(--ink);
-  color: var(--parchment);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
 /* Root container */
 .cc-root {
   width: 100%;
@@ -32,6 +24,7 @@ body {
   padding: 0;
   position: relative;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 /* Progress bar */
