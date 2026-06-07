@@ -178,3 +178,30 @@
   transform: scale(0.98);
   opacity: 0.9;
 }
+
+/* Ensure gallery/ability modal scrolls correctly on small screens and touch devices */
+.ability-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  padding:24px 0;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+  z-index:60;
+}
+.gallery-modal-content{
+  background:#0d0d0d;
+  color:#fff;
+  border-radius:8px;
+  padding:12px;
+  width:720px;
+  max-width:95%;
+  max-height:calc(100vh - 48px);
+  overflow-y:auto;
+  margin:12px auto;
+  -webkit-overflow-scrolling:touch;
+  touch-action:pan-y;
+}

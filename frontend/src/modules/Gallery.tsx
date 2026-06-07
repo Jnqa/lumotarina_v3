@@ -22,7 +22,7 @@ type ActiveFilters = {
 }
 
 const BASE_URL =
-  "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/images/"
+  "https://7871309f-1cc3-4e52-b3e7-0092c8fa743f.selstorage.ru/media/images/"
 
 const TAG_GROUPS: Record<keyof ActiveFilters, string[]> = {
   race: ["human", "mait", "regalif", "shadowblood", "animalic"],

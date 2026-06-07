@@ -43,7 +43,7 @@ export default function CharacterPageEdit() {
   async function handleGallerySelect(item: any) {
     if (!item) return;
     const pictureUrl = (typeof item.path === 'string' && item.path.startsWith('http')) ? item.path : (GALLERY_BASE + (item.path || item.file || ''));
-    draft?.avatar && setDraft({ ...draft, avatar: pictureUrl });
+    setDraft({ ...draft, avatar: pictureUrl });
     setGalleryOpen(false);
   }
 
