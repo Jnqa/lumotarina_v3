@@ -23,23 +23,46 @@ type SkillCategory = {
   Passive?: SkillItem[];
 };
 
+type SkillBlock = SkillCategory & {
+  element?: string;
+  element_name?: string;
+  note?: string;
+  element_note?: string;
+};
+
+type ElementChoice = {
+  description?: string;
+  elements?: string[];
+};
+
 type ClassData = {
   id: string;
   name: string;
+  version?: number;
   defense: number;
   hp: number;
   description: string;
   abilities: AbilityMap[];
   icon?: string;
   inventory?: string[][];
-  skills: SkillCategory[];
+  element_choice?: ElementChoice;
+  skills: SkillBlock[];
+};
+
+const ELEMENT_META: Record<string, { icon: string; name: string; color: string }> = {
+  fire: { icon: "🔥", name: "Огонь", color: "#d84a37" },
+  water: { icon: "💧", name: "Вода", color: "#4b9cd3" },
+  wind: { icon: "🌪️", name: "Ветер", color: "#8bcf6e" },
+  ice: { icon: "❄️", name: "Лёд", color: "#8cc0e5" },
+  earth: { icon: "⛰️", name: "Земля", color: "#a57739" },
+  lightning: { icon: "⚡", name: "Молния", color: "#f0db5a" },
 };
 
 const actionTypes = [
-  { type: "actions", icon: "◻", name: "Трюки" },
-  { type: "ShortRest", icon: "🔹", name: "Силовые приёмы" },
-  { type: "LongRest", icon: "⭐", name: "Сверхприёмы" },
-  { type: "Passive", icon: "🌚", name: "Черты" },
+  { type: "actions", icon: "⚔", name: "Трюки" },
+  { type: "ShortRest", icon: "🌙", name: "Силовые приёмы" },
+  { type: "LongRest", icon: "☀", name: "Сверхприёмы" },
+  { type: "Passive", icon: "◈", name: "Черты" },
 ];
 
 function buildSkillTree(skills: SkillItem[]) {
@@ -74,27 +97,17 @@ function SkillTreeRoot({
   skill: SkillItem;
   icon: string;
   learnedSet: Set<string>;
-  skillPoints: number;
   onLearn: (skill: SkillItem) => void;
 }) {
-  const [expanded, setExpanded] = useState(false);
-  const hasChildren = skill.children && skill.children.length > 0;
-
   return (
-    <div className="skill-root">
-      <div
-        className={`skill-root-header ${hasChildren ? "clickable" : ""}`}
-        onClick={() => hasChildren && setExpanded(v => !v)}
-      >
-        <SkillRow
-          skill={skill}
-          icon={icon}
-          depth={0}
-          expanded={expanded}
-          learnedSet={learnedSet}
-          onLearn={onLearn}
-        />
-      </div>
+    <div className="node-block">
+      <SkillRow
+        skill={skill}
+        icon={icon}
+        depth={0}
+        learnedSet={learnedSet}
+        onLearn={onLearn}
+      />
     </div>
   );
 }
@@ -103,99 +116,64 @@ function SkillRow({
   skill,
   icon,
   depth = 0,
-  expanded,
   learnedSet,
   onLearn,
 }: {
   skill: SkillItem;
   icon: string;
   depth?: number;
-  expanded?: boolean;
   learnedSet: Set<string>;
   onLearn: (skill: SkillItem) => void;
 }) {
+  const [expanded, setExpanded] = useState(false);
   const hasChildren = skill.children && skill.children.length > 0;
-
   const isLearned = learnedSet.has(skill.name);
-
   const needsMet =
     !skill.needs ||
     skill.needs.every(n => learnedSet.has(n));
-
   const canLearn = !isLearned && needsMet;
+  const status = isLearned ? '✓' : canLearn ? '+' : '…';
+  const blockState = isLearned ? 'is-learned' : canLearn ? 'is-available' : 'is-locked';
 
   return (
-    <>
-      <div className={`skill-row depth ${isLearned ? "learned" : ""}`}>
-        <div className="skill-icon">
-          {depth === 0 ? icon : "∟"}
-        </div>
-        {skill.level && (
-          <span className="skill-level-mini">Lv {skill.level}</span>
-        )}
-        {skill.dice && (
-            <span className="skill-dice-mini">🎲 {skill.dice}</span>
-          )}
-        <div className="skill-header">
-          <span className="skill-name">{skill.name}</span> 
-          <div className="skill-effect">{skill.effect}</div>
-          {canLearn ? (
-            <button
-              className="skill-learn-btn"
-              onClick={e => {
-                e.stopPropagation();
-                onLearn(skill);
-              }}
-            >
-              +
-            </button>
-          ) : isLearned ? (
-            <button
-              className="skill-learn-btn learned"
-              onClick={e => {
-                e.stopPropagation();
-                onLearn(skill);
-              }}
-            >
-              ✓
-            </button>
-          ) : (
-            <button
-              className="skill-learn-btn"
-              onClick={e => {
-                e.stopPropagation();
-                onLearn(skill);
-              }}
-            >
-              ...
-            </button>
-          )}
+    <div className={`node-block ${blockState} ${depth > 0 ? 'nested' : ''}`}>
+      <div
+        className={`node-row ${hasChildren ? 'clickable' : ''}`}
+        data-skill-id={skill.id}
+        tabIndex={0}
+        onClick={() => hasChildren && setExpanded(v => !v)}
+      >
+        <div className="medallion">{icon}</div>
+
+        <div className="node-main">
+          <div className="node-name-line">
+            <span className="node-name">{skill.name}</span>
+            {skill.level && <span className="tag-mono">Lv {skill.level}</span>}
+            {skill.dice && <span className="tag-mono dice">🎲 {skill.dice}</span>}
+          </div>
+          <div className="node-effect">{skill.effect}</div>
         </div>
 
-        {!needsMet && !isLearned && (
-          <span className="skill-locked">Требуются навыки</span>
-        )}
+        <div className="status-mark" onClick={e => { e.stopPropagation(); onLearn(skill); }}>
+          {status}
+        </div>
       </div>
 
-      {hasChildren && expanded && skill.children!.map(child => (
-        <SkillRow
-          key={child.id}
-          skill={child}
-          icon={icon}
-          depth={depth + 1}
-          expanded={expanded}
-          learnedSet={learnedSet}
-          onLearn={onLearn}
-        />
-      ))}
-
-      {hasChildren && !expanded && depth === 0 && (
-        <div className="skill-row depth skill-collapsed">
-          <div className="skill-icon">∟</div>
-          <div className="skill-effect">…</div>
+      {hasChildren && expanded && (
+        <div className="chain nested">
+          {skill.children!.map(child => (
+            <SkillRow
+              key={child.id}
+              skill={child}
+              icon={icon}
+              depth={depth + 1}
+              learnedSet={learnedSet}
+              onLearn={onLearn}
+            />
+          ))}
         </div>
       )}
-    </>
+    </div>
   );
 }
 
@@ -217,6 +195,7 @@ export default function ClassPreviewSkills({
   const [selectedSkill, setSelectedSkill] = useState<SkillItem | null>(null);
   const [selectedSectionKey, setSelectedSectionKey] = useState<keyof SkillCategory | null>(null);
   const [showLearnedOnly, setShowLearnedOnly] = useState(true);
+  const [selectedElement, setSelectedElement] = useState<string | null>(null);
 
   function toggleFilter() {
     setShowLearnedOnly(v => !v);
@@ -315,9 +294,39 @@ export default function ClassPreviewSkills({
     .then(setClassData);
   }, [character]);
 
+  const persistedElement = (character as any)?.selectedElement || (character as any)?.element || null;
+
+  useEffect(() => {
+    if (persistedElement) {
+      setSelectedElement(persistedElement);
+    }
+  }, [persistedElement]);
+
   if (!character || !classData) {
   return <div className="loading">🎡</div>;
   }
+
+  const isVersion2 = classData.version === 2;
+
+  const baseSkills = classData.skills?.[0] || {};
+  const elementBlocks = isVersion2
+    ? classData.skills?.filter(block => Boolean(block.element)) || []
+    : [];
+
+  const availableElements = isVersion2
+    ? (classData.element_choice?.elements?.length
+        ? classData.element_choice.elements
+        : elementBlocks.map(block => block.element).filter((el): el is string => Boolean(el)))
+    : [];
+
+  const allSkillsByType = (type: keyof SkillCategory) => {
+    const baseList = baseSkills[type] || [];
+    const elementList = isVersion2 && selectedElement
+      ? elementBlocks.find(block => block.element === selectedElement)?.[type] || []
+      : [];
+
+    return [...baseList, ...elementList];
+  };
 
   const learnedSet = new Set(
   Object.values(character.skills ?? {})
@@ -342,9 +351,54 @@ export default function ClassPreviewSkills({
         <div className="skill-points">{character.skillpoints}</div>
       </div>
     </div>}
+    {isVersion2 && (
+      <div className="element-badge">
+        <div className="element-badge-icon">
+          {selectedElement && ELEMENT_META[selectedElement]
+            ? ELEMENT_META[selectedElement].icon
+            : '◌'}
+        </div>
+        <div className="element-badge-text">
+          <div className="element-label">Стихия</div>
+          <div className="element-value">
+            {selectedElement && ELEMENT_META[selectedElement]
+              ? ELEMENT_META[selectedElement].name
+              : 'Не выбрана'}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {isVersion2 && availableElements.length > 0 && (
+      <div className="element-buttons">
+        <button
+          type="button"
+          title="Все стихии"
+          className={`element-button ${selectedElement === null ? 'active' : ''}`}
+          onClick={() => setSelectedElement(null)}
+        >
+          ◌
+        </button>
+        {availableElements.map(el => {
+          const meta = ELEMENT_META[el] || { icon: '', name: el, color: '#fff' };
+          return (
+            <button
+              key={el}
+              type="button"
+              title={meta.name}
+              className={`element-button ${selectedElement === el ? 'active' : ''}`}
+              style={{ borderColor: meta.color, color: selectedElement === el ? '#111' : meta.color, background: selectedElement === el ? meta.color : 'transparent' }}
+              onClick={() => setSelectedElement(el)}
+            >
+              {meta.icon}
+            </button>
+          );
+        })}
+      </div>
+    )}
+
     {actionTypes.map(actionType => {
-      const list =
-        classData.skills?.[0]?.[actionType.type as keyof SkillCategory];
+      const list = allSkillsByType(actionType.type as keyof SkillCategory);
 
       if (!list?.length) return null;
 
@@ -355,20 +409,17 @@ export default function ClassPreviewSkills({
       const tree = buildSkillTree(filteredList);
 
       return (
-        <section key={actionType.type} className="skill-section">
-          <h3 className="section-title">
-            {actionType.icon} {actionType.name}
-          </h3>
+        <section key={actionType.type} className="panel">
+          <h3 className="panel-title">{actionType.name}</h3>
 
           {tree.length > 0 && (
-            <div className="skill-table">
+            <div className="chain has-energy">
               {tree.map(skill => (
                 <SkillTreeRoot
                   key={skill.id}
                   skill={skill}
                   icon={actionType.icon}
                   learnedSet={learnedSet}
-                  skillPoints={character.skillpoints}
                   onLearn={(skill) => openLearnModal(skill, actionType.type as keyof SkillCategory)}
                 />
               ))}

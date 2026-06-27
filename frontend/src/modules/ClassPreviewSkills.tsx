@@ -7,7 +7,8 @@ type SkillItem = {
   id: string;
   name: string;
   effect: string;
-  level: number;
+  description?: string;
+  level?: number;
   dice?: string;
   needs?: string[];
   skills?: AbilityMap[];
@@ -21,23 +22,46 @@ type SkillCategory = {
   Passive?: SkillItem[];
 };
 
+type SkillBlock = SkillCategory & {
+  element?: string;
+  element_name?: string;
+  note?: string;
+  element_note?: string;
+};
+
+type ElementChoice = {
+  description?: string;
+  elements?: string[];
+};
+
 type ClassData = {
   id: string;
   name: string;
+  version?: number;
   defense: number;
   hp: number;
   description: string;
   abilities: AbilityMap[];
   icon?: string;
   inventory?: string[][];
-  skills: SkillCategory[];
+  element_choice?: ElementChoice;
+  skills: SkillBlock[];
+};
+
+const ELEMENT_META: Record<string, { icon: string; name: string; color: string }> = {
+  fire: { icon: "🔥", name: "Огонь", color: "#d84a37" },
+  water: { icon: "💧", name: "Вода", color: "#4b9cd3" },
+  wind: { icon: "🌪️", name: "Ветер", color: "#8bcf6e" },
+  ice: { icon: "❄️", name: "Лёд", color: "#8cc0e5" },
+  earth: { icon: "⛰️", name: "Земля", color: "#a57739" },
+  lightning: { icon: "⚡", name: "Молния", color: "#f0db5a" },
 };
 
 const actionTypes = [
-  { type: "actions", icon: "🔹", name: "Трюки" },
-  { type: "ShortRest", icon: "🔶", name: "Силовые приёмы" },
-  { type: "LongRest", icon: "⭐", name: "Сверхприёмы" },
-  { type: "Passive", icon: "🌚", name: "Черты" },
+  { type: "actions", icon: "⚔", name: "Трюки" },
+  { type: "ShortRest", icon: "🌙", name: "Силовые приёмы" },
+  { type: "LongRest", icon: "☀", name: "Сверхприёмы" },
+  { type: "Passive", icon: "◈", name: "Черты" },
 ];
 
 function buildSkillTree(skills: SkillItem[]) {
@@ -160,10 +184,86 @@ export default function ClassPreviewSkills({ className }: { className: string })
 
   if (!data) return <div className="loading">Loading…</div>;
 
-  const skills = data.skills[0];
+  const isVersion2 = data.version === 2;
+  const baseSkills = data.skills?.[0] || {};
+  const elementBlocks = isVersion2 ? data.skills?.filter(block => Boolean(block.element)) || [] : [];
+  const elementChoiceDescription = data.element_choice?.description || '';
+  const availableElements = isVersion2
+    ? data.element_choice?.elements?.length
+      ? data.element_choice.elements
+      : elementBlocks.map(block => block.element).filter((el): el is string => Boolean(el))
+    : [];
+
+  const [selectedElement, setSelectedElement] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isVersion2 && !selectedElement && availableElements.length > 0) {
+      setSelectedElement(availableElements[0]);
+    }
+  }, [isVersion2, availableElements, selectedElement]);
+
+  const filteredElementBlocks = selectedElement
+    ? elementBlocks.filter(block => block.element === selectedElement)
+    : elementBlocks;
+
+  const selectedElementBlock = selectedElement
+    ? elementBlocks.find(block => block.element === selectedElement)
+    : null;
+
+  const renderTree = (list: SkillItem[]) => {
+    const tree = buildSkillTree(list);
+    return tree.map(skill => (
+      <SkillTreeRoot
+        key={skill.id}
+        skill={skill}
+        icon="◻"
+      />
+    ));
+  };
 
   return (
     <div className="class-preview">
+      {isVersion2 && (
+        <div className="element-banner">
+          <div className="element-label">Стихии</div>
+          <div className="element-value">
+            {elementBlocks.length > 0
+              ? elementBlocks.map(block => `${ELEMENT_META[block.element || '']?.icon || ''} ${block.element_name || block.element || ''}`).join(', ')
+              : 'Нет данных'}
+          </div>
+        </div>
+      )}
+      {isVersion2 && availableElements.length > 0 && (
+        <div className="element-buttons">
+          <button
+            type="button"
+            className={`element-button ${selectedElement === null ? 'active' : ''}`}
+            onClick={() => setSelectedElement(null)}
+          >
+            Все
+          </button>
+          {availableElements.map(el => {
+            const meta = ELEMENT_META[el] || { icon: '', name: el, color: '#fff' };
+            return (
+              <button
+                key={el}
+                type="button"
+                className={`element-button ${selectedElement === el ? 'active' : ''}`}
+                style={{ borderColor: meta.color, color: selectedElement === el ? '#fff' : meta.color, background: selectedElement === el ? meta.color : 'transparent' }}
+                onClick={() => setSelectedElement(el)}
+              >
+                {meta.icon} {meta.name}
+              </button>
+            );
+          })}
+        </div>
+      )}
+      {isVersion2 && elementChoiceDescription && (
+        <div className="class-description">{elementChoiceDescription}</div>
+      )}
+      {selectedElementBlock?.element_note && (
+        <div className="class-description">{selectedElementBlock.element_note}</div>
+      )}
       <div className="class-stats">
         🛡 {data.defense} · 💚 {data.hp}
       </div>
@@ -171,10 +271,15 @@ export default function ClassPreviewSkills({ className }: { className: string })
       <p className="class-description">{data.description}</p>
 
       {actionTypes.map(actionType => {
-        const list = skills[actionType.type as keyof SkillCategory];
-        if (!list?.length) return null;
+        const baseList = baseSkills[actionType.type as keyof SkillCategory] || [];
+        const elementSections = filteredElementBlocks
+          .map(block => ({
+            block,
+            list: block[actionType.type as keyof SkillCategory] || []
+          }))
+          .filter(item => item.list.length > 0);
 
-        const tree = buildSkillTree(list);
+        if (!baseList.length && elementSections.length === 0) return null;
 
         return (
           <section key={actionType.type} className="skill-section">
@@ -183,12 +288,14 @@ export default function ClassPreviewSkills({ className }: { className: string })
             </h3>
 
             <div className="skill-table">
-              {tree.map(skill => (
-                <SkillTreeRoot
-                  key={skill.id}
-                  skill={skill}
-                  icon={actionType.icon}
-                />
+              {baseList.length > 0 && renderTree(baseList)}
+              {elementSections.map(({ block, list }) => (
+                <div key={block.element || block.element_name} className="element-section">
+                  <div className="element-section-title">
+                    {ELEMENT_META[block.element || '']?.icon || ''} {block.element_name || block.element}
+                  </div>
+                  {renderTree(list)}
+                </div>
               ))}
             </div>
           </section>

@@ -1,12 +1,58 @@
 import { useEffect, useState } from "react";
+import "./ClassPreviewSkills.css";
 
 type AbilityMap = Record<string, number>;
+
+type SkillItem = {
+  id: string;
+  name: string;
+  description?: string;
+  effect: string;
+  level?: number;
+  dice?: string;
+  needs?: string[];
+  skills?: AbilityMap[];
+  children?: SkillItem[];
+};
+
+type SkillCategory = {
+  actions?: SkillItem[];
+  ShortRest?: SkillItem[];
+  LongRest?: SkillItem[];
+  Passive?: SkillItem[];
+};
+
+type SkillBlock = SkillCategory & {
+  element?: string;
+  element_name?: string;
+  note?: string;
+  element_note?: string;
+};
+
+type ElementChoice = {
+  description?: string;
+  elements?: string[];
+};
 
 type ClassData = {
   id: string;
   name: string;
+  version?: number;
   description: string;
   abilities: AbilityMap[];
+  icon?: string;
+  inventory?: string[][];
+  element_choice?: ElementChoice;
+  skills: SkillBlock[];
+};
+
+const ELEMENT_META: Record<string, { icon: string; name: string; color: string }> = {
+  fire: { icon: "🔥", name: "Огонь", color: "#d84a37" },
+  water: { icon: "💧", name: "Вода", color: "#4b9cd3" },
+  wind: { icon: "🌪️", name: "Ветер", color: "#8bcf6e" },
+  ice: { icon: "❄️", name: "Лёд", color: "#8cc0e5" },
+  earth: { icon: "⛰️", name: "Земля", color: "#a57739" },
+  lightning: { icon: "⚡", name: "Молния", color: "#f0db5a" },
 };
 
 type AbilityInfo = {
@@ -28,6 +74,7 @@ const RADAR_STATS = [
   "Intelligence",
   "Lumion",
 ];
+
 
 const DexterityStats = ["Acrobatics", "Stealth", "Lockpicking"];
 const PerceptionStats = ["Survival"];
@@ -58,6 +105,16 @@ export default function ClassPreview({ classId }: { classId: string }) {
   if (!data) return null;
 
   const abilities: AbilityMap = Object.assign({}, ...data.abilities);
+  const isVersion2 = data.version === 2;
+  const elementBlocks = isVersion2
+    ? data.skills?.filter(block => Boolean(block.element)) || []
+    : [];
+  const elementChoices = data.element_choice?.elements?.length
+    ? data.element_choice.elements
+    : elementBlocks.map(block => block.element).filter((el): el is string => Boolean(el));
+  const elementNames = elementChoices.map(el => ELEMENT_META[el]?.name || el);
+  const elementIcons = elementChoices.map(el => ELEMENT_META[el]?.icon || "");
+  const elementChoiceDescription = data.element_choice?.description || '';
 
   const radarStats = RADAR_STATS.filter(stat => stat === "Lumion" ? (abilities[stat] ?? 0) >= 10 : true);
 
@@ -94,16 +151,31 @@ export default function ClassPreview({ classId }: { classId: string }) {
   }).join(" ");
 
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 0, width: '100%', fontFamily: 'consolas' }}>
-      <div style={{ flex: '1 1 20%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: '12px', whiteSpace: "nowrap" }}>
-        {/* Left: Intelligence skills */}
-        {IntelligenceStats.map(stat => {
-          const ab = abilitiesData[stat];
-          const value = abilities[stat] ?? 0;
-          const mod = Math.floor((value / 10));
-          return <div key={stat} style={{ color: ab?.color, cursor: 'pointer', background: '#1e1e1e90', borderRadius: '40px', padding: '4px 4px 4px 8px' }} onClick={() => setSelectedStat(stat)}>{mod} {ab?.abbreviation} {ab?.icon}</div>;
-        })}
-      </div>
+    <div style={{ display: "flex", flexDirection: 'column', gap: 10, width: '100%', fontFamily: 'consolas' }}>
+      {isVersion2 && (
+        <div className="element-banner">
+          <div className="element-label">Стихии</div>
+          <div className="element-value">
+            {elementIcons.length > 0 ? elementIcons.join(' ') + ' ' : ''}
+            {elementNames.length > 0 ? elementNames.join(', ') : 'Нет доступных стихий'}
+          </div>
+        </div>
+      )}
+      {isVersion2 && elementChoiceDescription && (
+        <div style={{ color: '#c7b07e', fontSize: 12, margin: '0 4px 6px' }}>
+          {elementChoiceDescription}
+        </div>
+      )}
+      <div style={{ display: "flex", alignItems: "center", gap: 0, width: '100%' }}>
+        <div style={{ flex: '1 1 20%', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', fontSize: '12px', whiteSpace: "nowrap" }}>
+          {/* Left: Intelligence skills */}
+          {IntelligenceStats.map(stat => {
+            const ab = abilitiesData[stat];
+            const value = abilities[stat] ?? 0;
+            const mod = Math.floor((value / 10));
+            return <div key={stat} style={{ color: ab?.color, cursor: 'pointer', background: '#1e1e1e90', borderRadius: '40px', padding: '4px 4px 4px 8px' }} onClick={() => setSelectedStat(stat)}>{mod} {ab?.abbreviation} {ab?.icon}</div>;
+          })}
+        </div>
       
       <div>
       <svg width={size} height={size} style={{ flex: '1 1 50%', background: '#1e1e1e90', borderRadius: '30%' }}>
@@ -211,6 +283,7 @@ export default function ClassPreview({ classId }: { classId: string }) {
           return <div key={stat} style={{ color: ab?.color, cursor: 'pointer', background: '#1e1e1e90', borderRadius: '40px', padding: '4px 8px 4px 4px' }} onClick={() => setSelectedStat(stat)}>{ab?.icon} {ab?.abbreviation} {mod}</div>;
         })}
       </div>
+    </div>
     </div>
   );
 }

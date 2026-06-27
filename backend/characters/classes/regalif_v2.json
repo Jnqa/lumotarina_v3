@@ -1,6 +1,7 @@
 {
   "id": "regalif_v2",
   "name": "Регалиф (2)",
+  "version": 2,
   "hidden": true,
   "defense": 4,
   "hp": 9,

@@ -1,5 +1,37 @@
-.powers-page { 
-    padding-bottom: 100px;
+.powers-page {
+  min-height: 100vh;
+  padding: 20px 16px 100px;
+  background: radial-gradient(circle at top, #1e1217 0%, #0c080e 45%, #060307 100%);
+  color: #f1e7d4;
+  font-family: 'Cinzel', serif;
+}
+
+.powers-page .skills-map {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 6px;
+  background: rgba(12, 7, 11, 0.78);
+  border: 1px solid rgba(196, 164, 90, 0.18);
+  border-radius: 24px;
+  box-shadow: 0 20px 70px rgba(0, 0, 0, 0.55), inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.powers-page .skills-map::before {
+  content: 'Древо умений';
+  display: block;
+  margin-bottom: 14px;
+  font-size: 18px;
+  letter-spacing: 0.18em;
+  color: #d4af70;
+  text-transform: uppercase;
+}
+
+.powers-page .skills-map::after {
+  content: '';
+  display: block;
+  margin-top: 16px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 112, 0.35), transparent);
 }
 
 /* .powers-page { 

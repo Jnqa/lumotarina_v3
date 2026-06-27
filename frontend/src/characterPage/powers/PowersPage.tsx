@@ -3,6 +3,7 @@
 import useCharacter from '../hooks/useCharacter'
 import { useParams } from 'react-router-dom'
 import './PowersPage.css'
+import '../../modules/ClassPreviewSkills.css'
 import ClassSkills from '../../modules/ClassSkills';
 
 export default function PowersPage() {
