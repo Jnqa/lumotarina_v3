@@ -128,6 +128,10 @@ export default function MainPage() {
   const [splashFade, setSplashFade] = useState(false);
   const [loaderProgress, setLoaderProgress] = useState(0);
   const [splashDone, setSplashDone] = useState(false);
+  const splashTimeoutRef = useRef<number | null>(null);
+  const fastForwardRef = useRef(false);
+  const sessionLoadedRef = useRef(false);
+  const pendingSessionUserRef = useRef<any>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [characters, setCharacters] = useState<any[] | null>(null);
@@ -172,28 +176,79 @@ export default function MainPage() {
 
   // Проверка сессии + старт анимации
   useEffect(() => {
+    let mounted = true;
+
+    const completeSplash = () => {
+      if (!mounted) return;
+      setSessionUser(pendingSessionUserRef.current);
+      requestAnimationFrame(() => {
+        containerRef.current?.classList.add('visible');
+      });
+
+      const splash = document.querySelector('.mainpage-loading-screen') as HTMLElement | null;
+      if (splash) {
+        splash.classList.add('fade-out');
+        splash.addEventListener('transitionend', () => {
+          if (!mounted) return;
+          setSplashDone(true);
+        }, { once: true });
+      } else {
+        setSplashDone(true);
+      }
+    };
+
     const t0 = Date.now();
     checkSessionAndGetUser().then(u => {
+      if (!mounted) return;
+      sessionLoadedRef.current = true;
+      pendingSessionUserRef.current = u?.tgId ? u : null;
+
       const delay = Math.max(0, LOADER_MIN_MS - (Date.now() - t0));
-      setTimeout(() => {
-        setSessionUser(u?.tgId ? u : null);
-        // Плавно показываем контент
-        requestAnimationFrame(() => {
-          containerRef.current?.classList.add('visible');
-        });
-        // Плавно скрываем сплэш через transition (класс fade-out)
-        const splash = document.querySelector('.mainpage-loading-screen') as HTMLElement | null;
-        if (splash) {
-          splash.classList.add('fade-out');
-          splash.addEventListener('transitionend', () => {
-            setSplashDone(true);
-          }, { once: true });
-        } else {
-          setSplashDone(true);
-        }
+      if (delay <= 0 || fastForwardRef.current) {
+        setLoaderProgress(100);
+        completeSplash();
+        return;
+      }
+
+      splashTimeoutRef.current = window.setTimeout(() => {
+        if (!mounted) return;
+        splashTimeoutRef.current = null;
+        setLoaderProgress(100);
+        completeSplash();
       }, delay);
     });
+
+    return () => {
+      mounted = false;
+      if (splashTimeoutRef.current !== null) {
+        window.clearTimeout(splashTimeoutRef.current);
+      }
+    };
   }, []);
+
+  const accelerateLoading = () => {
+    if (splashDone) return;
+    fastForwardRef.current = true;
+    setLoaderProgress(100);
+
+    if (sessionLoadedRef.current && splashTimeoutRef.current !== null) {
+      window.clearTimeout(splashTimeoutRef.current);
+      splashTimeoutRef.current = null;
+      const splash = document.querySelector('.mainpage-loading-screen') as HTMLElement | null;
+      if (splash) {
+        splash.classList.add('fade-out');
+        splash.addEventListener('transitionend', () => {
+          setSplashDone(true);
+        }, { once: true });
+      } else {
+        setSplashDone(true);
+      }
+      requestAnimationFrame(() => {
+        containerRef.current?.classList.add('visible');
+      });
+      setSessionUser(pendingSessionUserRef.current);
+    }
+  };
 
   // Данные пользователя
   useEffect(() => {
@@ -265,7 +320,7 @@ export default function MainPage() {
     <>
       {/* ─── Splash ─── */}
       {!splashDone && (
-        <div className="mainpage-loading-screen">
+        <div className="mainpage-loading-screen" onClick={accelerateLoading}>
           <div className="loader-rune">⚔</div>
 
           <div className="loader-phrase" style={{ opacity: splashFade ? 0 : 1 }}>

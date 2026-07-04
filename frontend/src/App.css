@@ -2,7 +2,9 @@
   max-width: 1280px;
   margin: 0 auto;
   padding: 4px;
-  text-align: center;
+  /* text-align: center убран — центрировал текст внутри дерева умений
+     и других компонентов с left-aligned разметкой */
+  text-align: left;
 }
 
 .logo {

@@ -354,6 +354,7 @@
   opacity: 1;
   pointer-events: auto;
   right: 8px;
+  border: 0px solid rgba(173, 148, 103, 0.3);
 }
 
 /* Кнопка на задней стороне видна, когда перевернуто */

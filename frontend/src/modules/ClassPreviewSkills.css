@@ -1,21 +1,55 @@
+/* =========================================================================
+   ТОКЕНЫ
+   Раньше .node-block.is-learned и другие правила ссылались на
+   var(--moss), var(--card), var(--font-body) и т.п., которые нигде не были
+   объявлены — переменная резолвилась в "ничего", и эти правила тихо не
+   работали (текст брал дефолтный цвет/шрифт браузера). Это была основная
+   причина "криво": сама раскладка не ломалась, просто половина оформления
+   физически не применялась.
+   Токены объявлены на .class-preview (а не на :root), чтобы не утекать в
+   остальное приложение — но всё внутри компонента (включая модалку и
+   плашки стихий) их получает по цепочке наследования.
+   ========================================================================= */
 .class-preview {
+  --void: #0b0913;
+  --panel: #0f0b13;
+  --card: #140f19;
+  --card-soft: #1d1623;
+  --line: #4f3d5b;
+
+  --gold: #d4af37;
+  --gold-bright: #e9d18e;
+  --ember: #b1503a;
+  --ember-bright: #e2856a;
+  --moss: #5f9270;
+  --moss-bright: #8fc29e;
+  --parchment: #f1e7d4;
+  --mist: #cdc3b1;
+
+  --font-display: 'Cinzel', serif;
+  --font-body: 'Crimson Pro', Georgia, serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
   width: 100%;
   max-width: 100%;
   margin: 0 auto;
-  padding: 16px 0 0;
-  font-family: 'Cinzel', serif;
-  color: #f1e7d4;
+  padding: 4px;
+  font-family: var(--font-body);
+  color: var(--parchment);
 }
 
-.loading {
-  padding: 20px;
-  text-align: center;
+.chain {
+  position: relative; /* обязательно — иначе ::before не найдёт точку отсчёта */
+  padding-left: 36px; /* reduced to match demo spacing */
 }
-
-.class-stats {
-  font-size: 14px;
-  opacity: 0.9;
-  margin-bottom: 6px;
+.chain::before {
+  content: '';
+  position: absolute;
+  left: 18px;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: linear-gradient(to bottom, var(--moss), var(--line));
 }
 
 .class-description {
@@ -23,33 +57,45 @@
     background: linear-gradient(145deg, #1a1612, #0d0c0a);
     border: 0px solid #4a3b2a; /* Цвет темной бронзы */
     border-radius: 4px; /* В RPG углы более строгие */
-    box-shadow: 
+    box-shadow:
         inset 0 0 15px rgba(0,0,0,0.8), /* Внутренняя тень дает объем */
         0 4px 10px rgba(0,0,0,0.5);
     color: #d1c1a1; /* Цвет старой бумаги */
     font-family: 'Georgia', serif; /* Или любой антиквенный шрифт */
     line-height: 1.5;
+    padding: 10px 12px;
+    margin: 0 4px 12px;
 }
 
-.panel {
-  margin-bottom: 16px;
-  padding: 0px;
+/* =========================================================================
+   ПАНЕЛИ КАТЕГОРИЙ (Трюки / Силовые приёмы / Сверхприёмы / Черты)
+   .skill-section/.section-title оставлены как алиасы — их использует
+   старый ClassSkills.tsx (полный, привязанный к персонажу компонент на
+   странице PowersPage), который не входил в эту правку, но делит этот
+   файл стилей.
+   ========================================================================= */
+.panel,
+.skill-section {
+  margin: 0 4px 16px;
+  padding: 4px;
   border-radius: 18px;
   background: linear-gradient(180deg, rgba(15, 11, 19, 0.96), rgba(9, 6, 13, 0.98));
   border: 1px solid rgba(79, 61, 91, 0.85);
   box-shadow: 0 14px 32px rgba(0, 0, 0, 0.28);
 }
 
-.panel-title {
-  font-size: 13px;
-  margin: 0 0 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, rgba(21, 14, 28, 0.98), rgba(14, 9, 16, 0.98));
-  border: 1px solid rgba(89, 70, 101, 0.65);
-  color: #e9d18e;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.panel-title,
+.section-title {
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    letter-spacing: 0.05em;
+    color: var(--gold);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--line);
 }
 
 .skill-table {
@@ -59,8 +105,12 @@
   background: rgba(12, 8, 16, 0.95);
 }
 
+/* =========================================================================
+   ДЕРЕВО (новая разметка: .chain / .node-block / .node-row / .medallion)
+   Используется в ClassPreviewSkills.tsx.
+   ========================================================================= */
 .chain {
-  position: relative;
+  position: relative; /* обязательно — иначе ::before не найдёт точку отсчёта */
   padding-left: 48px;
 }
 
@@ -78,46 +128,81 @@
   background: linear-gradient(to bottom, rgba(208, 173, 80, 0.95), rgba(22, 14, 27, 0.8));
 }
 
-.chain.nested { margin-top: 8px; }
+.chain.nested {
+  margin-top: 8px;
+  margin-left: 10px;
+}
 
 .node-block {
   margin-bottom: 10px;
 }
 
+.node-block + .node-block {
+  margin-top: 4px;
+}
+
 .node-row {
   position: relative;
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  cursor: pointer;
+  align-items: flex-start;▲
+  gap: 10px;
   border-radius: 14px;
-  padding: 12px 14px 12px 0;
+  padding: 6px 10px 6px 0; /* tightened to avoid tag wrapping on narrow viewports */
   transition: background 0.18s ease, transform 0.18s ease;
 }
 
-.node-row:hover {
+.node-row--clickable {
+  cursor: pointer;
+}
+
+.node-row--clickable:hover {
   background: rgba(255, 255, 255, 0.04);
   transform: translateY(-1px);
 }
 
+.node-row--collapsed {
+  opacity: 0.55;
+}
+
 .medallion {
   position: absolute;
-  left: -44px;
+  left: -40px; /* adjusted for smaller padding/size */
   top: 50%;
   transform: translateY(-50%);
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 14px;
   background: rgba(18, 12, 22, 0.96);
   border: 2px solid rgba(211, 169, 79, 0.8);
   color: #f5e3aa;
   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
   flex-shrink: 0;
   z-index: 1;
+}
+
+.el-badge {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  background: rgba(11, 9, 19, 0.95);
+  font-size: 9px;
+  line-height: 1;
+}
+
+.medallion--ghost {
+  opacity: 0.53;
+  border-style: dashed;
 }
 
 .node-main {
@@ -128,7 +213,7 @@
 .node-name-line {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
@@ -138,6 +223,12 @@
   font-size: 14px;
   color: #f7eed0;
   line-height: 1.2;
+}
+
+.node-caret {
+  margin-left: auto;
+  font-size: 11px;
+  color: var(--mist);
 }
 
 .tag-mono {
@@ -162,21 +253,66 @@
   line-height: 1.45;
 }
 
+.node-desc {
+  font-size: 11.5px;
+  font-style: italic;
+  color: var(--mist);
+  opacity: 0.85;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.req-line {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--ember-bright);
+  margin-top: 6px;
+}
+
+.req-line.req-broken {
+  color: var(--mist);
+  font-style: italic;
+}
+
 .status-mark {
   flex-shrink: 0;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 16px;
+  font-weight: 700;
   width: 26px;
   height: 26px;
-  border-radius: 50%;
+  border-radius: 10%;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-top: 2px;
-  border: 1px solid rgba(212, 175, 70, 0.35);
+  border: 5px solid rgba(212, 175, 70, 0.35);
   color: #f6e4ae;
   background: rgba(255,255,255,0.04);
 }
+
+/* состояния узла — пока используются только если компонент знает о
+   прогрессе персонажа (изучено / доступно / заблокировано по навыкам
+   или по уровню). ClassPreviewSkills.tsx сейчас их не выставляет — это
+   чисто справочный просмотр класса, без персонажа. Правила оставлены
+   для переиспользования, когда то же дерево понадобится привязать к
+   character.skills (как в ClassSkills.tsx). */
+
+.medallion {
+    position: absolute;
+    top: 16px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    background: var(--card);
+    border: 2px solid var(--line);
+    flex-shrink: 0;
+    z-index: 1;
+}  
 
 .node-block.is-learned .medallion {
   border-color: var(--moss);
@@ -191,7 +327,13 @@
   animation: pulse-gold 2.4s ease-in-out infinite;
 }
 
-.node-block.is-locked .medallion { opacity: 0.45; }
+.node-block.is-locked-needs .medallion { opacity: 0.45; }
+
+.node-block.is-locked-level .medallion {
+  border-color: var(--ember);
+  color: var(--ember-bright);
+  opacity: 0.85;
+}
 
 .node-block.is-learned .node-effect { color: #b9b0cb; }
 
@@ -204,32 +346,17 @@
   .node-block.is-available .medallion { animation: none; }
 }
 
-.node-block + .node-block { margin-top: 4px; }
-
-.chain.nested { margin-left: 12px; }
-
-.skill-row.learned { display: none; }
-
-.class-preview { padding: 4px; }
-
 .skill-dice-mini {
   color: #e1c07e;
 }
 
-.class-preview {
-  padding: 4px;
-}
-
 .skill-learn-btn {
-  /* position: absolute; */
   margin-left: auto;
   padding: 5px 15px;
   cursor: pointer;
-  bottom: 2px;
-  left: 30px;
   border: 1px solid #c4a45a2c;
   background: linear-gradient(120deg, #ffd70049 0%, #58441e4d 100%);
-  box-shadow: 
+  box-shadow:
     inset 1px 2px 6px rgba(228, 223, 195, 0.418),
     2px 2px 4px rgba(0, 0, 0, 0.3);
 }
@@ -237,36 +364,40 @@
 .skill-learn-btn.learned {
   background: linear-gradient(120deg, #41423c1a, #989b0d34);
   color: #e0e0e0;
-  box-shadow: 
+  box-shadow:
     inset -3px -2px 15px #ffd9002c,
     inset 2px 2px 4px rgba(0, 0, 0, 0.1);
   border: 1px solid #c4a45a11;
 }
 
 .skill-info-btn {
-  /* position: absolute; */
   margin-left: auto;
   padding: 5px 15px;
   cursor: pointer;
-  bottom: 2px;
-  left: 30px;
   border: 1px solid #c4a45a99;
   background: linear-gradient(120deg, #58441e4d 0%, #ffd70049 100%);
-  box-shadow: 
+  box-shadow:
   inset 0 0 10px rgba(228, 223, 195, 0.418),
   0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .skill-locked {
   margin-left: auto;
-  opacity: 0.4;
-  font-size: 12px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--ember-bright);
+  opacity: 0.85;
+  align-self: flex-start;
+}
+
+.skills-filter {
+  margin-bottom: 12px;
 }
 
 .skills-filter-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 12px; /* Чуть больше отступа для "дыхания" */
+  margin-bottom: 12px;
   align-items: center;
   padding: 0 4px;
 }
@@ -274,8 +405,8 @@
 .skills-filter-header span {
   font-size: 14px;
   font-weight: 600;
-  color: #c4a45a; /* Цвет заголовка */
-  font-family: 'Cinzel', serif;
+  color: var(--gold);
+  font-family: var(--font-display);
 }
 
 .element-banner,
@@ -303,6 +434,7 @@
   background: rgba(212, 175, 70, 0.08);
   color: #ffd970;
   font-size: 18px;
+  flex-shrink: 0;
 }
 
 .element-badge-text {
@@ -317,34 +449,37 @@
   letter-spacing: 0.12em;
   color: #d4b86a;
   opacity: 0.85;
+  font-family: var(--font-mono);
 }
 
 .element-value {
   font-size: 14px;
   font-weight: 700;
   color: #fff;
+  font-family: var(--font-body);
 }
 
 .element-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  padding: 8px 0 12px;
+  padding: 8px 4px 12px;
 }
 
 .element-button {
-  width: 42px;
-  height: 42px;
+  height: 38px;
   border: 1px solid rgba(212, 175, 70, 0.25);
   background: rgba(255, 255, 255, 0.05);
   color: #d4af37;
-  font-size: 18px;
+  font-size: 13px;
+  font-family: var(--font-body);
   font-weight: 700;
-  padding: 0;
-  border-radius: 999px;
+  padding: 0 14px;
+  border-radius: 8px 8px 20px 20px;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   justify-content: center;
   transition: transform 0.16s ease, background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
 }
@@ -355,9 +490,7 @@
 }
 
 .element-button.active {
-  color: #111;
-  background: rgba(212, 175, 55, 0.95);
-  border-color: rgba(212, 175, 55, 0.9);
+  box-shadow: 0 0 14px rgba(0,0,0,0.25);
 }
 
 .element-button.active:hover {
@@ -365,7 +498,7 @@
 }
 
 .element-section {
-  margin-top: 12px;
+  margin-top: 14px;
 }
 
 .element-section-title {
@@ -374,12 +507,13 @@
   letter-spacing: 0.12em;
   color: #d4af37;
   margin-bottom: 8px;
+  font-family: var(--font-display);
 }
 
 .skill-points {
   font-family: 'Georgia', serif;
   font-size: 14px;
-  color: #d4af37; /* Золото */
+  color: #d4af37;
   background: linear-gradient(180deg, #3a2f1f 0%, #1a150e 100%);
   padding: 4px 8px;
   border: 2px solid #8b7355;
@@ -391,6 +525,27 @@
   min-width: 38px;
 }
 
+.button-skill-toggle-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 12px;
+  cursor: pointer;
+  width: 100%;
+  height: 42px;
+  font-family: var(--font-display);
+  color: #ffc60c;
+  background: linear-gradient(180deg, #2c2c2c 0%, #1a1a1a 100%);
+  border: 1px solid #4a3b2a;
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    0 2px 4px rgba(0,0,0,0.5);
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
 .button-skill-toggle {
   display: flex;
   align-items: center;
@@ -398,21 +553,15 @@
   padding: 4px 12px;
   cursor: pointer;
   width: 140px;
-  height: 36px; /* Чуть выше для солидности */
-  font-family: 'Cinzel', serif;
+  height: 36px;
+  font-family: var(--font-display);
   color: #ffc60c;
-  /* Фон: глубокий градиент кованого железа */
   background: linear-gradient(180deg, #2c2c2c 0%, #1a1a1a 100%);
-  
-  /* Рамка: имитация чеканки */
-  border: 1px solid #4a3b2a; 
-  border-radius: 4px;
-  
-  /* Тени для объема */
-  box-shadow: 
-    inset 0 1px 0 rgba(255,255,255,0.05), 
+  border: 1px solid #4a3b2a;
+  border-radius: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.05),
     0 2px 4px rgba(0,0,0,0.5);
-    
   transition: all 0.2s ease;
   position: relative;
   overflow: hidden;
@@ -428,26 +577,24 @@
   box-shadow: inset 0 2px 10px rgba(0,0,0,0.8);
 }
 
-/* Если кнопка активна (выбран фильтр) — добавляем магическое свечение */
 .button-skill-toggle.active {
   border-color: #d4af37;
   box-shadow: 0 0 12px rgba(212, 175, 55, 0.3), inset 0 0 5px rgba(212, 175, 55, 0.2);
 }
 
 .button-skill-toggle span {
-  color: #d1c1a1; /* Цвет состаренного золота */
-  font-family: 'Cinzel', serif; /* Или Georgia для благородства */
+  color: #d1c1a1;
+  font-family: var(--font-display);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: clamp(11px, 2.2vw, 13px); /* Чуть уменьшил для изящества */
+  font-size: clamp(11px, 2.2vw, 13px);
   text-shadow: 0 1px 2px rgba(0,0,0,0.8);
 }
 
-/* Маленькая деталь: декоративная точка/заклепка слева */
 .button-skill-toggle::before {
   content: '';
   width: 4px;
@@ -467,48 +614,55 @@
   0% {
     opacity: 0;
     transform: scale(0.8) translateY(10px);
-    filter: brightness(0) contrast(1.5); /* Полная темнота */
+    filter: brightness(0) contrast(1.5);
     box-shadow: 0 0 0px rgba(212, 175, 55, 0);
   }
   50% {
-    filter: brightness(1.2) contrast(1.2); /* Вспышка при проявлении */
+    filter: brightness(1.2) contrast(1.2);
     box-shadow: 0 0 40px rgba(212, 175, 55, 0.4);
   }
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
-    filter: brightness(1) contrast(1); /* Финальный вид */
+    filter: brightness(1) contrast(1);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
   }
 }
 
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,5,10,0.65);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 50;
+  padding: 16px;
+}
+
 .modal-learn {
-  background: #1a1612; /* Темный шоколад/камень */
-  background-image: 
-    linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    url('https://www.transparenttextures.com'); /* Текстура кожи */
-  
-  border: 2px solid #8b7355; /* Бронзовая рамка */
+  /* было фоновое изображение с https://www.transparenttextures.com без пути —
+     просто 404 на каждый рендер модалки, убрал */
+  background: #1a1612;
+  border: 2px solid #8b7355;
   border-radius: 4px;
   padding: 24px;
   max-width: 320px;
-  color: #e2d1b1; /* Цвет пергамента */
-  box-shadow: 
-    0 0 30px rgba(0, 0, 0, 0.9), 
-    inset 0 0 15px rgba(139, 115, 85, 0.3); /* Внутреннее свечение */
+  width: 100%;
+  color: #e2d1b1;
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.9),
+    inset 0 0 15px rgba(139, 115, 85, 0.3);
   text-align: center;
   position: relative;
-    animation: magicAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-  
-  /* Оптимизация для мобилок (ускоряет рендер на iPhone) */
+  animation: magicAppear 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   will-change: transform, opacity;
   backface-visibility: hidden;
 }
 
-/* Заголовок как в книге заклинаний */
 .modal-learn h3 {
-  font-family: 'Cinzel', serif; /* Если нет, то Georgia */
-  color: #d4af37; /* Золото */
+  font-family: var(--font-display);
+  color: #d4af37;
   text-transform: uppercase;
   margin: 0 0 16px 0;
   letter-spacing: 1px;
@@ -522,7 +676,6 @@
   to { text-shadow: 0 0 15px rgba(212, 175, 55, 0.8), 0 0 20px rgba(255, 255, 255, 0.2); }
 }
 
-/* Описание */
 .modal-learn p {
   font-size: 14px;
   line-height: 1.5;
@@ -531,20 +684,17 @@
   opacity: 0.9;
 }
 
-/* Кубик d20 — сделаем его магическим */
 .modal-learn p:nth-of-type(2) {
   font-weight: bold;
-  color: #7b8e7b; /* Магический зеленый */
+  color: #7b8e7b;
   font-size: 16px;
 }
 
-/* Очки навыков */
 .modal-learn b {
   color: #ffcc00;
   text-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
 }
 
-/* Кнопки — самое важное */
 .modal-learn button {
   width: 100%;
   margin-top: 12px;
@@ -557,7 +707,6 @@
   transition: all 0.2s;
 }
 
-/* Кнопка Изучить (Золотая/Героическая) */
 .modal-learn button:first-of-type {
   background: linear-gradient(180deg, #8b7355 0%, #4a3b2a 100%);
   color: #fff;
@@ -569,7 +718,6 @@
   box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
 }
 
-/* Кнопка Отмена (Скромная) */
 .modal-learn button:last-of-type {
   background: transparent;
   border-color: #4a3b2a;
@@ -580,4 +728,99 @@
 .modal-learn button:last-of-type:hover {
   color: #e2d1b1;
   background: rgba(139, 115, 85, 0.1);
+}
+
+/* =========================================================================
+   СОВМЕСТИМОСТЬ СО СТАРОЙ РАЗМЕТКОЙ (ClassSkills.tsx, не входил в эту правку)
+   Тот компонент использует .skill-root/.skill-row/.skill-icon/.skill-header
+   вместо .node-block/.node-row/.medallion/.node-main — поэтому весь блок
+   "дерево" выше на него не действовал и узлы стояли неоформленными.
+   Ниже — облегчённый эквивалент того же языка дизайна для старых имён
+   классов. ВАЖНО: линии-соединители дерева (.chain) сюда не переехали —
+   это требует обёртки в самой разметке ClassSkills.tsx. Если перенесёшь
+   его сюда так же, как ClassPreviewSkills.tsx, этот блок можно удалить.
+   ========================================================================= */
+.skill-root {
+  margin-bottom: 10px;
+}
+
+.skill-root-header.clickable {
+  cursor: pointer;
+}
+
+.skill-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 10px 10px 8px;
+  border-radius: 12px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  margin-bottom: 6px;
+  transition: border-color 0.15s ease;
+}
+
+.skill-row:hover {
+  border-color: var(--gold);
+}
+
+.skill-row.skill-collapsed {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.skill-row.learned {
+  border-color: var(--moss);
+}
+
+.skill-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card-soft);
+  border: 2px solid var(--gold);
+  color: var(--gold-bright);
+  font-size: 14px;
+}
+
+.skill-row.learned .skill-icon {
+  border-color: var(--moss);
+  color: var(--moss-bright);
+}
+
+.skill-level-mini {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--mist);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1px 5px;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+
+.skill-header {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.skill-name {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--parchment);
+}
+
+.skill-effect {
+  font-size: 12.5px;
+  color: var(--mist);
+  line-height: 1.45;
 }

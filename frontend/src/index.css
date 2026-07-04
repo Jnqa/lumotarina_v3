@@ -43,23 +43,17 @@ h1 {
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
+  /* Оставляем только базовый сброс — конкретные компоненты задают
+     свои стили сами. Глобальный border-radius/padding/background
+     перебивал .element-button, .status-mark и .skill-learn-btn. */
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
   transition: border-color 0.25s;
 }
-button:hover {
-  border-color: #9dc6fc1e;
-}
 button:focus,
 button:focus-visible {
-  outline: 0px #ffffff22;
-  overflow: hidden;
+  outline: 2px solid rgba(212, 175, 55, 0.4);
+  outline-offset: 2px;
 }
 
 @media (prefers-color-scheme: light) {

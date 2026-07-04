@@ -44,7 +44,7 @@
 .abilities-map {
   display: flex;
   flex-wrap: wrap;
-  width: 94%;
+  width: 100%;
   flex-direction: column;
   position: relative;
   border-radius: 0px;

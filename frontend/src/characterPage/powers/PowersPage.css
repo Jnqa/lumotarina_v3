@@ -1,9 +1,15 @@
 .powers-page {
   min-height: 100vh;
   padding: 20px 16px 100px;
-  background: radial-gradient(circle at top, #1e1217 0%, #0c080e 45%, #060307 100%);
+  background: radial-gradient(circle at top, #1e1217 0%, #0c080e 45%, #0b0913 100%);
   color: #f1e7d4;
-  font-family: 'Cinzel', serif;
+  /* Cinzel — шрифт заголовков, а не текста: на всю страницу его лучше не
+     ставить базовым (внутренние компоненты типа ClassPreviewSkills уже
+     сами переключаются на Crimson Pro для тела текста, но "Загрузка…" /
+     "Персонаж не найден" ниже раньше наследовали Cinzel как обычный
+     параграф — отсюда нестыковка). Базовый шрифт страницы — текстовый,
+     Cinzel оставлен только декоративному заголовку ::before. */
+  font-family: 'Crimson Pro', Georgia, serif;
 }
 
 .powers-page .skills-map {
@@ -20,9 +26,10 @@
   content: 'Древо умений';
   display: block;
   margin-bottom: 14px;
+  font-family: 'Cinzel', serif;
   font-size: 18px;
   letter-spacing: 0.18em;
-  color: #d4af70;
+  color: #d4af37;
   text-transform: uppercase;
 }
 
@@ -33,40 +40,3 @@
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(212, 175, 112, 0.35), transparent);
 }
-
-/* .powers-page { 
-    padding: 16px;
-    color: #e7e7e7;
-}
-.powers-page h1 { 
-    margin: 0 0 8px 0;
-    font-size: 16px 
-}
-.powers-page .powers-grid { 
-    display:grid; 
-    grid-template-columns: 1fr 1fr; 
-    gap:8px 
-}
-.powers-page input { 
-    width:72px; 
-    padding:6px; 
-    border-radius:6px; 
-    background:#171717; 
-    border:1px solid #2a2a2a; 
-    color:#fff 
-}
-.powers-page button { 
-    padding:8px 12px; 
-    background:#2e7dff; 
-    color:#fff; 
-    border-radius:6px; 
-    border:none 
-}
-.powers-page .ability-row { 
-    background:#222; 
-    padding:8px; 
-    border-radius:6px; 
-    display:flex; 
-    align-items:center; 
-    justify-content:space-between 
-} */
