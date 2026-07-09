@@ -144,7 +144,7 @@
 .node-row {
   position: relative;
   display: flex;
-  align-items: flex-start;▲
+  align-items: flex-start;
   gap: 10px;
   border-radius: 14px;
   padding: 6px 10px 6px 0; /* tightened to avoid tag wrapping on narrow viewports */
